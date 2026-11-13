@@ -4,118 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080d0b">
-<meta name="description" content="TERRAFORM — Planetary Analog Intelligence. A geospatial research platform exploring terrestrial and planetary terrain similarities.">
 <title>TERRAFORM | Planetary Analog Intelligence</title>
 <style>
-:root {
-  --bg: #080d0b;
-  --panel: #101814;
-  --green: #28a745;
-  --text: #f2f6f3;
-  --muted: #9aa9a0;
-  --line: rgba(255,255,255,.09);
+* {
+    box-sizing: border-box;
 }
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Inter, Arial, sans-serif;
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #080d0b;
 }
-header {
-  height: 72px;
-  padding: 0 5%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  background: rgba(8,13,11,.96);
-}
-.brand { display:flex; align-items:center; gap:12px; }
-.symbol {
-  width: 36px; height: 36px; border: 1px solid var(--green);
-  border-radius: 50%; display:grid; place-items:center;
-  color:var(--green); font-weight:800;
-}
-.brand-name { font-weight:800; letter-spacing:3px; font-size:16px; }
-.brand-sub { color:var(--muted); font-size:10px; letter-spacing:1.5px; margin-top:4px; }
-.status { color:#8de6a1; font-size:12px; letter-spacing:1px; }
-.status:before {
-  content:""; display:inline-block; width:7px; height:7px;
-  background:var(--green); border-radius:50%; margin-right:9px;
-}
-main { max-width:1600px; margin:auto; padding:30px 4% 20px; }
-.intro { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:22px; }
-.eyebrow { color:var(--green); font-size:11px; letter-spacing:2.5px; font-weight:700; }
-h1 { font-size:clamp(25px,3vw,38px); margin:9px 0 7px; letter-spacing:-1px; }
-.description { color:var(--muted); font-size:14px; line-height:1.6; margin:0; }
-.open-link {
-  color:var(--text); text-decoration:none; border:1px solid var(--line);
-  border-radius:7px; padding:11px 15px; font-size:12px; white-space:nowrap;
-}
-.open-link:hover { border-color:var(--green); color:#8de6a1; }
-.dashboard {
-  width:100%; height:calc(100vh - 225px); min-height:650px;
-  background:var(--panel); border:1px solid var(--line);
-  border-radius:10px; overflow:hidden;
-}
-iframe { width:100%; height:100%; border:0; background:var(--panel); }
-footer {
-  display:flex; justify-content:space-between; gap:15px;
-  padding:18px 4%; color:#78877e; font-size:11px;
-  border-top:1px solid var(--line); letter-spacing:.5px;
-}
-@media(max-width:700px) {
-  header { padding:0 5%; height:65px; }
-  .status { display:none; }
-  main { padding:25px 4% 15px; }
-  .intro { align-items:start; flex-direction:column; }
-  .dashboard { height:calc(100vh - 230px); min-height:600px; }
-  footer { flex-direction:column; }
+iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #080d0b;
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="symbol">T</div>
-    <div>
-      <div class="brand-name">TERRAFORM</div>
-      <div class="brand-sub">PLANETARY ANALOG INTELLIGENCE</div>
-    </div>
-  </div>
-  <div class="status">RESEARCH PLATFORM ONLINE</div>
-</header>
-
-<main>
-  <section class="intro">
-    <div>
-      <div class="eyebrow">GEOSPATIAL RESEARCH PLATFORM</div>
-      <h1>Exploring worlds through terrain.</h1>
-      <p class="description">
-        Investigating measurable terrain similarities between Earth and planetary environments.
-      </p>
-    </div>
-    <a class="open-link"
-       href="https://projectterraform.streamlit.app/"
-       target="_blank" rel="noopener">
-       Open standalone dashboard ↗
-    </a>
-  </section>
-
-  <section class="dashboard">
-    <iframe
-      src="https://projectterraform.streamlit.app/?embed=true"
-      title="TERRAFORM Planetary Analog Intelligence Dashboard"
-      loading="eager"
-      allow="fullscreen">
-    </iframe>
-  </section>
-</main>
-
-<footer>
-  <span>© 2026 TERRAFORM — PLANETARY ANALOG INTELLIGENCE</span>
-  <span>EARTH · MARS · MOON</span>
-</footer>
+<iframe
+    src="https://projectterraform.streamlit.app/?embed=true"
+    title="TERRAFORM Planetary Analog Intelligence"
+    allow="fullscreen"
+    loading="eager">
+</iframe>
 </body>
 </html>
