@@ -1,0 +1,68 @@
+
+=== data/raw/mars/megt44n000hb.img ===
+File size: 129,761,280 bytes
+
+=== data/processed/mars/mars_mola_128ppd_megt44n000hb.tif ===
+File size: 59,105,277 bytes
+Dimensions: 11520 x 5632
+Bands: 1
+CRS: GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]]
+Resolution: (0.0078125, 0.0078125)
+Bounds: BoundingBox(left=0.0, bottom=0.0, right=90.0, top=44.0)
+NoData: None
+Data type: ('int16',)
+Valid pixels: 64,880,640
+Min elevation/value: -5062.0000
+Max elevation/value: 3210.0000
+
+=== data/processed/mars/jezero_dem_local_mars.tif ===
+File size: 135,268 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 50,192
+Min elevation/value: -3457.1848
+Max elevation/value: -535.8076
+
+=== data/processed/mars/jezero_slope_deg.tif ===
+File size: 168,282 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 0.0100
+Max elevation/value: 31.0750
+
+=== data/processed/mars/jezero_roughness_std_3x3_m.tif ===
+File size: 165,171 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 0.3839
+Max elevation/value: 206.0082
+
+=== data/processed/mars/jezero_local_relief_3x3_m.tif ===
+File size: 147,256 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 1.2693
+Max elevation/value: 661.0845

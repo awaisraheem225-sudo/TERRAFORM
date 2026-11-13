@@ -1,0 +1,163 @@
+﻿========== CSS BLOCK ==========
+# GLOBAL STYLING
+# ============================================================
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --background:#0A1018;
+    --panel:#111C27;
+    --border:#263746;
+    --accent:#55D6A0;
+    --text:#EDF4F8;
+    --muted:#8FA3B5;
+}
+html, body, [class*="css"] {font-family:'Inter',sans-serif;}
+.stApp {background:var(--background);color:var(--text);}
+header[data-testid="stHeader"] {background:rgba(10,16,24,.92);}
+[data-testid="stSidebar"] {background:#0D1721;border-right:1px solid var(--border);}
+[data-testid="stSidebar"] > div:first-child {padding-top:1.2rem;}
+[data-testid="stMainBlockContainer"] {padding-top:2rem;padding-bottom:3rem;max-width:1600px;}
+.block-container {padding-left:2.5rem;padding-right:2.5rem;}
+h1,h2,h3 {color:var(--text);letter-spacing:-.6px;}
+p,li,label {color:#BDCAD5;}
+small {color:var(--muted);}
+hr {border-color:var(--border);}
+div[data-testid="stMetric"] {background:var(--panel);border:1px solid var(--border);padding:17px 20px;border-radius:12px;}
+div[data-testid="stMetricLabel"] {color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+div[data-testid="stMetricValue"] {color:var(--text);font-weight:700;}
+.stButton > button,.stDownloadButton > button {background:#162B32;color:var(--accent);border:1px solid #326452;border-radius:8px;font-weight:600;}
+.stButton > button:hover {background:#1C3B36;border-color:var(--accent);color:white;}
+.stTextInput input,.stNumberInput input,.stSelectbox div[data-baseweb="select"],.stMultiSelect div[data-baseweb="select"] {background:#111C27;border-color:var(--border);}
+.stTabs [data-baseweb="tab-list"] {gap:18px;background:transparent;}
+.stTabs [data-baseweb="tab"] {color:var(--muted);font-weight:600;}
+.stTabs [aria-selected="true"] {color:var(--accent)!important;}
+[data-testid="stDataFrame"] {border:1px solid var(--border);border-radius:10px;}
+.terraform-brand {font-size:25px;font-weight:800;letter-spacing:2px;color:white;}
+.terraform-subbrand {font-family:'DM Mono',monospace;color:var(--accent);font-size:9px;letter-spacing:2.3px;margin-top:-5px;}
+.eyebrow {color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:9px;}
+.page-title {color:white;font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-1.3px;margin-bottom:8px;}
+.page-description {color:var(--muted);font-size:14px;margin-bottom:27px;}
+.hero {background:radial-gradient(circle at 90% 15%,rgba(85,214,160,.13),transparent 28%),linear-gradient(120deg,#142633,#0D1721 70%);border:1px solid #304553;border-radius:17px;padding:31px 34px;margin-bottom:24px;}
+.hero-title {font-size:39px;font-weight:800;color:white;letter-spacing:-1.5px;line-height:1.15;}
+.hero-description {color:#A9BAC7;font-size:14px;max-width:720px;margin-top:12px;line-height:1.8;}
+.hero-tag {display:inline-block;color:var(--accent);background:rgba(85,214,160,.09);border:1px solid rgba(85,214,160,.25);border-radius:5px;padding:5px 9px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;margin-bottom:17px;}
+.panel {background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:19px;margin-bottom:14px;}
+.panel-title {color:white;font-size:15px;font-weight:700;margin-bottom:5px;}
+.panel-description {color:var(--muted);font-size:12px;margin-bottom:14px;}
+.status-dot {display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;}
+.status-text {color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;}
+.mono {font-family:'DM Mono',monospace;color:var(--muted);font-size:11px;}
+.empty-state {background:#111C27;border:1px dashed #354B5B;border-radius:12px;padding:30px;text-align:center;color:var(--muted);}
+.empty-state h3 {color:#EAF1F5;font-size:17px;}
+.footer {border-top:1px solid var(--border);margin-top:40px;padding-top:17px;color:#718394;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;}
+[data-testid="stAlert"] {border-radius:9px;}
+</style>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# GENERAL UTILITIES
+# ============================================================
+
+def format_number(value, suffix=""):
+    try:
+
+========== DUPLICATE FUNCTION BOUNDARIES ==========
+# PAGE 5 â€” CANDIDATE INTELLIGENCE
+# ============================================================
+
+# This page intentionally uses your existing dedicated module.
+# Its original functionality is retained.
+def candidate_page():
+    candidate_intelligence_page(ROOT)
+
+
+# ============================================================
+# PAGE 6 â€” RESEARCH VISUALISATIONS
+# ============================================================
+
+def visualisations_page():
+    section_header(
+        "MODULE 05 / SCIENTIFIC VISUALISATION",
+        "Research Visualisations",
+        "A visual archive of the global planetary analysis and the Atacamaâ€“Jezero regional investigation."
+    )
+
+    total_images = sum(len(items) for items in VISUALISATION_GROUPS.values())
+    available_images = sum(
+        (OUTPUTS / path).exists()
+        for items in VISUALISATION_GROUPS.values()
+        for _, path in items
+    )
+
+    a, b, c = st.columns(3)
+    a.metric("Visual assets catalogued", total_images)
+    b.metric("Images available", available_images)
+    c.metric("Missing images", total_images - available_images)
+
+    st.caption(
+        "The gallery uses the existing image files in the outputs directory. "
+        "No image is regenerated or altered by this page."
+    )
+    st.divider()
+
+    for group_name, images in VISUALISATION_GROUPS.items():
+        st.markdown(f"### {group_name}")
+        cols = st.columns(2)
+        for index, (title, relative_path) in enumerate(images):
+            with cols[index % 2]:
+                st.markdown(f"**{title}**")
+                show_image(relative_path, title)
+        st.divider()
+
+    st.markdown("### Visualisation inventory")
+    inventory_rows = []
+    for group_name, images in VISUALISATION_GROUPS.items():
+        for title, relative_path in images:
+            path = OUTPUTS / relative_path
+            inventory_rows.append({
+                "Research stream": group_name,
+                "Visualisation": title,
+                "Status": "Available" if path.exists() else "Missing",
+                "Path": f"outputs/{relative_path}",
+            })
+    st.dataframe(
+        pd.DataFrame(inventory_rows),
+        use_container_width=True,
+        hide_index=True
+    )
+    st.download_button(
+        "Download visualisation inventory",
+        data=pd.DataFrame(inventory_rows).to_csv(index=False).encode("utf-8"),
+        file_name="terraform_visualisation_inventory.csv",
+        mime="text/csv"
+    )
+
+
+# ============================================================
+# PAGE 7 â€” DATA LABORATORY
+# ============================================================
+
+def visualisations_page():
+    section_header(
+        "MODULE 05 / SCIENTIFIC VISUALISATION",
+        "Research Visualisations",
+        "Explore global Earth, Mars and Moon analysis alongside the Atacamaâ€“Jezero regional investigation."
+    )
+
+    # ========================================================
+    # GLOBAL PLANETARY COMPARISON â€” VERSION 1.1
+    # ========================================================
+
+    st.markdown("## Global Planetary Comparison")
+    st.caption(
+        "Area-weighted elevation distribution analysis across "
+        "Earth, Mars and the Moon."
+    )
+
+    global_report_path = (
+        OUTPUTS
+        / "Global"

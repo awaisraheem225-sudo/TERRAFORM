@@ -1,0 +1,158 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261113195735
+Username: AWAIS\h
+RunAs User: AWAIS\h
+Configuration Name: 
+Machine: AWAIS (Microsoft Windows NT 10.0.19044.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "d:\cdrive\Microsoft VS Code\69047191fc\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 12908
+PSVersion: 5.1.19041.1682
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.1682
+BuildVersion: 10.0.19041.1682
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\TERRAFORM\TERRAFORM_RUNTIME_TRACE.txt
+
+========== 1. RASTER AND DATA ACCESS IN APP ==========
+
+========== APP DATA ACCESS ==========
+   31: PLANETARY_DATASETS = {
+  944: if not path.exists():
+  947: return pd.read_csv(path)
+  955: if not path.exists():
+  987: if not path.exists():
+  998: if not path.exists():
+ 1004: with rasterio.open(path) as dataset:
+ 1027: if path.exists():
+ 1064: if path.exists():
+ 1074: if path.exists():
+ 1121: for name, spec in PLANETARY_DATASETS.items()
+ 1128: for name, spec in PLANETARY_DATASETS.items()
+ 1136: (OUTPUTS / path).exists()
+ 1418: config = PLANETARY_DATASETS[planet]
+ 1698: if report_path.exists():
+ 2914: if not config["report_path"].exists():
+ 2963: if not global_report_path.exists():
+ 3011: if not moon_report_path.exists():
+ 3023: if not earth_moon_report_path.exists():
+ 3563: if image_path.exists():
+ 4023: if moon_image_path.exists():
+ 4350: if not report_path.exists():
+ 4433: if image_path.exists():
+ 4536: if not report_path.exists():
+ 4562: if image_path.exists():
+ 4728: (OUTPUTS / path).exists()
+ 4778: "Available" if path.exists() else "Missing"
+ 5014: if path.exists():
+ 5087: datasets = PLANETARY_DATASETS
+ 5171: with rasterio.open(raster_path) as dataset:
+ 5506: return (OUTPUTS / relative_path).exists()
+
+========== 2. CANDIDATE PAGE ==========
+
+========== CANDIDATE PAGE FILE ACCESS ==========
+   21: with open(path, "r", encoding="utf-8") as file:
+   27: gdf = gpd.read_file(path)
+  174: def render_profile(profile, geojson, root):
+  585: root
+  586: / "outputs"
+  608: markdown_path.exists()
+  627: def candidate_intelligence_page(root):
+  630: root
+  631: / "outputs"
+  637: root
+  638: / "outputs"
+  645: root
+  646: / "outputs"
+  678: if not profiles_path.exists():
+  686: if not boundaries_path.exists():
+  779: root
+  794: if comparison_path.exists():
+  796: comparison_df = pd.read_csv(comparison_path)
+
+========== 3. DASHBOARD PIPELINE ==========
+
+========== DASHBOARD PIPELINE FILE ACCESS ==========
+    3: TERRAFORM - Dashboard Data Integration
+   10: from src.data.processing import process_dataframe
+   13: PROJECT_ROOT = Path(__file__).resolve().parents[2]
+   15: EARTH_RAW = PROJECT_ROOT / "data" / "raw" / "earth"
+   16: MARS_RAW = PROJECT_ROOT / "data" / "raw" / "mars"
+   22: def load_and_process(uploaded_file, dataset_type):
+   24: Load a CSV from the dashboard or raw data directory,
+   28: dataset_type = dataset_type.lower()
+   30: if dataset_type not in ("earth", "mars"):
+   31: raise ValueError("Dataset type must be earth or mars.")
+   33: raw_directory = EARTH_RAW if dataset_type == "earth" else MARS_RAW
+   37: dataframe = pd.read_csv(uploaded_file)
+   47: "cleaned": pd.DataFrame(),
+   48: "rejected": pd.DataFrame(),
+   50: "source": "No dataset available",
+   56: dataframe = pd.read_csv(selected_file)
+   59: result = process_dataframe(
+   60: dataframe=dataframe,
+   61: dataset_type=dataset_type,
+
+========== 4. IMPORTS IN DIRECTLY IMPORTED MODULES ==========
+
+--- \src\data\dashboard_pipeline.py ---
+from pathlib import Path
+import pandas as pd
+from src.data.processing import process_dataframe
+
+--- \src\data\processing.py ---
+from pathlib import Path
+import json
+import pandas as pd
+from src.data.validation import validate_dataset
+
+--- \src\data\validation.py ---
+import pandas as pd
+
+--- \src\visualization\candidate_intelligence_page.py ---
+from pathlib import Path
+import json
+import html
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import folium
+import geopandas as gpd
+from streamlit_folium import st_folium
+
+--- \src\visualization\death_valley_map.py ---
+from pathlib import Path
+import numpy as np
+import rasterio
+import folium
+from rasterio.warp import (
+from rasterio.transform import array_bounds
+from rasterio import Affine
+from matplotlib import colormaps
+
+========== 5. GIT STATUS ==========
+
+
+
+Tracked files: 200
+
+========== 6. CONFIG AND ASSET CHECK ==========
+data\Global\Earth\earth_etopo_2022_60s.tif | EXISTS | 444.38 MB
+data\Global\Mars\megt90n000eb.img | EXISTS | 31.64 MB
+data\Global\Moon\LDEM_16.LBL | EXISTS | 0.00 MB
+outputs\Global\Earth\earth_global_report.json | EXISTS | 0.00 MB
+outputs\Global\Mars\mars_global_report.json | EXISTS | 0.00 MB
+outputs\Global\Moon\moon_global_report.json | EXISTS | 0.00 MB
+outputs\Global\Comparisons\global_planetary_comparison_report.json | EXISTS | 0.01 MB
+outputs\dashboard\candidate_profiles.json | EXISTS | 0.07 MB
+outputs\maps\candidate_regions\atacama_candidate_inventory.csv | EXISTS | 0.19 MB
+outputs\reports\death_valley_terrain_analysis.json | EXISTS | 0.00 MB
+**********************
+Windows PowerShell transcript end
+End time: 20261113195736
+**********************

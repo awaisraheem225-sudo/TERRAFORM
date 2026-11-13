@@ -1,0 +1,2909 @@
+﻿=== PLANETARY PYTHON MODULES ===
+\src\crosscheck_mola_global.py
+\src\inspect_mars_outliers.py
+\src\mars_area_weighted_analysis.py
+\src\mars_global_terrain.py
+\src\mars_observation_threshold_audit.py
+\src\mars_outlier_validation.py
+\src\mars_strict_maxima_audit.py
+\src\mars_strict_observation_validation.py
+\src\process_global_mars.py
+\src\verify_mola_global.py
+\src\__init__.py
+\src\analysis\analog_comparison.py
+\src\analysis\candidate_extraction.py
+\src\analysis\comparison.py
+\src\analysis\diagnose_candidate_ids.py
+\src\analysis\generate_candidate_profiles.py
+\src\analysis\geological_characterization.py
+\src\analysis\inspect_profile_inputs.py
+\src\analysis\mars_terrain_analysis.py
+\src\analysis\sensitivity_analysis.py
+\src\analysis\spatial_cluster_analysis.py
+\src\analysis\terrain_analysis.py
+\src\analysis\terrain_range_screening.py
+\src\analysis\__init__.py
+\src\data\dashboard_pipeline.py
+\src\data\download_earth_dem.py
+\src\data\download_mars_dem.py
+\src\data\inspect_geology.py
+\src\data\processing.py
+\src\data\validation.py
+\src\data\__init__.py
+\src\planetary\catalog.py
+
+========== \src\planetary\catalog.py ==========
+
+"""
+TERRAFORM â€” Planetary Dataset Registry
+Version: 1.0
+
+Central metadata registry for global Earth, Mars and Moon datasets.
+This module records data provenance; it does not download or process data.
+"""
+
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "Global"
+OUTPUT_FILE = OUTPUT_DIR / "dataset_catalog.json"
+
+
+DATASETS = [
+    {
+        "dataset_id": "EARTH_ETOPO_2022",
+        "planet": "Earth",
+        "dataset_name": "ETOPO 2022 Global Relief Model",
+        "provider": "NOAA National Centers for Environmental Information",
+        "instrument": "Multi-source elevation and bathymetry compilation",
+        "product": "Global relief model",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "60 arc-seconds",
+        "approximate_resolution_at_equator": "1.85 km",
+        "measurement": "Elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Geographic coordinates; inspect source metadata",
+        "vertical_reference": "Verify against selected product metadata",
+        "format": ["GeoTIFF", "NetCDF"],
+        "role": "Global Earth terrain overview and screening",
+        "source_url": (
+            "https://www.ncei.noaa.gov/products/"
+            "etopo-global-relief-model"
+        ),
+        "citation": (
+            "NOAA National Centers for Environmental Information. "
+            "2022. ETOPO 2022 Global Relief Model."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "Includes terrestrial elevation and ocean bathymetry.",
+            "Ocean cells must be excluded from terrestrial analog screening.",
+            "Global overview resolution is not equivalent to regional DEM resolution."
+        ]
+    },
+    {
+        "dataset_id": "MARS_MOLA_MEGDR",
+        "planet": "Mars",
+        "dataset_name": "MOLA Mission Experiment Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Mars Orbiter Laser Altimeter",
+        "product": "MEGDR global topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "3.7 km",
+        "measurement": "Topographic elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Planetocentric/planetographic conventions must be verified",
+        "vertical_reference": "Martian areoid reference; verify product label",
+        "format": ["PDS IMG", "PDS label"],
+        "role": "Global Mars terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/mgs/megdr.html"
+        ),
+        "citation": (
+            "NASA Mars Global Surveyor. Mars Orbiter Laser Altimeter "
+            "Mission Experiment Gridded Data Record."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "MEGDR products are available at multiple spatial resolutions.",
+            "PDS labels contain essential map projection and data information.",
+            "Do not interpret raw IMG pixel values without decoding product metadata."
+        ]
+    },
+    {
+        "dataset_id": "MOON_LOLA_GDR",
+        "planet": "Moon",
+        "dataset_name": "LRO LOLA Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Lunar Orbiter Laser Altimeter",
+        "product": "Global cylindrical GDR topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "1.9 km",
+        "measurement": "Lunar topographic elevation",
+        "measurement_unit": "metres after product scaling",
+        "coordinate_reference": "Lunar map projection; verify product label",
+        "vertical_reference": "Lunar radius reference; decode label scaling and offset",
+        "format": ["PDS IMG", "GeoJPEG2000", "PDS label"],
+        "role": "Global lunar terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/lro/lola.htm"
+        ),
+        "citation": (
+            "NASA Lunar Reconnaissance Orbiter. Lunar Orbiter Laser "
+            "Altimeter Gridded Data Records."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "LOLA GDR products contain gridded altimetry measurements.",
+            "Pixel values may require a scale factor and offset.",
+            "Global and polar products use different map projections."
+        ]
+    }
+]
+
+
+def validate_catalog(datasets):
+    required_fields = [
+        "dataset_id",
+        "planet",
+        "dataset_name",
+        "provider",
+        "spatial_coverage",
+        "measurement",
+        "measurement_unit",
+        "source_url",
+        "processing_status"
+    ]
+
+    errors = []
+
+    for dataset in datasets:
+        for field in required_fields:
+            if not dataset.get(field):
+                errors.append(
+                    f"{dataset.get('dataset_id', 'UNKNOWN')}: "
+                    f"missing {field}"
+                )
+
+    identifiers = [item["dataset_id"] for item in datasets]
+
+    if len(identifiers) != len(set(identifiers)):
+        errors.append("Duplicate dataset identifiers detected.")
+
+    return errors
+
+
+def build_catalog():
+    errors = validate_catalog(DATASETS)
+
+    if errors:
+        raise ValueError("\n".join(errors))
+
+    return {
+        "project": "TERRAFORM",
+        "project_title": "Planetary Analog Intelligence",
+        "catalog_version": "1.0",
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "dataset_count": len(DATASETS),
+        "planets": ["Earth", "Mars", "Moon"],
+        "datasets": DATASETS,
+        "methodological_note": (
+            "Dataset resolutions, coordinate systems, vertical references "
+            "and measurement conventions must be verified before "
+            "cross-planetary comparison. Global screening and regional "
+            "analysis are separate processing levels."
+        )
+    }
+
+
+def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    catalog = build_catalog()
+
+    with OUTPUT_FILE.open("w", encoding="utf-8") as file:
+        json.dump(catalog, file, indent=4, ensure_ascii=False)
+
+    print("=" * 55)
+    print("TERRAFORM â€” PLANETARY DATASET REGISTRY")
+    print("=" * 55)
+
+    for dataset in catalog["datasets"]:
+        print(
+            f"{dataset['planet']:8} | "
+            f"{dataset['dataset_name']}"
+        )
+
+    print("-" * 55)
+    print(f"Datasets registered: {catalog['dataset_count']}")
+    print(f"Output: {OUTPUT_FILE}")
+    print("CATALOG VALIDATION: PASSED")
+    print("=" * 55)
+
+
+if __name__ == "__main__":
+    main()
+
+\src\planetary\earth_global.py
+
+========== \src\planetary\earth_global.py ==========
+
+"""
+TERRAFORM â€” Global Earth Raster Analysis
+Version: 1.3
+
+Dataset:
+    NOAA ETOPO 2022 â€” 60 arc-second global relief
+
+Features:
+    1. Raster metadata inspection
+    2. Block-wise elevation statistics
+    3. Preliminary land/ocean classification
+    4. NoData-aware global elevation visualisation
+    5. CRS inspection
+    6. Machine-readable JSON reporting
+
+The original source raster is never modified.
+"""
+
+import json
+from pathlib import Path
+
+import numpy as np
+import rasterio
+import matplotlib.pyplot as plt
+
+from rasterio.enums import Resampling
+from pyproj import CRS as PyprojCRS
+
+
+# ==================================================
+# 1. PROJECT CONFIGURATION
+# ==================================================
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+INPUT_FILE = (
+    PROJECT_ROOT
+    / "data"
+    / "Global"
+    / "Earth"
+    / "earth_etopo_2022_60s.tif"
+)
+
+OUTPUT_DIR = (
+    PROJECT_ROOT
+    / "outputs"
+    / "Global"
+    / "Earth"
+)
+
+FIGURE_DIR = (
+    PROJECT_ROOT
+    / "outputs"
+    / "Visualisations"
+    / "Global"
+)
+
+REPORT_FILE = OUTPUT_DIR / "earth_global_report.json"
+FIGURE_FILE = FIGURE_DIR / "earth_global_elevation.png"
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ==================================================
+# 2. RASTER VALIDITY
+# ==================================================
+
+def get_valid_mask(data, nodata):
+
+    valid = np.isfinite(data)
+
+    if nodata is not None:
+
+        if np.isnan(nodata):
+            valid &= ~np.isnan(data)
+
+        else:
+            valid &= data != nodata
+
+    return valid
+
+
+# ==================================================
+# 3. GLOBAL ELEVATION STATISTICS
+# ==================================================
+
+def analyse_elevation(src):
+
+    nodata = src.nodata
+
+    valid_count = 0
+    land_count = 0
+    ocean_count = 0
+
+    elevation_sum = 0.0
+    land_sum = 0.0
+    ocean_sum = 0.0
+
+    minimum = float("inf")
+    maximum = float("-inf")
+
+    land_minimum = float("inf")
+    land_maximum = float("-inf")
+
+    ocean_minimum = float("inf")
+    ocean_maximum = float("-inf")
+
+    print("\nPROCESSING GLOBAL ELEVATION BLOCKS")
+    print("-" * 45)
+
+    for _, window in src.block_windows(1):
+
+        data = src.read(1, window=window)
+
+        valid = get_valid_mask(data, nodata)
+
+        values = data[valid].astype(
+            np.float64,
+            copy=False
+        )
+
+        if values.size == 0:
+            continue
+
+        valid_count += values.size
+
+        elevation_sum += float(
+            values.sum(dtype=np.float64)
+        )
+
+        minimum = min(
+            minimum,
+            float(values.min())
+        )
+
+        maximum = max(
+            maximum,
+            float(values.max())
+        )
+
+        # Preliminary elevation-based classification
+        land_values = values[values > 0]
+        ocean_values = values[values <= 0]
+
+        land_count += land_values.size
+        ocean_count += ocean_values.size
+
+        if land_values.size:
+
+            land_sum += float(
+                land_values.sum(dtype=np.float64)
+            )
+
+            land_minimum = min(
+                land_minimum,
+                float(land_values.min())
+            )
+
+            land_maximum = max(
+                land_maximum,
+                float(land_values.max())
+            )
+
+        if ocean_values.size:
+
+            ocean_sum += float(
+                ocean_values.sum(dtype=np.float64)
+            )
+
+            ocean_minimum = min(
+                ocean_minimum,
+                float(ocean_values.min())
+            )
+
+            ocean_maximum = max(
+                ocean_maximum,
+                float(ocean_values.max())
+            )
+
+    if valid_count == 0:
+
+        raise ValueError(
+            "The raster contains no valid elevation cells."
+        )
+
+    def safe_range(low, high):
+
+        if low == float("inf"):
+            return None, None
+
+        return low, high
+
+    land_minimum, land_maximum = safe_range(
+        land_minimum,
+        land_maximum
+    )
+
+    ocean_minimum, ocean_maximum = safe_range(
+        ocean_minimum,
+        ocean_maximum
+    )
+
+    return {
+
+        "valid_cells": int(valid_count),
+
+        "land_cells": int(land_count),
+
+        "ocean_cells": int(ocean_count),
+
+        "land_percentage_of_valid_cells": round(
+            land_count / valid_count * 100,
+            4
+        ),
+
+        "ocean_percentage_of_valid_cells": round(
+            ocean_count / valid_count * 100,
+            4
+        ),
+
+        "global_elevation_min_m": minimum,
+
+        "global_elevation_max_m": maximum,
+
+        "global_elevation_mean_m": (
+            elevation_sum / valid_count
+        ),
+
+        "land_elevation_min_m": land_minimum,
+
+        "land_elevation_max_m": land_maximum,
+
+        "land_elevation_mean_m": (
+            land_sum / land_count if land_count else None
+        ),
+
+        "ocean_elevation_min_m": ocean_minimum,
+
+        "ocean_elevation_max_m": ocean_maximum,
+
+        "ocean_elevation_mean_m": (
+            ocean_sum / ocean_count if ocean_count else None
+        )
+    }
+
+
+# ==================================================
+# 4. CRS INSPECTION
+# ==================================================
+
+def inspect_crs(src):
+
+    print("\nCOORDINATE REFERENCE SYSTEM")
+    print("-" * 45)
+
+    if src.crs is None:
+
+        print("WARNING: Raster CRS is not defined.")
+
+        return {
+            "crs": None,
+            "crs_name": None,
+            "crs_wkt": None,
+            "axis_information": [],
+            "sub_crs_information": []
+        }
+
+    crs_info = PyprojCRS.from_user_input(src.crs)
+
+    print("CRS:", src.crs)
+    print("CRS DESCRIPTION:", crs_info.name)
+
+    axis_information = []
+
+    print("\nAXIS INFORMATION")
+
+    for axis in crs_info.axis_info:
+
+        record = {
+            "name": axis.name,
+            "direction": axis.direction,
+            "unit": axis.unit_name
+        }
+
+        axis_information.append(record)
+
+        print(
+            f"{axis.name} | "
+            f"Direction: {axis.direction} | "
+            f"Unit: {axis.unit_name}"
+        )
+
+    sub_crs_information = []
+
+    print("\nSUB-CRS INFORMATION")
+
+    if crs_info.is_compound:
+
+        for sub_crs in crs_info.sub_crs_list:
+
+            record = {
+                "name": sub_crs.name,
+                "type": sub_crs.type_name
+            }
+
+            sub_crs_information.append(record)
+
+            print(
+                f"{sub_crs.name} | "
+                f"Type: {sub_crs.type_name}"
+            )
+
+    else:
+
+        print("CRS is not identified as a compound CRS.")
+
+    return {
+
+        "crs": src.crs.to_string(),
+
+        "crs_name": crs_info.name,
+
+        "crs_wkt": src.crs.to_wkt(),
+
+        "axis_information": axis_information,
+
+        "sub_crs_information": sub_crs_information
+    }
+
+
+# ==================================================
+# 5. GLOBAL ELEVATION VISUALISATION
+# ==================================================
+
+def create_global_map(src):
+
+    print("\nGENERATING GLOBAL EARTH MAP")
+    print("-" * 45)
+
+    preview_height = 1080
+    preview_width = 2160
+
+    elevation = src.read(
+        1,
+        out_shape=(
+            preview_height,
+            preview_width
+        ),
+        masked=True,
+        resampling=Resampling.average
+    ).astype(np.float32)
+
+    masked = np.ma.masked_invalid(elevation)
+
+    # Standard scientific atlas appearance.
+    fig, ax = plt.subplots(
+        figsize=(16, 8),
+        facecolor="white"
+    )
+
+    ax.set_facecolor("white")
+
+    # Main map.
+    image = ax.imshow(
+
+        masked,
+
+        extent=(-180, 180, -90, 90),
+
+        origin="upper",
+
+        cmap="terrain",
+
+        vmin=-8000,
+
+        vmax=6000,
+
+        interpolation="nearest",
+
+        aspect="auto"
+    )
+
+    ax.set_title(
+
+        "TERRAFORM | GLOBAL EARTH ELEVATION",
+
+        fontsize=17,
+
+        fontweight="bold",
+
+        color="#202B36",
+
+        pad=14
+    )
+
+    ax.set_xlabel(
+        "Longitude (degrees)",
+        fontsize=10,
+        labelpad=7,
+        color="#303B46"
+    )
+
+    ax.set_ylabel(
+        "Latitude (degrees)",
+        fontsize=10,
+        labelpad=7,
+        color="#303B46"
+    )
+
+    ax.set_xticks(np.arange(-180, 181, 30))
+    ax.set_yticks(np.arange(-90, 91, 15))
+
+    ax.tick_params(
+        axis="both",
+        labelsize=9,
+        colors="#303B46"
+    )
+
+    ax.grid(
+        color="white",
+        alpha=0.45,
+        linewidth=0.55
+    )
+
+    for spine in ax.spines.values():
+        spine.set_color("#AAB4BE")
+
+    # Keep the map large and use only a small
+    # amount of space for the colour bar.
+    fig.subplots_adjust(
+        left=0.075,
+        right=0.96,
+        top=0.87,
+        bottom=0.17
+    )
+
+    # Colour bar.
+    colorbar = fig.colorbar(
+
+        image,
+
+        ax=ax,
+
+        orientation="horizontal",
+
+        fraction=0.045,
+
+        pad=0.12,
+
+        aspect=50
+    )
+
+    colorbar.set_label(
+        "Elevation relative to dataset vertical reference (m)",
+        fontsize=9,
+        labelpad=5,
+        color="#303B46"
+    )
+
+    colorbar.ax.tick_params(
+        labelsize=8,
+        colors="#303B46"
+    )
+
+    # One compact source attribution.
+    fig.text(
+
+        0.5,
+
+        0.035,
+
+        "Source: NOAA ETOPO 2022 | 60 arc-second global relief",
+
+        ha="center",
+
+        va="center",
+
+        fontsize=8.5,
+
+        color="#586675"
+    )
+
+    # Save without tight_layout or excessive padding.
+    fig.savefig(
+
+        FIGURE_FILE,
+
+        dpi=180,
+
+        facecolor="white",
+
+        bbox_inches="tight",
+
+        pad_inches=0.08
+    )
+
+    plt.close(fig)
+
+    print("Global elevation map generated.")
+
+    return {
+
+        "preview_width": preview_width,
+
+        "preview_height": preview_height,
+
+        "figure_path": str(
+            FIGURE_FILE.relative_to(PROJECT_ROOT)
+        )
+    }
+
+
+# ==================================================
+# 6. MAIN ANALYSIS
+# ==================================================
+
+def main():
+
+    print("=" * 60)
+    print("TERRAFORM â€” GLOBAL EARTH ANALYSIS")
+    print("=" * 60)
+
+    if not INPUT_FILE.exists():
+
+        raise FileNotFoundError(
+            f"Earth elevation raster not found: {INPUT_FILE}"
+        )
+
+    with rasterio.open(INPUT_FILE) as src:
+
+        print("\nDATASET METADATA")
+        print("-" * 45)
+
+        print("Driver:", src.driver)
+        print("Width:", src.width)
+        print("Height:", src.height)
+        print("Bands:", src.count)
+        print("Resolution:", src.res)
+        print("NoData:", src.nodata)
+        print("Bounds:", src.bounds)
+        print("Data types:", src.dtypes)
+        print("Block shape:", src.block_shapes)
+
+        crs_report = inspect_crs(src)
+
+        statistics = analyse_elevation(src)
+
+        visualisation = create_global_map(src)
+
+        report = {
+
+            "project": "TERRAFORM",
+
+            "analysis": "Global Earth Elevation Analysis",
+
+            "version": "1.3",
+
+            "dataset": {
+
+                "name": "NOAA ETOPO 2022",
+
+                "provider": "NOAA",
+
+                "source_file": INPUT_FILE.name,
+
+                "source_resolution": "60 arc-seconds",
+
+                "measurement": "Elevation and bathymetry",
+
+                "units": "Metres"
+            },
+
+            "coordinate_reference_system": crs_report,
+
+            "dimensions": {
+
+                "width": src.width,
+
+                "height": src.height,
+
+                "bands": src.count
+            },
+
+            "raster_metadata": {
+
+                "driver": src.driver,
+
+                "resolution": list(src.res),
+
+                "bounds": {
+
+                    "left": src.bounds.left,
+
+                    "bottom": src.bounds.bottom,
+
+                    "right": src.bounds.right,
+
+                    "top": src.bounds.top
+                },
+
+                "data_types": list(src.dtypes),
+
+                "nodata_value": src.nodata
+            },
+
+            "statistics": statistics,
+
+            "visualisation": visualisation,
+
+            "methodology": {
+
+                "processing": "Block-wise raster analysis",
+
+                "land_definition": "Elevation greater than zero metres",
+
+                "ocean_definition": "Elevation less than or equal to zero metres",
+
+                "classification_type": "Preliminary elevation-based classification",
+
+                "nodata_handling": "Invalid and NoData cells excluded",
+
+                "original_raster_modified": False
+            },
+
+            "limitations": [
+
+                "ETOPO is a global overview dataset, not a regional high-resolution DEM.",
+
+                "The elevation-zero threshold is a preliminary classification, not an authoritative coastline mask.",
+
+                "Below-sea-level terrestrial regions may be classified as ocean.",
+
+                "Land and ocean percentages represent valid raster-cell counts, not physical surface-area percentages.",
+
+                "Geographic grid cells have latitude-dependent physical dimensions.",
+
+                "Vertical reference information must be interpreted using official dataset metadata.",
+
+                "Global terrain derivatives require geodesically appropriate processing."
+            ]
+        }
+
+    # Save machine-readable report.
+    with REPORT_FILE.open(
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        json.dump(
+            report,
+            file,
+            indent=4,
+            ensure_ascii=False,
+            allow_nan=False
+        )
+
+    print("\nGLOBAL ELEVATION STATISTICS")
+    print("-" * 45)
+
+    for key, value in statistics.items():
+        print(f"{key}: {value}")
+
+    print("\nOUTPUT FILES")
+    print("-" * 45)
+
+    print("JSON REPORT:", REPORT_FILE)
+    print("GLOBAL MAP:", FIGURE_FILE)
+
+    print("\nEARTH GLOBAL ANALYSIS: COMPLETED")
+    print("=" * 60)
+
+
+# ==================================================
+# 7. EXECUTION
+# ==================================================
+
+if __name__ == "__main__":
+    main()
+
+\src\planetary\global_comparison.py
+
+========== \src\planetary\global_comparison.py ==========
+
+"""
+TERRAFORM â€” Global Planetary Terrain Comparison
+Version: 1.1
+
+Earth, Mars and Moon global elevation-distribution comparison.
+
+Scientific scope:
+- Earth: elevation-positive land proxy.
+- Mars and Moon: full gridded surfaces.
+- Approximate spherical latitude weighting.
+- No pixel-to-pixel planetary matching.
+- Native vertical references are retained.
+- Statistics are calculated from 10 m histogram bins.
+"""
+
+from __future__ import annotations
+
+import json
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import rasterio
+from rasterio.windows import Window
+
+
+# ============================================================
+# 1. CONFIGURATION
+# ============================================================
+
+ROOT = Path(__file__).resolve().parents[2]
+
+EARTH_FILE = ROOT / "data" / "Global" / "Earth" / "earth_etopo_2022_60s.tif"
+MARS_FILE = ROOT / "data" / "Global" / "Mars" / "megt90n000eb.img"
+MOON_FILE = ROOT / "data" / "Global" / "Moon" / "ldem_16.img"
+
+OUTPUT_DIR = ROOT / "outputs" / "Global" / "Comparisons"
+VISUAL_DIR = ROOT / "outputs" / "Visualisations" / "Global"
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+VISUAL_DIR.mkdir(parents=True, exist_ok=True)
+
+VERSION = "1.1"
+
+ELEVATION_MIN = -11000.0
+ELEVATION_MAX = 22000.0
+ELEVATION_BIN_SIZE = 10.0
+
+ELEVATION_EDGES = np.arange(
+    ELEVATION_MIN,
+    ELEVATION_MAX + ELEVATION_BIN_SIZE,
+    ELEVATION_BIN_SIZE,
+    dtype=np.float64,
+)
+
+ELEVATION_CENTRES = (
+    ELEVATION_EDGES[:-1] + ELEVATION_EDGES[1:]
+) / 2.0
+
+EARTH_BLOCK_ROWS = 128
+PLANET_BLOCK_ROWS = 128
+
+EARTH_AGGREGATION = 2
+MARS_RESOLUTION = 0.0625
+MOON_RESOLUTION = 0.0625
+MOON_AGGREGATION = 2
+
+MARS_LABEL_MIN = -8177
+MARS_LABEL_MAX = 21171
+
+MOON_LABEL_MIN = -18150
+MOON_LABEL_MAX = 21580
+
+
+# ============================================================
+# 2. DIAGNOSTIC HELPERS
+# ============================================================
+
+def new_diagnostics():
+    return {
+        "input_cells": 0,
+        "nonfinite_values": 0,
+        "nonfinite_weights": 0,
+        "nonpositive_weights": 0,
+        "below_range_cells": 0,
+        "above_range_cells": 0,
+        "accepted_cells": 0,
+        "accepted_weight": 0.0,
+        "below_range_weight": 0.0,
+        "above_range_weight": 0.0,
+    }
+
+
+def merge_diagnostics(total, block):
+
+    for key in (
+        "input_cells",
+        "nonfinite_values",
+        "nonfinite_weights",
+        "nonpositive_weights",
+        "below_range_cells",
+        "above_range_cells",
+        "accepted_cells",
+    ):
+        total[key] += int(block[key])
+
+    for key in (
+        "accepted_weight",
+        "below_range_weight",
+        "above_range_weight",
+    ):
+        total[key] += float(block[key])
+
+
+def finalize_diagnostics(d):
+
+    eligible_cells = (
+        d["accepted_cells"]
+        + d["below_range_cells"]
+        + d["above_range_cells"]
+    )
+
+    eligible_weight = (
+        d["accepted_weight"]
+        + d["below_range_weight"]
+        + d["above_range_weight"]
+    )
+
+    excluded_weight = (
+        d["below_range_weight"]
+        + d["above_range_weight"]
+    )
+
+    result = dict(d)
+
+    result["eligible_cells"] = int(eligible_cells)
+    result["eligible_weight"] = float(eligible_weight)
+    result["excluded_histogram_weight"] = float(excluded_weight)
+
+    result["cell_coverage_percent"] = (
+        100.0 * d["accepted_cells"] / eligible_cells
+        if eligible_cells else None
+    )
+
+    result["weighted_coverage_percent"] = (
+        100.0 * d["accepted_weight"] / eligible_weight
+        if eligible_weight else None
+    )
+
+    return result
+
+
+def new_extrema():
+    return {
+        "valid_source_cells": 0,
+        "minimum": None,
+        "maximum": None,
+        "zero_cells": 0,
+    }
+
+
+def record_extrema(total, values, valid_mask=None):
+
+    array = np.asarray(values)
+    valid = np.isfinite(array)
+
+    if valid_mask is not None:
+        valid &= np.asarray(valid_mask, dtype=bool)
+
+    selected = array[valid]
+
+    if selected.size == 0:
+        return
+
+    block_min = float(selected.min())
+    block_max = float(selected.max())
+
+    total["valid_source_cells"] += int(selected.size)
+    total["zero_cells"] += int(np.count_nonzero(selected == 0))
+
+    if total["minimum"] is None:
+        total["minimum"] = block_min
+        total["maximum"] = block_max
+    else:
+        total["minimum"] = min(total["minimum"], block_min)
+        total["maximum"] = max(total["maximum"], block_max)
+
+
+# ============================================================
+# 3. LATITUDE WEIGHTING
+# ============================================================
+
+def latitude_weights(first_row, number_of_rows, resolution_degrees):
+
+    row_indices = np.arange(
+        first_row,
+        first_row + number_of_rows,
+        dtype=np.float64,
+    )
+
+    latitude_centres = (
+        90.0 - (row_indices + 0.5) * resolution_degrees
+    )
+
+    return np.clip(
+        np.cos(np.deg2rad(latitude_centres)),
+        0.0,
+        None,
+    )
+
+
+# ============================================================
+# 4. HISTOGRAM ENGINE
+# ============================================================
+
+def add_to_histogram(histogram, values, weights):
+
+    values = np.asarray(values, dtype=np.float64).ravel()
+    weights = np.asarray(weights, dtype=np.float64).ravel()
+
+    if values.size != weights.size:
+        raise ValueError(
+            "Values and weights have different sizes."
+        )
+
+    finite_values = np.isfinite(values)
+    finite_weights = np.isfinite(weights)
+
+    usable = (
+        finite_values
+        & finite_weights
+        & (weights > 0)
+    )
+
+    below = usable & (values < ELEVATION_MIN)
+
+    above = usable & (values >= ELEVATION_MAX)
+
+    accepted = (
+        usable
+        & (values >= ELEVATION_MIN)
+        & (values < ELEVATION_MAX)
+    )
+
+    if accepted.any():
+
+        block_histogram, _ = np.histogram(
+            values[accepted],
+            bins=ELEVATION_EDGES,
+            weights=weights[accepted],
+        )
+
+        histogram += block_histogram
+
+    return {
+        "input_cells": int(values.size),
+        "nonfinite_values": int((~finite_values).sum()),
+        "nonfinite_weights": int((~finite_weights).sum()),
+        "nonpositive_weights": int(
+            (finite_weights & (weights <= 0)).sum()
+        ),
+        "below_range_cells": int(below.sum()),
+        "above_range_cells": int(above.sum()),
+        "accepted_cells": int(accepted.sum()),
+        "accepted_weight": float(weights[accepted].sum()),
+        "below_range_weight": float(weights[below].sum()),
+        "above_range_weight": float(weights[above].sum()),
+    }
+
+
+# ============================================================
+# 5. WEIGHTED STATISTICS
+# ============================================================
+
+def calculate_weighted_statistics(histogram):
+
+    histogram = np.asarray(histogram, dtype=np.float64)
+
+    if histogram.size != len(ELEVATION_CENTRES):
+        raise ValueError("Invalid histogram dimensions.")
+
+    if np.any(~np.isfinite(histogram)) or np.any(histogram < 0):
+        raise ValueError("Invalid histogram weights.")
+
+    total = float(histogram.sum())
+
+    if total <= 0:
+        raise ValueError("No valid histogram observations.")
+
+    probabilities = histogram / total
+
+    mean = float(
+        np.sum(probabilities * ELEVATION_CENTRES)
+    )
+
+    variance = float(
+        np.sum(
+            probabilities
+            * (ELEVATION_CENTRES - mean) ** 2
+        )
+    )
+
+    standard_deviation = float(
+        np.sqrt(max(variance, 0.0))
+    )
+
+    cumulative = np.cumsum(histogram)
+
+    def percentile(p):
+
+        target = total * p / 100.0
+
+        index = int(
+            np.searchsorted(cumulative, target, side="left")
+        )
+
+        index = min(index, len(histogram) - 1)
+
+        previous = (
+            float(cumulative[index - 1])
+            if index > 0 else 0.0
+        )
+
+        bin_weight = float(histogram[index])
+
+        fraction = (
+            (target - previous) / bin_weight
+            if bin_weight > 0 else 0.0
+        )
+
+        fraction = float(np.clip(fraction, 0.0, 1.0))
+
+        return float(
+            ELEVATION_EDGES[index]
+            + fraction * ELEVATION_BIN_SIZE
+        )
+
+    percentiles = {
+        f"P{p:02d}": percentile(p)
+        for p in (5, 10, 25, 50, 75, 90, 95)
+    }
+
+    return {
+        "weighted_mean_m": mean,
+        "weighted_standard_deviation_m": standard_deviation,
+        "weighted_percentiles_m": percentiles,
+        "weighted_histogram_total": total,
+        "histogram_bin_width_m": ELEVATION_BIN_SIZE,
+        "percentile_method": (
+            "Linear interpolation within 10 m histogram bins, "
+            "assuming uniform within-bin weight distribution."
+        ),
+        "statistics_scope": (
+            "Finite positive-weight observations inside histogram bounds."
+        ),
+    }
+
+
+# ============================================================
+# 6. NORMALIZED DISTRIBUTIONS
+# ============================================================
+
+def make_normalized_histogram(histogram, mean, standard_deviation):
+
+    if (
+        standard_deviation <= 0
+        or not np.isfinite(standard_deviation)
+    ):
+        raise ValueError("Invalid standard deviation.")
+
+    regular_edges = np.linspace(-6.0, 6.0, 241)
+
+    # Infinite edges retain all values outside +/-6.
+    edges = np.concatenate((
+        [-np.inf],
+        regular_edges,
+        [np.inf],
+    ))
+
+    regular_centres = (
+        regular_edges[:-1] + regular_edges[1:]
+    ) / 2.0
+
+    centres = np.concatenate((
+        [-6.025],
+        regular_centres,
+        [6.025],
+    ))
+
+    z_values = (
+        ELEVATION_CENTRES - mean
+    ) / standard_deviation
+
+    normalized, _ = np.histogram(
+        z_values,
+        bins=edges,
+        weights=histogram,
+    )
+
+    total = float(histogram.sum())
+
+    if total <= 0:
+        raise ValueError("Cannot normalize empty histogram.")
+
+    normalized = normalized.astype(np.float64) / total
+
+    return centres, normalized
+
+
+# ============================================================
+# 7. EARTH PROCESSOR
+# ============================================================
+
+def process_earth():
+
+    print("\n[1/3] Processing Earth...")
+
+    if not EARTH_FILE.exists():
+        raise FileNotFoundError(EARTH_FILE)
+
+    histogram = np.zeros(
+        len(ELEVATION_EDGES) - 1,
+        dtype=np.float64,
+    )
+
+    diagnostics = new_diagnostics()
+    extrema = new_extrema()
+
+    accepted_land_cells = 0
+    total_coarse_cells = 0
+    positive_source_cells = 0
+
+    with rasterio.open(EARTH_FILE) as src:
+
+        if src.width != 21600 or src.height != 10800:
+            raise ValueError(
+                f"Unexpected ETOPO dimensions: "
+                f"{src.width} x {src.height}"
+            )
+
+        output_width = src.width // EARTH_AGGREGATION
+        output_height = src.height // EARTH_AGGREGATION
+
+        if (
+            src.width % EARTH_AGGREGATION
+            or src.height % EARTH_AGGREGATION
+        ):
+            raise ValueError("Earth dimensions cannot be aggregated evenly.")
+
+        for output_start in range(
+            0,
+            output_height,
+            EARTH_BLOCK_ROWS,
+        ):
+
+            output_count = min(
+                EARTH_BLOCK_ROWS,
+                output_height - output_start,
+            )
+
+            source_start = output_start * EARTH_AGGREGATION
+            source_count = output_count * EARTH_AGGREGATION
+
+            masked = src.read(
+                1,
+                window=Window(
+                    0,
+                    source_start,
+                    src.width,
+                    source_count,
+                ),
+                masked=True,
+            )
+
+            raw = np.asarray(masked.data, dtype=np.float32)
+
+            valid = (
+                np.isfinite(raw)
+                & (~np.ma.getmaskarray(masked))
+            )
+
+            record_extrema(extrema, raw, valid)
+
+            positive = valid & (raw > 0)
+
+            positive_source_cells += int(positive.sum())
+
+            grouped_values = raw.reshape(
+                output_count,
+                2,
+                output_width,
+                2,
+            )
+
+            grouped_positive = positive.reshape(
+                output_count,
+                2,
+                output_width,
+                2,
+            )
+
+            positive_count = grouped_positive.sum(axis=(1, 3))
+
+            positive_sum = np.where(
+                grouped_positive,
+                grouped_values,
+                0.0,
+            ).sum(axis=(1, 3), dtype=np.float64)
+
+            keep = positive_count >= 2
+
+            coarse = np.zeros(
+                positive_count.shape,
+                dtype=np.float32,
+            )
+
+            np.divide(
+                positive_sum,
+                positive_count,
+                out=coarse,
+                where=keep,
+            )
+
+            row_weights = latitude_weights(
+                output_start,
+                output_count,
+                resolution_degrees=2.0 / 60.0,
+            )
+
+            weights = np.broadcast_to(
+                row_weights[:, None],
+                coarse.shape,
+            )
+
+            block_diag = add_to_histogram(
+                histogram,
+                coarse[keep],
+                weights[keep],
+            )
+
+            merge_diagnostics(diagnostics, block_diag)
+
+            accepted_land_cells += int(keep.sum())
+            total_coarse_cells += int(keep.size)
+
+            if output_start % 512 == 0:
+                print(
+                    f"  Earth: {output_start:,}/{output_height:,} rows"
+                )
+
+    statistics = calculate_weighted_statistics(histogram)
+
+    diagnostics = finalize_diagnostics(diagnostics)
+
+    print("  Earth complete.")
+
+    return {
+        "planet": "Earth",
+        "dataset": "NOAA ETOPO 2022, 60 arc-second",
+        "input_file": str(EARTH_FILE.relative_to(ROOT)),
+        "native_resolution_degrees": 1 / 60,
+        "comparison_resolution_degrees": 2 / 60,
+        "approximate_equatorial_spacing_km": 3.7,
+        "surface_scope": "Elevation-positive land proxy",
+        "land_proxy_rule": (
+            "At least 2 of 4 native cells must have valid elevation "
+            "> 0 m. Mean uses positive cells only."
+        ),
+        "accepted_land_proxy_cells": accepted_land_cells,
+        "total_coarse_grid_cells": total_coarse_cells,
+        "land_proxy_cell_fraction": (
+            accepted_land_cells / total_coarse_cells
+            if total_coarse_cells else None
+        ),
+        "positive_valid_native_source_cells": positive_source_cells,
+        "source_raster_diagnostics": extrema,
+        "histogram_diagnostics": diagnostics,
+        "vertical_reference": "WGS84 + EGM2008 geoid",
+        "statistics": statistics,
+        "limitations": [
+            "Elevation > 0 m is not an authoritative land mask.",
+            "Below-sea-level terrestrial regions may be excluded.",
+            "Earth represents an elevation-positive land proxy, not the full surface.",
+            "Histogram coverage and exclusions are reported separately.",
+            "Latitude weighting uses cos(latitude).",
+        ],
+        "histogram": histogram,
+    }
+
+
+# ============================================================
+# 8. MARS PROCESSOR
+# ============================================================
+
+def process_mars():
+
+    print("\n[2/3] Processing Mars...")
+
+    if not MARS_FILE.exists():
+        raise FileNotFoundError(MARS_FILE)
+
+    rows, columns = 2880, 5760
+
+    raw = np.fromfile(MARS_FILE, dtype=">i2")
+
+    if raw.size != rows * columns:
+        raise ValueError(
+            f"Mars size mismatch: {raw.size:,} cells."
+        )
+
+    raw_grid = raw.reshape(rows, columns)
+
+    elevation = raw_grid.astype(np.float32)
+
+    extrema = new_extrema()
+    record_extrema(extrema, raw_grid)
+
+    histogram = np.zeros(
+        len(ELEVATION_EDGES) - 1,
+        dtype=np.float64,
+    )
+
+    diagnostics = new_diagnostics()
+
+    for start in range(0, rows, PLANET_BLOCK_ROWS):
+
+        end = min(start + PLANET_BLOCK_ROWS, rows)
+
+        block = elevation[start:end]
+
+        row_weights = latitude_weights(
+            start,
+            end - start,
+            MARS_RESOLUTION,
+        )
+
+        weights = np.broadcast_to(
+            row_weights[:, None],
+            block.shape,
+        )
+
+        block_diag = add_to_histogram(
+            histogram,
+            block,
+            weights,
+        )
+
+        merge_diagnostics(diagnostics, block_diag)
+
+        if start % 512 == 0:
+            print(f"  Mars: {start:,}/{rows:,} rows")
+
+    statistics = calculate_weighted_statistics(histogram)
+    diagnostics = finalize_diagnostics(diagnostics)
+
+    raw_min = int(raw_grid.min())
+    raw_max = int(raw_grid.max())
+
+    print("  Mars complete.")
+
+    return {
+        "planet": "Mars",
+        "dataset": "MOLA MEGDR MEGT90N000EB",
+        "input_file": str(MARS_FILE.relative_to(ROOT)),
+        "native_resolution_degrees": MARS_RESOLUTION,
+        "comparison_resolution_degrees": MARS_RESOLUTION,
+        "approximate_equatorial_spacing_km": 3.704,
+        "surface_scope": "Full gridded planetary surface",
+        "aggregation": "Native grid retained",
+        "grid_dimensions": {
+            "rows": rows,
+            "columns": columns,
+        },
+        "source_raster_diagnostics": {
+            **extrema,
+            "raw_integer_minimum": raw_min,
+            "raw_integer_maximum": raw_max,
+            "pds_label_minimum": MARS_LABEL_MIN,
+            "pds_label_maximum": MARS_LABEL_MAX,
+            "raw_extrema_match_pds_label": (
+                raw_min == MARS_LABEL_MIN
+                and raw_max == MARS_LABEL_MAX
+            ),
+        },
+        "histogram_diagnostics": diagnostics,
+        "vertical_reference": "MOLA areoid",
+        "data_interpretation": (
+            "Median observed topography where measurements exist; "
+            "interpolated values are also present."
+        ),
+        "zero_value_handling": (
+            "Zero values retained pending reconciliation between "
+            "PDS interpolation documentation and ENVI ignore metadata."
+        ),
+        "statistics": statistics,
+        "limitations": [
+            "MOLA measurement coverage is spatially uneven.",
+            "Interpolated cells are included.",
+            "Zero-value metadata requires further reconciliation.",
+            "Histogram exclusions are reported in diagnostics.",
+            "Latitude weighting uses cos(latitude).",
+        ],
+        "histogram": histogram,
+    }
+
+
+# ============================================================
+# 9. MOON PROCESSOR
+# ============================================================
+
+def process_moon():
+
+    print("\n[3/3] Processing Moon...")
+
+    if not MOON_FILE.exists():
+        raise FileNotFoundError(MOON_FILE)
+
+    rows, columns = 2880, 5760
+
+    raw = np.fromfile(MOON_FILE, dtype="<i2")
+
+    if raw.size != rows * columns:
+        raise ValueError(
+            f"Moon size mismatch: {raw.size:,} cells."
+        )
+
+    raw_grid = raw.reshape(rows, columns)
+
+    extrema = new_extrema()
+    record_extrema(extrema, raw_grid)
+
+    raw_min = int(raw_grid.min())
+    raw_max = int(raw_grid.max())
+
+    elevation = raw_grid.astype(np.float32) * 0.5
+
+    coarse = elevation.reshape(
+        rows // 2,
+        2,
+        columns // 2,
+        2,
+    ).mean(axis=(1, 3))
+
+    coarse_rows, coarse_columns = coarse.shape
+
+    histogram = np.zeros(
+        len(ELEVATION_EDGES) - 1,
+        dtype=np.float64,
+    )
+
+    diagnostics = new_diagnostics()
+
+    comparison_resolution = (
+        MOON_RESOLUTION * MOON_AGGREGATION
+    )
+
+    for start in range(
+        0,
+        coarse_rows,
+        PLANET_BLOCK_ROWS,
+    ):
+
+        end = min(start + PLANET_BLOCK_ROWS, coarse_rows)
+
+        block = coarse[start:end]
+
+        row_weights = latitude_weights(
+            start,
+            end - start,
+            comparison_resolution,
+        )
+
+        weights = np.broadcast_to(
+            row_weights[:, None],
+            block.shape,
+        )
+
+        block_diag = add_to_histogram(
+            histogram,
+            block,
+            weights,
+        )
+
+        merge_diagnostics(diagnostics, block_diag)
+
+        if start % 256 == 0:
+            print(
+                f"  Moon: {start:,}/{coarse_rows:,} rows"
+            )
+
+    statistics = calculate_weighted_statistics(histogram)
+    diagnostics = finalize_diagnostics(diagnostics)
+
+    print("  Moon complete.")
+
+    return {
+        "planet": "Moon",
+        "dataset": "NASA LOLA LDEM_16",
+        "input_file": str(MOON_FILE.relative_to(ROOT)),
+        "native_resolution_degrees": MOON_RESOLUTION,
+        "comparison_resolution_degrees": comparison_resolution,
+        "approximate_equatorial_spacing_km": 3.79,
+        "surface_scope": "Full gridded lunar surface",
+        "aggregation": "2 x 2 native cells averaged",
+        "grid_dimensions": {
+            "rows": coarse_rows,
+            "columns": coarse_columns,
+        },
+        "source_raster_diagnostics": {
+            **extrema,
+            "raw_integer_minimum": raw_min,
+            "raw_integer_maximum": raw_max,
+            "physical_minimum_m": raw_min * 0.5,
+            "physical_maximum_m": raw_max * 0.5,
+            "pds_label_minimum": MOON_LABEL_MIN,
+            "pds_label_maximum": MOON_LABEL_MAX,
+            "raw_extrema_match_pds_label": (
+                raw_min == MOON_LABEL_MIN
+                and raw_max == MOON_LABEL_MAX
+            ),
+            "raw_extrema_within_pds_label_range": (
+                raw_min >= MOON_LABEL_MIN
+                and raw_max <= MOON_LABEL_MAX
+            ),
+        },
+        "histogram_diagnostics": diagnostics,
+        "vertical_reference": "Reference sphere, radius 1,737.4 km",
+        "height_conversion": "Elevation metres = DN * 0.5",
+        "zero_value_handling": "Zero values retained.",
+        "statistics": statistics,
+        "limitations": [
+            "LOLA interpolation compensates for incomplete altimetry coverage.",
+            "Documented edge artefacts occur near some 45-degree latitude bands.",
+            "Vertical reference is a reference sphere, not a geoid.",
+            "Observed raw extrema differ from label extrema but remain within the declared range.",
+            "Distribution represents aggregated 2 x 2 cells, not native-resolution cells.",
+            "Histogram exclusions are reported in diagnostics.",
+            "Latitude weighting uses cos(latitude).",
+        ],
+        "histogram": histogram,
+    }
+
+
+# ============================================================
+# 10. ELEVATION DISTRIBUTION CHART
+# ============================================================
+
+def create_elevation_distribution_chart(results):
+
+    fig, ax = plt.subplots(figsize=(13, 7))
+
+    for name in ("Earth", "Mars", "Moon"):
+
+        item = results[name]
+        histogram = item["histogram"]
+
+        total = float(histogram.sum())
+
+        if total <= 0:
+            continue
+
+        density = (
+            histogram
+            / total
+            / ELEVATION_BIN_SIZE
+        )
+
+        coverage = item["histogram_diagnostics"][
+            "weighted_coverage_percent"
+        ]
+
+        label = (
+            f"{name} â€” coverage {coverage:.3f}%"
+            if coverage is not None else name
+        )
+
+        ax.plot(
+            ELEVATION_CENTRES,
+            density,
+            linewidth=2,
+            label=label,
+        )
+
+    ax.set_title(
+        "Global Planetary Elevation Distributions",
+        fontsize=17,
+        pad=18,
+    )
+
+    ax.set_xlabel(
+        "Elevation relative to native vertical reference (m)"
+    )
+
+    ax.set_ylabel(
+        "Relative frequency per metre (within histogram range)"
+    )
+
+    ax.grid(True, alpha=0.25)
+    ax.legend(frameon=False)
+
+    fig.text(
+        0.5,
+        0.015,
+        "Earth: elevation-positive land proxy | "
+        "Mars and Moon: full gridded surfaces | "
+        "Native vertical references differ",
+        ha="center",
+        fontsize=9,
+    )
+
+    fig.tight_layout(rect=[0, 0.05, 1, 1])
+
+    output = (
+        VISUAL_DIR
+        / "global_elevation_distribution_comparison.png"
+    )
+
+    fig.savefig(output, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+    return output
+
+
+# ============================================================
+# 11. STANDARDIZED DISTRIBUTION CHART
+# ============================================================
+
+def create_normalized_distribution_chart(results):
+
+    fig, ax = plt.subplots(figsize=(13, 7))
+
+    for name in ("Earth", "Mars", "Moon"):
+
+        item = results[name]
+        stats = item["statistics"]
+
+        centres, normalized = make_normalized_histogram(
+            item["histogram"],
+            stats["weighted_mean_m"],
+            stats["weighted_standard_deviation_m"],
+        )
+
+        ax.plot(
+            centres,
+            normalized,
+            linewidth=2,
+            label=name,
+        )
+
+    ax.set_title(
+        "Standardized Global Terrain Distributions",
+        fontsize=17,
+        pad=18,
+    )
+
+    ax.set_xlabel(
+        "Within-body standardized elevation (z-score)"
+    )
+
+    ax.set_ylabel(
+        "Latitude-weighted relative frequency per bin"
+    )
+
+    ax.grid(True, alpha=0.25)
+    ax.legend(frameon=False)
+
+    fig.text(
+        0.5,
+        0.015,
+        "Each planet is standardized using its own weighted mean and "
+        "standard deviation. Tail bins retain values beyond +/-6. "
+        "Shape similarity does not establish geological equivalence.",
+        ha="center",
+        fontsize=8,
+    )
+
+    fig.tight_layout(rect=[0, 0.06, 1, 1])
+
+    output = (
+        VISUAL_DIR
+        / "global_normalized_terrain_comparison.png"
+    )
+
+    fig.savefig(output, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+    return output
+
+
+# ============================================================
+# 12. JSON CLEANING
+# ============================================================
+
+def clean_for_json(value):
+
+    if isinstance(value, dict):
+        return {
+            key: clean_for_json(item)
+            for key, item in value.items()
+            if key != "histogram"
+        }
+
+    if isinstance(value, (list, tuple)):
+        return [clean_for_json(item) for item in value]
+
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+
+    if isinstance(value, np.integer):
+        return int(value)
+
+    if isinstance(value, np.floating):
+        return float(value)
+
+    if isinstance(value, np.bool_):
+        return bool(value)
+
+    return value
+
+
+# ============================================================
+# 13. MAIN PIPELINE
+# ============================================================
+
+def main():
+
+    print("=" * 68)
+    print("TERRAFORM â€” GLOBAL PLANETARY COMPARISON ENGINE")
+    print(f"Version {VERSION}")
+    print("=" * 68)
+
+    start_clock = time.perf_counter()
+    started_utc = datetime.now(timezone.utc).isoformat()
+
+    earth = process_earth()
+    mars = process_mars()
+    moon = process_moon()
+
+    results = {
+        "Earth": earth,
+        "Mars": mars,
+        "Moon": moon,
+    }
+
+    print("\nGenerating visualisations...")
+
+    elevation_chart = create_elevation_distribution_chart(results)
+
+    normalized_chart = create_normalized_distribution_chart(results)
+
+    duration = time.perf_counter() - start_clock
+
+    report = {
+        "project": "TERRAFORM â€” Planetary Analog Intelligence",
+        "analysis": "Global Planetary Terrain Distribution Comparison",
+        "version": VERSION,
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "processing_started_utc": started_utc,
+        "processing_duration_seconds": float(duration),
+
+        "method": {
+            "comparison_type": "Global weighted distribution comparison",
+            "pixel_to_pixel_matching": False,
+
+            "area_weighting": (
+                "Approximate spherical latitude weighting using cos(latitude)."
+            ),
+
+            "histogram_configuration": {
+                "minimum_m_inclusive": ELEVATION_MIN,
+                "maximum_m_exclusive": ELEVATION_MAX,
+                "bin_width_m": ELEVATION_BIN_SIZE,
+            },
+
+            "histogram_coverage": (
+                "Finite observations with positive latitude weights are "
+                "classified as accepted, below range or above range."
+            ),
+
+            "earth_resolution_protocol": (
+                "Aggregate 2 x 2 native cells from 1 arc-minute "
+                "to 2 arc-minutes."
+            ),
+
+            "mars_resolution_protocol": (
+                "Retain native 0.0625-degree grid."
+            ),
+
+            "moon_resolution_protocol": (
+                "Aggregate 2 x 2 native cells from 0.0625 "
+                "to 0.125 degrees."
+            ),
+
+            "resolution_note": (
+                "Selected grids have approximately comparable north-south "
+                "equatorial spacing of 3.7â€“3.8 km. East-west spacing varies "
+                "with latitude."
+            ),
+
+            "normalization": (
+                "Within-body z-scores based on each dataset's own weighted "
+                "mean and standard deviation. Explicit tail bins retain "
+                "values outside +/-6 standard deviations."
+            ),
+
+            "statistics_precision": (
+                "Moments use histogram bin centres. Percentiles are "
+                "interpolated within 10 m bins under a uniform "
+                "within-bin assumption."
+            ),
+
+            "weighted_total_interpretation": (
+                "Weighted histogram totals are sums of relative "
+                "cos(latitude) cell weights, not pixel counts or "
+                "physical areas in square kilometres."
+            ),
+        },
+
+        "planetary_results": {
+            name: {
+                key: value
+                for key, value in item.items()
+                if key != "histogram"
+            }
+            for name, item in results.items()
+        },
+
+        "visualisations": {
+            "elevation_distributions": str(
+                elevation_chart.relative_to(ROOT)
+            ),
+            "normalized_distributions": str(
+                normalized_chart.relative_to(ROOT)
+            ),
+        },
+
+        "scientific_interpretation": [
+            "The comparison describes global elevation-distribution patterns.",
+            "Earth is represented by a preliminary elevation-positive land proxy.",
+            "Mars and Moon represent their full gridded surfaces.",
+            "Histogram coverage diagnostics identify excluded observations.",
+            "Planetary vertical references are different and not directly interchangeable.",
+            "Standardized distributions compare statistical shape, not geological equivalence.",
+            "Moon statistics represent aggregated 2 x 2 LOLA cells.",
+            "Mars interpolated cells are included.",
+            "Mars zero-value metadata requires further reconciliation.",
+            "The analysis does not establish habitability, resource potential or mission-site suitability.",
+            "Global screening does not replace higher-resolution regional analysis.",
+        ],
+    }
+
+    report_path = (
+        OUTPUT_DIR / "global_planetary_comparison_report.json"
+    )
+
+    with open(
+        report_path,
+        "w",
+        encoding="utf-8",
+    ) as file:
+
+        json.dump(
+            clean_for_json(report),
+            file,
+            indent=4,
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+
+    print("\n" + "=" * 68)
+    print("GLOBAL COMPARISON COMPLETED")
+    print("=" * 68)
+
+    for name, item in results.items():
+
+        stats = item["statistics"]
+        diag = item["histogram_diagnostics"]
+
+        print(f"\n{name}")
+
+        print(
+            f"  Weighted mean: "
+            f"{stats['weighted_mean_m']:,.2f} m"
+        )
+
+        print(
+            f"  Weighted standard deviation: "
+            f"{stats['weighted_standard_deviation_m']:,.2f} m"
+        )
+
+        print(
+            f"  Weighted median: "
+            f"{stats['weighted_percentiles_m']['P50']:,.2f} m"
+        )
+
+        print(
+            f"  Accepted histogram cells: "
+            f"{diag['accepted_cells']:,}"
+        )
+
+        print(
+            f"  Below histogram range: "
+            f"{diag['below_range_cells']:,}"
+        )
+
+        print(
+            f"  Above histogram range: "
+            f"{diag['above_range_cells']:,}"
+        )
+
+        print(
+            f"  Weighted histogram coverage: "
+            f"{diag['weighted_coverage_percent']:.6f}%"
+        )
+
+        print(
+            f"  Weighted histogram total: "
+            f"{stats['weighted_histogram_total']:,.4f}"
+        )
+
+    print("\nSaved outputs:")
+    print(f"  Report: {report_path}")
+    print(f"  Elevation chart: {elevation_chart}")
+    print(f"  Normalized chart: {normalized_chart}")
+
+    print(f"\nProcessing duration: {duration:.2f} seconds")
+
+    print(
+        "\nRemember: distribution similarity is not site suitability."
+    )
+
+
+if __name__ == "__main__":
+    main()
+
+\src\planetary\inspect_raster.py
+\src\planetary\mars_global.py
+
+========== \src\planetary\mars_global.py ==========
+
+"""
+TERRAFORM â€” Mars Global Intelligence
+Version 1.0
+
+Dataset: MGS MOLA MEGDR median topography
+Source: NASA Planetary Data System (PDS)
+"""
+
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ---------------------------------------------------------
+# 1. PROJECT PATHS
+# ---------------------------------------------------------
+
+ROOT = Path(__file__).resolve().parents[2]
+
+DATA_FILE = ROOT / "data" / "Global" / "Mars" / "megt90n000eb.img"
+
+OUTPUT_DIR = ROOT / "outputs" / "Global" / "Mars"
+VISUAL_DIR = ROOT / "outputs" / "Visualisations" / "Global"
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+VISUAL_DIR.mkdir(parents=True, exist_ok=True)
+
+REPORT_FILE = OUTPUT_DIR / "mars_global_report.json"
+MAP_FILE = VISUAL_DIR / "mars_global_elevation.png"
+
+
+# ---------------------------------------------------------
+# 2. VERIFIED DATASET METADATA
+# ---------------------------------------------------------
+
+ROWS = 2880
+COLS = 5760
+EXPECTED_CELLS = ROWS * COLS
+EXPECTED_BYTES = EXPECTED_CELLS * 2
+
+PIXEL_SIZE_DEGREES = 0.0625
+EQUATORIAL_PIXEL_SIZE_KM = 3.7044613374
+
+SOURCE = (
+    "NASA Planetary Data System â€” "
+    "Mars Global Surveyor MOLA MEGDR, MEGT90N000EB"
+)
+
+
+# ---------------------------------------------------------
+# 3. VALIDATE AND LOAD RAW DATA
+# ---------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TERRAFORM | MARS GLOBAL INTELLIGENCE")
+print("=" * 60)
+
+if not DATA_FILE.exists():
+    raise FileNotFoundError(
+        f"Mars dataset not found:\n{DATA_FILE}"
+    )
+
+actual_bytes = DATA_FILE.stat().st_size
+
+if actual_bytes != EXPECTED_BYTES:
+    raise ValueError(
+        f"Unexpected file size. Expected {EXPECTED_BYTES:,} bytes, "
+        f"received {actual_bytes:,} bytes."
+    )
+
+print("\n[1/5] Dataset file validated.")
+
+# PDS label confirms signed 16-bit big-endian integers.
+raw = np.fromfile(DATA_FILE, dtype=">i2")
+
+if raw.size != EXPECTED_CELLS:
+    raise ValueError(
+        f"Unexpected number of cells: {raw.size:,}"
+    )
+
+elevation = raw.reshape((ROWS, COLS)).astype(np.float32)
+
+print(f"      Dimensions: {COLS:,} Ã— {ROWS:,}")
+print(f"      Total cells: {elevation.size:,}")
+print("      Data type: signed 16-bit, big-endian")
+
+
+# ---------------------------------------------------------
+# 4. LONGITUDE ORIENTATION
+# ---------------------------------------------------------
+
+# The source grid spans 0Â° to 360Â° east.
+# Shift the columns by half the image width so that
+# the displayed map spans -180Â° to +180Â°.
+
+elevation = np.roll(
+    elevation,
+    shift=-(COLS // 2),
+    axis=1
+)
+
+print("\n[2/5] Longitude orientation adjusted.")
+print("      Display range: -180Â° to +180Â°")
+print("      Latitude range: -90Â° to +90Â°")
+
+
+# ---------------------------------------------------------
+# 5. GLOBAL ELEVATION STATISTICS
+# ---------------------------------------------------------
+
+# Retain zero-valued cells: zero metres is a valid elevation.
+# No undocumented NoData mask is applied.
+
+values = elevation.ravel()
+
+statistics = {
+    "minimum_m": float(np.min(values)),
+    "maximum_m": float(np.max(values)),
+    "mean_m": float(np.mean(values)),
+    "median_m": float(np.median(values)),
+    "standard_deviation_m": float(np.std(values)),
+    "percentiles_m": {
+        "p05": float(np.percentile(values, 5)),
+        "p25": float(np.percentile(values, 25)),
+        "p75": float(np.percentile(values, 75)),
+        "p95": float(np.percentile(values, 95)),
+    },
+    "zero_valued_cells": int(np.count_nonzero(values == 0)),
+}
+
+print("\n[3/5] Elevation statistics calculated.")
+
+for key, value in statistics.items():
+    if isinstance(value, dict):
+        continue
+    print(f"      {key}: {value:,.2f}")
+
+
+# ---------------------------------------------------------
+# 6. GENERATE GLOBAL ELEVATION MAP
+# ---------------------------------------------------------
+
+print("\n[4/5] Generating global elevation visualisation...")
+
+# Downsample only for display.
+# Original source data remains unchanged.
+display = elevation[::3, ::3]
+
+plt.rcParams.update({
+    "font.family": "DejaVu Sans",
+    "font.size": 10,
+})
+
+fig, ax = plt.subplots(figsize=(16, 8.5))
+
+fig.patch.set_facecolor("white")
+ax.set_facecolor("white")
+
+image = ax.imshow(
+    display,
+    cmap="inferno",
+    origin="upper",
+    extent=(-180, 180, -90, 90),
+    aspect="auto",
+    interpolation="nearest",
+    vmin=statistics["minimum_m"],
+    vmax=statistics["maximum_m"],
+)
+
+ax.set_title(
+    "MARS | GLOBAL ELEVATION MODEL",
+    fontsize=19,
+    fontweight="bold",
+    loc="left",
+    pad=18,
+)
+
+ax.set_xlabel("Longitude (Â°)", labelpad=10)
+ax.set_ylabel("Latitude (Â°)", labelpad=10)
+
+ax.set_xticks(np.arange(-180, 181, 30))
+ax.set_yticks(np.arange(-90, 91, 30))
+
+ax.grid(
+    True,
+    color="#777777",
+    linewidth=0.35,
+    alpha=0.35,
+)
+
+for spine in ax.spines.values():
+    spine.set_color("#333333")
+    spine.set_linewidth(0.7)
+
+colorbar = fig.colorbar(
+    image,
+    ax=ax,
+    orientation="horizontal",
+    pad=0.12,
+    fraction=0.045,
+    aspect=45,
+)
+
+colorbar.set_label(
+    "Elevation relative to MOLA areoid (metres)",
+    labelpad=8,
+)
+
+fig.text(
+    0.5,
+    0.025,
+    "Source: NASA PDS | Mars Global Surveyor | MOLA MEGDR | "
+    "0.0625Â° global grid",
+    ha="center",
+    fontsize=8,
+    color="#555555",
+)
+
+fig.subplots_adjust(
+    left=0.07,
+    right=0.97,
+    top=0.88,
+    bottom=0.17,
+)
+
+fig.savefig(
+    MAP_FILE,
+    dpi=220,
+    bbox_inches="tight",
+    facecolor="white",
+)
+
+plt.close(fig)
+
+print(f"      Map saved: {MAP_FILE}")
+
+
+# ---------------------------------------------------------
+# 7. SAVE MACHINE-READABLE REPORT
+# ---------------------------------------------------------
+
+report = {
+    "project": "TERRAFORM â€” Planetary Analog Intelligence",
+    "analysis": "Mars Global Elevation Analysis",
+    "version": "1.0",
+    "generated_utc": datetime.now(timezone.utc).isoformat(),
+    "dataset": {
+        "product": "MOLA MEGDR Median Topography",
+        "product_id": "MEGT90N000EB",
+        "source": SOURCE,
+        "filename": DATA_FILE.name,
+        "dimensions": {
+            "columns": COLS,
+            "rows": ROWS,
+            "bands": 1,
+            "total_cells": EXPECTED_CELLS,
+        },
+        "data_type": "Signed 16-bit integer",
+        "byte_order": "Big-endian",
+        "pixel_resolution_degrees": PIXEL_SIZE_DEGREES,
+        "equatorial_pixel_scale_km": EQUATORIAL_PIXEL_SIZE_KM,
+        "projection": "Simple cylindrical / equirectangular",
+        "central_meridian_degrees": 180,
+        "vertical_reference": "MOLA areoid",
+        "elevation_unit": "metres",
+    },
+    "elevation_statistics": statistics,
+    "processing": {
+        "longitude_display_range": [-180, 180],
+        "latitude_display_range": [-90, 90],
+        "zero_values_retained": True,
+        "nodata_mask_applied": False,
+        "display_downsampling": "Every third row and column",
+        "source_data_modified": False,
+    },
+    "scientific_limitations": [
+        "MOLA grid cells represent median observed topography "
+        "where observations are available.",
+        "Interpolated values are supplied where no observations "
+        "fall within a grid cell.",
+        "Observation coverage is uneven, with lower density "
+        "near the equator.",
+        "Global statistics are unweighted grid-cell statistics; "
+        "they are not area-weighted.",
+        "Elevation is referenced to the MOLA areoid.",
+        "Terrain elevation alone does not establish geological, "
+        "environmental or habitation suitability.",
+    ],
+    "outputs": {
+        "map": str(MAP_FILE.relative_to(ROOT)),
+        "report": str(REPORT_FILE.relative_to(ROOT)),
+    },
+}
+
+with REPORT_FILE.open("w", encoding="utf-8") as file:
+    json.dump(report, file, indent=4)
+
+print("\n[5/5] JSON report saved.")
+
+
+# ---------------------------------------------------------
+# 8. COMPLETION SUMMARY
+# ---------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("MARS GLOBAL ANALYSIS COMPLETED")
+print("=" * 60)
+
+print(f"\nElevation range: "
+      f"{statistics['minimum_m']:,.0f} m to "
+      f"{statistics['maximum_m']:,.0f} m")
+
+print(f"Mean elevation: "
+      f"{statistics['mean_m']:,.2f} m")
+
+print(f"Median elevation: "
+      f"{statistics['median_m']:,.2f} m")
+
+print("\nGenerated files:")
+print(f"1. {MAP_FILE}")
+print(f"2. {REPORT_FILE}")
+
+print("\nTERRAFORM | End of processing")
+
+\src\planetary\moon_global.py
+
+========== \src\planetary\moon_global.py ==========
+
+"""
+TERRAFORM â€” Moon Global Intelligence
+Version 1.1
+
+Dataset: NASA LRO LOLA LDEM_16
+Source: NASA Planetary Data System (PDS)
+"""
+
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ---------------------------------------------------------
+# 1. PROJECT PATHS
+# ---------------------------------------------------------
+
+ROOT = Path(__file__).resolve().parents[2]
+
+DATA_FILE = ROOT / "data" / "Global" / "Moon" / "ldem_16.img"
+
+OUTPUT_DIR = ROOT / "outputs" / "Global" / "Moon"
+VISUAL_DIR = ROOT / "outputs" / "Visualisations" / "Global"
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+VISUAL_DIR.mkdir(parents=True, exist_ok=True)
+
+REPORT_FILE = OUTPUT_DIR / "moon_global_report.json"
+MAP_FILE = VISUAL_DIR / "moon_global_elevation.png"
+
+
+# ---------------------------------------------------------
+# 2. VERIFIED PDS METADATA
+# ---------------------------------------------------------
+
+ROWS = 2880
+COLS = 5760
+
+EXPECTED_CELLS = ROWS * COLS
+EXPECTED_BYTES = EXPECTED_CELLS * 2
+
+SCALING_FACTOR = 0.5
+REFERENCE_RADIUS_M = 1_737_400.0
+
+PIXEL_SIZE_DEGREES = 0.0625
+EQUATORIAL_PIXEL_SIZE_M = 1895.21
+
+LABEL_RAW_MIN = -18150
+LABEL_RAW_MAX = 21580
+
+SOURCE = (
+    "NASA Planetary Data System â€” "
+    "Lunar Reconnaissance Orbiter LOLA LDEM_16"
+)
+
+
+# ---------------------------------------------------------
+# 3. VALIDATE AND DECODE DATA
+# ---------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TERRAFORM | MOON GLOBAL INTELLIGENCE")
+print("=" * 60)
+
+if not DATA_FILE.exists():
+    raise FileNotFoundError(
+        f"Moon dataset not found:\n{DATA_FILE}"
+    )
+
+actual_bytes = DATA_FILE.stat().st_size
+
+if actual_bytes != EXPECTED_BYTES:
+    raise ValueError(
+        f"Unexpected file size. Expected {EXPECTED_BYTES:,} bytes, "
+        f"received {actual_bytes:,} bytes."
+    )
+
+print("\n[1/6] Dataset file validated.")
+
+# PDS label:
+# SAMPLE_TYPE = LSB_INTEGER
+# SAMPLE_BITS = 16
+
+raw = np.fromfile(DATA_FILE, dtype="<i2")
+
+if raw.size != EXPECTED_CELLS:
+    raise ValueError(
+        f"Unexpected number of cells: {raw.size:,}"
+    )
+
+raw_min = int(raw.min())
+raw_max = int(raw.max())
+
+print(f"      Dimensions: {COLS:,} Ã— {ROWS:,}")
+print(f"      Total cells: {raw.size:,}")
+print(f"      Observed raw minimum: {raw_min:,}")
+print(f"      Observed raw maximum: {raw_max:,}")
+
+# Compare observed extrema with label extrema.
+# A discrepancy is recorded, not silently ignored.
+
+range_matches_label = (
+    raw_min == LABEL_RAW_MIN
+    and raw_max == LABEL_RAW_MAX
+)
+
+if range_matches_label:
+    print("      PDS extrema comparison: PASS")
+else:
+    print("\n      WARNING: PDS extrema discrepancy detected.")
+    print(
+        f"      Label range: {LABEL_RAW_MIN:,} to {LABEL_RAW_MAX:,}"
+    )
+    print(
+        f"      Observed range: {raw_min:,} to {raw_max:,}"
+    )
+    print("      Continuing with the observed raster values.")
+    print("      Discrepancy will be documented in the report.")
+
+# Convert digital numbers into height relative to the
+# reference sphere using the PDS scaling factor.
+height = raw.reshape((ROWS, COLS)).astype(np.float32)
+height *= SCALING_FACTOR
+
+print("      Byte order: little-endian")
+print("      Data type: signed 16-bit integer")
+print("      Scaling factor: 0.5 m per DN")
+print("      Reference radius: 1,737,400 m")
+
+
+# ---------------------------------------------------------
+# 4. LONGITUDE ORIENTATION
+# ---------------------------------------------------------
+
+# Source longitude range: 0Â° to 360Â° east.
+# Shift half the image width for a -180Â° to +180Â° display.
+
+height = np.roll(
+    height,
+    shift=-(COLS // 2),
+    axis=1
+)
+
+print("\n[2/6] Longitude orientation adjusted.")
+print("      Display longitude: -180Â° to +180Â°")
+print("      Latitude range: -90Â° to +90Â°")
+
+
+# ---------------------------------------------------------
+# 5. GLOBAL ELEVATION STATISTICS
+# ---------------------------------------------------------
+
+# Preserve all cells. The supplied PDS label does not
+# define a missing-data sentinel for this raster.
+
+values = height.ravel()
+
+statistics = {
+    "minimum_m": float(np.min(values)),
+    "maximum_m": float(np.max(values)),
+    "mean_m": float(np.mean(values)),
+    "median_m": float(np.median(values)),
+    "standard_deviation_m": float(np.std(values)),
+    "percentiles_m": {
+        "p05": float(np.percentile(values, 5)),
+        "p25": float(np.percentile(values, 25)),
+        "p75": float(np.percentile(values, 75)),
+        "p95": float(np.percentile(values, 95)),
+    },
+    "zero_height_cells": int(np.count_nonzero(values == 0)),
+}
+
+print("\n[3/6] Elevation statistics calculated.")
+
+for key, value in statistics.items():
+    if isinstance(value, dict):
+        continue
+    print(f"      {key}: {value:,.2f}")
+
+
+# ---------------------------------------------------------
+# 6. GENERATE GLOBAL ELEVATION MAP
+# ---------------------------------------------------------
+
+print("\n[4/6] Generating lunar elevation visualisation...")
+
+# Downsampling is only for display.
+# Original decoded data remains unchanged.
+
+display = height[::3, ::3]
+
+plt.rcParams.update({
+    "font.family": "DejaVu Sans",
+    "font.size": 10,
+})
+
+fig, ax = plt.subplots(figsize=(16, 8.5))
+
+fig.patch.set_facecolor("white")
+ax.set_facecolor("white")
+
+image = ax.imshow(
+    display,
+    cmap="terrain",
+    origin="upper",
+    extent=(-180, 180, -90, 90),
+    aspect="auto",
+    interpolation="nearest",
+    vmin=statistics["minimum_m"],
+    vmax=statistics["maximum_m"],
+)
+
+ax.set_title(
+    "MOON | GLOBAL ELEVATION MODEL",
+    fontsize=19,
+    fontweight="bold",
+    loc="left",
+    pad=18,
+)
+
+ax.set_xlabel("Longitude (Â°)", labelpad=10)
+ax.set_ylabel("Latitude (Â°)", labelpad=10)
+
+ax.set_xticks(np.arange(-180, 181, 30))
+ax.set_yticks(np.arange(-90, 91, 30))
+
+ax.grid(
+    True,
+    color="#777777",
+    linewidth=0.35,
+    alpha=0.35,
+)
+
+for spine in ax.spines.values():
+    spine.set_color("#333333")
+    spine.set_linewidth(0.7)
+
+colorbar = fig.colorbar(
+    image,
+    ax=ax,
+    orientation="horizontal",
+    pad=0.12,
+    fraction=0.045,
+    aspect=45,
+)
+
+colorbar.set_label(
+    "Height relative to 1,737.4 km reference sphere (metres)",
+    labelpad=8,
+)
+
+fig.text(
+    0.5,
+    0.025,
+    "Source: NASA PDS | LRO LOLA | LDEM_16 | "
+    "0.0625Â° global grid",
+    ha="center",
+    fontsize=8,
+    color="#555555",
+)
+
+fig.subplots_adjust(
+    left=0.07,
+    right=0.97,
+    top=0.88,
+    bottom=0.17,
+)
+
+fig.savefig(
+    MAP_FILE,
+    dpi=220,
+    bbox_inches="tight",
+    facecolor="white",
+)
+
+plt.close(fig)
+
+print(f"      Map saved: {MAP_FILE}")
+
+
+# ---------------------------------------------------------
+# 7. SAVE MACHINE-READABLE REPORT
+# ---------------------------------------------------------
+
+print("\n[5/6] Creating machine-readable report...")
+
+report = {
+    "project": "TERRAFORM â€” Planetary Analog Intelligence",
+    "analysis": "Moon Global Elevation Analysis",
+    "version": "1.1",
+    "generated_utc": datetime.now(timezone.utc).isoformat(),
+
+    "dataset": {
+        "product": "LOLA Global Digital Elevation Model",
+        "product_id": "LDEM_16",
+        "data_set_id": "LRO-L-LOLA-4-GDR-V1.0",
+        "product_version": "V3.1",
+        "source": SOURCE,
+        "filename": DATA_FILE.name,
+
+        "dimensions": {
+            "columns": COLS,
+            "rows": ROWS,
+            "bands": 1,
+            "total_cells": EXPECTED_CELLS,
+        },
+
+        "data_type": "Signed 16-bit integer",
+        "byte_order": "Little-endian",
+        "scaling_factor": SCALING_FACTOR,
+        "elevation_unit": "metres",
+        "reference_radius_m": REFERENCE_RADIUS_M,
+
+        "pixel_resolution_degrees": PIXEL_SIZE_DEGREES,
+        "equatorial_pixel_scale_m": EQUATORIAL_PIXEL_SIZE_M,
+
+        "projection": "Simple cylindrical",
+        "central_meridian_degrees": 180,
+        "longitude_direction": "East-positive",
+        "coordinate_system": "Mean Earth / Polar Axis of DE421",
+    },
+
+    "raw_data_validation": {
+        "observed_raw_minimum": raw_min,
+        "observed_raw_maximum": raw_max,
+        "label_raw_minimum": LABEL_RAW_MIN,
+        "label_raw_maximum": LABEL_RAW_MAX,
+        "range_matches_label": range_matches_label,
+        "range_discrepancy": None if range_matches_label else {
+            "minimum_difference": raw_min - LABEL_RAW_MIN,
+            "maximum_difference": raw_max - LABEL_RAW_MAX,
+            "status": "UNRESOLVED_METADATA_DISCREPANCY",
+        },
+        "file_size_validation": "PASS",
+        "cell_count_validation": "PASS",
+    },
+
+    "elevation_statistics": statistics,
+
+    "processing": {
+        "conversion": "height_m = digital_number * 0.5",
+        "longitude_display_range": [-180, 180],
+        "latitude_display_range": [-90, 90],
+        "zero_height_cells_retained": True,
+        "nodata_mask_applied": False,
+        "display_downsampling": "Every third row and column",
+        "source_data_modified": False,
+    },
+
+    "scientific_limitations": [
+        "Heights are relative to a 1,737.4 km reference sphere.",
+        "These heights are not automatically equivalent to "
+        "elevation relative to a lunar geoid or equipotential surface.",
+        "The product description reports possible edge artifacts "
+        "at 45-degree latitude-band boundaries.",
+        "The source describes interpolation to compensate for "
+        "incomplete altimetry coverage.",
+        "Global statistics are unweighted grid-cell statistics "
+        "and are not area-weighted.",
+        "The observed raw extrema differ from the supplied PDS label "
+        "extrema and require further investigation.",
+        "Elevation alone does not establish geological, "
+        "environmental or habitation suitability.",
+    ],
+
+    "outputs": {
+        "map": str(MAP_FILE.relative_to(ROOT)),
+        "report": str(REPORT_FILE.relative_to(ROOT)),
+    },
+}
+
+with REPORT_FILE.open("w", encoding="utf-8") as file:
+    json.dump(report, file, indent=4)
+
+print(f"      Report saved: {REPORT_FILE}")
+
+
+# ---------------------------------------------------------
+# 8. COMPLETION SUMMARY
+# ---------------------------------------------------------
+
+print("\n[6/6] Processing complete.")
+
+print("\n" + "=" * 60)
+print("MOON GLOBAL ANALYSIS COMPLETED")
+print("=" * 60)
+
+print(
+    f"\nHeight range: "
+    f"{statistics['minimum_m']:,.1f} m to "
+    f"{statistics['maximum_m']:,.1f} m"
+)
+
+print(f"Mean height: {statistics['mean_m']:,.2f} m")
+print(f"Median height: {statistics['median_m']:,.2f} m")
+
+print("\nRange comparison:", 
+      "PASS" if range_matches_label else "WARNING â€” REVIEW REQUIRED")
+
+print("\nGenerated files:")
+print(f"1. {MAP_FILE}")
+print(f"2. {REPORT_FILE}")
+
+print("\nTERRAFORM | End of processing")
+
+\src\utils\__init__.py
+\src\visualization\candidate_intelligence_page.py
+\src\visualization\terrain_comparison_charts.py
+\src\visualization\__init__.py
+
+=== RAW EARTH DATA FILES ===
+Copernicus_DSM_COG_10_S23_00_W069_00_DEM.tif | 35.17 MB

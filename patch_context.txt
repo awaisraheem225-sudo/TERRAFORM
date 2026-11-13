@@ -1,0 +1,782 @@
+TERRAFORM APP.PY PATCH CONTEXT
+=================================================================
+
+
+==================== OVERVIEW ====================
+1360:                         SOURCE / {source}
+1361:                     </div>
+1362:                 </div>
+1363:                 """,
+1364:                 unsafe_allow_html=True
+1365:             )
+1366: 
+1367:     st.caption(
+1368:         "Global planetary comparison and regional analogue investigation "
+1369:         "are separate research scopes with different datasets, resolutions "
+1370:         "and processing methods."
+1371:     )
+1372: 
+1373:     st.divider()
+1374: 
+1375:     # --------------------------------------------------------
+1376:     # RESEARCH REPOSITORY
+1377:     # --------------------------------------------------------
+1378: 
+1379:     st.markdown(
+1380:         '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+1381:         unsafe_allow_html=True
+1382:     )
+1383: 
+1384:     c1, c2, c3, c4 = st.columns(4)
+1385: 
+1386:     c1.metric(
+1387:         "Extracted regions",
+1388:         REPOSITORY_STATS["inventory"]
+1389:     )
+1390:     c2.metric(
+1391:         "Profiled candidates",
+1392:         REPOSITORY_STATS["profiles"]
+1393:     )
+1394:     c3.metric(
+1395:         "Geological records",
+1396:         REPOSITORY_STATS["geology"]
+1397:     )
+1398:     c4.metric(
+1399:         "Sensitivity scenarios",
+1400:         REPOSITORY_STATS["sensitivity"]
+1401:     )
+1402: 
+1403:     st.caption(
+1404:         "Repository statistics are loaded from the existing TERRAFORM "
+1405:         "research inventory. These counts describe available research "
+1406:         "outputs, not confirmed planetary analogue discoveries."
+1407:     )
+1408: 
+1409:     st.divider()
+1410: 
+1411:     # --------------------------------------------------------
+1412:     # REGIONAL ANALOGUE INVESTIGATION
+1413:     # --------------------------------------------------------
+1414: 
+1415:     st.markdown(
+1416:         '<div class="eyebrow">03 / REGIONAL ANALOGUE INVESTIGATION</div>',
+1417:         unsafe_allow_html=True
+1418:     )
+1419: 
+1420:     left, right = st.columns([1.55, 1])
+1421: 
+1422:     with left:
+1423:         st.markdown("### Atacama candidate geography")
+1424: 
+1425:         st.caption(
+1426:             "Geographical distribution of extracted candidate-region "
+1427:             "centroids within the Atacama Desert, Chile."
+1428:         )
+1429: 
+1430:         if (
+1431:             CANDIDATE_INVENTORY is not None
+1432:             and not CANDIDATE_INVENTORY.empty
+1433:         ):
+1434:             candidate_map = create_research_candidate_map(
+1435:                 CANDIDATE_INVENTORY
+1436:             )
+1437: 
+1438:             if candidate_map is not None:
+1439:                 st_folium(
+1440:                     candidate_map,
+1441:                     width=None,
+1442:                     height=440,
+1443:                     returned_objects=[],
+1444:                     key="overview_research_map"
+1445:                 )
+1446:             else:
+1447:                 empty_state(
+1448:                     "Candidate coordinates unavailable",
+1449:                     "The inventory does not contain valid centroid coordinates."
+1450:                 )
+1451:         else:
+1452:             empty_state(
+1453:                 "Research inventory unavailable",
+1454:                 "The Atacama candidate inventory could not be loaded."
+1455:             )
+1456: 
+1457:     with right:
+1458:         st.markdown("### Regional study configuration")
+1459: 
+1460:         repository_status = (
+
+
+==================== DISCOVERY ====================
+1690:     if CANDIDATE_INVENTORY is None or CANDIDATE_INVENTORY.empty:
+1691:         empty_state("Candidate inventory unavailable", "The Atacama candidate inventory could not be loaded.")
+1692:         return
+1693: 
+1694:     df = CANDIDATE_INVENTORY.copy()
+1695:     if "candidate_id" not in df.columns:
+1696:         st.error("The candidate inventory does not contain a candidate_id column.")
+1697:         return
+1698: 
+1699:     st.markdown("### Explore extracted regions")
+1700:     f1, f2, f3 = st.columns([1.2, 1, 1])
+1701:     with f1:
+1702:         search = st.text_input("Search candidate ID", placeholder="Example: TF-001")
+1703:     with f2:
+1704:         area_range = None
+1705:         if "area_km2" in df.columns:
+1706:             areas = pd.to_numeric(df["area_km2"], errors="coerce").dropna()
+1707:             if not areas.empty:
+1708:                 lo, hi = float(areas.min()), float(areas.max())
+1709:                 area_range = st.slider(
+1710:                     "Area range (km²)", min_value=lo, max_value=hi,
+1711:                     value=(lo, hi), key="discovery_area_range"
+1712:                 )
+1713:     with f3:
+1714:         sort_order = st.selectbox(
+1715:             "Sort candidates",
+1716:             ["Largest area first", "Smallest area first", "Candidate ID"]
+1717:         )
+1718: 
+1719:     filtered_df = df.copy()
+1720:     if search:
+1721:         filtered_df = filtered_df[
+1722:             filtered_df["candidate_id"].astype(str).str.contains(search, case=False, na=False)
+1723:         ]
+1724:     if area_range is not None and "area_km2" in filtered_df.columns:
+1725:         filtered_df = filtered_df[
+1726:             pd.to_numeric(filtered_df["area_km2"], errors="coerce").between(*area_range)
+1727:         ]
+1728:     if sort_order == "Largest area first" and "area_km2" in filtered_df.columns:
+1729:         filtered_df = filtered_df.sort_values("area_km2", ascending=False)
+1730:     elif sort_order == "Smallest area first" and "area_km2" in filtered_df.columns:
+1731:         filtered_df = filtered_df.sort_values("area_km2", ascending=True)
+1732:     else:
+1733:         filtered_df = filtered_df.sort_values("candidate_id")
+1734: 
+1735:     a, b, c = st.columns(3)
+1736:     a.metric("Extracted inventory", len(df))
+1737:     b.metric("Filtered candidates", len(filtered_df))
+1738:     c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+1739:     st.divider()
+1740: 
+1741:     map_col, profile_col = st.columns([1.45, 1])
+1742:     with map_col:
+1743:         st.markdown("### Candidate geography")
+1744:         if not filtered_df.empty:
+1745:             candidate_map = create_research_candidate_map(filtered_df)
+1746:             if candidate_map is not None:
+1747:                 st_folium(
+1748:                     candidate_map, width=None, height=490,
+1749:                     returned_objects=[], key="discovery_research_map"
+1750:                 )
+1751:             else:
+1752:                 empty_state("Candidate coordinates unavailable", "No valid centroid coordinates were found.")
+1753:         else:
+1754:             empty_state("No matching candidates", "Change your search or area filters.")
+1755: 
+1756:     with profile_col:
+1757:         st.markdown("### Candidate profile")
+1758:         if not filtered_df.empty:
+1759:             selected_id = st.selectbox(
+1760:                 "Select candidate region",
+1761:                 filtered_df["candidate_id"].astype(str).tolist(),
+1762:                 key="research_discovery_candidate"
+1763:             )
+1764:             selected = filtered_df[
+1765:                 filtered_df["candidate_id"].astype(str) == selected_id
+1766:             ].iloc[0]
+1767:             st.markdown(
+1768:                 f'<div class="panel"><div class="eyebrow">SELECTED REGION</div>'
+1769:                 f'<div style="font-size:25px;font-weight:800;color:white;">{html.escape(selected_id)}</div>'
+1770:                 f'<div class="mono">ATACAMA DESERT / CHILE</div></div>',
+1771:                 unsafe_allow_html=True
+1772:             )
+1773:             for label, column, suffix in [
+1774:                 ("Area", "area_km2", " km²"),
+1775:                 ("Mean slope", "slope_mean_deg", "°"),
+1776:                 ("Mean roughness", "roughness_mean_m", " m"),
+1777:                 ("Mean local relief", "local_relief_mean_m", " m"),
+1778:             ]:
+1779:                 if column in selected.index:
+1780:                     st.metric(label, safe_metric_value(selected, column, suffix))
+1781:             lat, lon = selected.get("centroid_latitude", np.nan), selected.get("centroid_longitude", np.nan)
+1782:             if pd.notna(lat) and pd.notna(lon):
+1783:                 st.caption(f"Latitude: {float(lat):.5f} | Longitude: {float(lon):.5f}")
+1784:             detailed_profile = get_profile_data(selected_id)
+1785:             if detailed_profile:
+1786:                 with st.expander("Detailed research profile"):
+1787:                     st.json(detailed_profile)
+1788:             with st.expander("Complete candidate record"):
+1789:                 st.dataframe(selected.to_frame("Value"), use_container_width=True)
+1790:         else:
+1791:             empty_state("No candidate selected", "There are no matching records.")
+1792: 
+1793:     st.divider()
+1794:     st.markdown("### Extracted candidate records")
+1795:     display_columns = [
+1796:         col for col in [
+1797:             "candidate_id", "rank_by_area", "pixel_count", "area_km2",
+1798:             "centroid_latitude", "centroid_longitude", "slope_mean_deg",
+1799:             "roughness_mean_m", "local_relief_mean_m",
+1800:             "broad_screening_overlap_percent", "moderate_screening_overlap_percent"
+1801:         ] if col in filtered_df.columns
+1802:     ]
+1803:     st.dataframe(filtered_df[display_columns], use_container_width=True, hide_index=True)
+1804:     st.download_button(
+1805:         "Download filtered candidate inventory",
+1806:         data=filtered_df.to_csv(index=False).encode("utf-8"),
+1807:         file_name="terraform_filtered_candidate_inventory.csv",
+1808:         mime="text/csv"
+1809:     )
+1810:     st.info(
+1811:         "The inventory contains connected regions extracted from the strict three-metric "
+1812:         "terrain intersection. Candidate identifiers and area ranks describe extracted "
+1813:         "components, not scientific suitability or confirmed planetary analogy."
+1814:     )
+1815: 
+1816: 
+1817: # ============================================================
+1818: # PAGE 3 — GLOBAL MARS EXPLORER
+1819: # ============================================================
+1820: 
+1821: 
+1822: def global_mars_page():
+1823:     # ========================================================
+1824:     # MODULE 02 — GLOBAL MARS EXPLORER
+1825:     # ========================================================
+1826: 
+1827:     section_header(
+1828:         "MODULE 02 / PLANETARY-SCALE ANALYSIS",
+1829:         "Global Mars Explorer",
+1830:         "Investigate the global topography, surface characteristics and observation coverage of Mars using NASA MOLA MEGDR data."
+1831:     )
+1832: 
+1833:     if not isinstance(MARS_TERRAIN_REPORT, dict):
+1834:         st.error(
+1835:             "The global Mars terrain metrics JSON report could not be loaded."
+1836:         )
+1837:         st.caption(f"Expected: `{MARS_JSON_PATH}`")
+1838:         return
+1839: 
+1840:     report = MARS_TERRAIN_REPORT
+1841:     source = report.get("source", {})
+1842:     grid = report.get("grid", {})
+1843:     geometry = report.get("geometry", {})
+1844:     stats = report.get("statistics", {})
+1845:     processing = report.get("processing", {})
+1846: 
+1847:     def display_number(value, suffix="", decimals=2):
+1848:         if isinstance(value, (int, float)):
+1849:             return f"{value:,.{decimals}f}{suffix}"
+1850:         return f"—{suffix}"
+1851: 
+1852:     def display_integer(value):
+1853:         if isinstance(value, (int, float)):
+1854:             return f"{value:,.0f}"
+1855:         return "—"
+1856: 
+1857:     # --------------------------------------------------------
+1858:     # 01 / DATASET OVERVIEW
+1859:     # --------------------------------------------------------
+1860: 
+1861:     st.markdown(
+1862:         '<div class="eyebrow">01 / PLANETARY DATASET</div>',
+1863:         unsafe_allow_html=True
+1864:     )
+1865: 
+1866:     st.markdown("### Global Mars terrain model")
+1867: 
+1868:     rows = display_integer(grid.get("rows"))
+1869:     columns = display_integer(grid.get("columns"))
+1870: 
+
+
+==================== TECHNICAL DEEP DIVE ====================
+2850:     st.download_button(
+2851:         "Download visualisation inventory",
+2852:         data=inventory_df.to_csv(index=False).encode("utf-8"),
+2853:         file_name="terraform_visualisation_inventory.csv",
+2854:         mime="text/csv",
+2855:         key="download_visualisation_inventory"
+2856:     )
+2857: 
+2858: 
+2859: # ============================================================
+2860: # PAGE 8 — TECHNICAL DEEP DIVE
+2861: # ============================================================
+2862: 
+2863: def technical_deep_dive_page():
+2864:     section_header(
+2865:         "MODULE 07 / METHODS, DATA AND REPRODUCIBILITY",
+2866:         "Technical Deep Dive",
+2867:         "Inspect the scientific foundations, data products, processing methods, assumptions and limitations behind TERRAFORM."
+2868:     )
+2869: 
+2870:     st.markdown("### Research architecture")
+2871:     stages = [
+2872:         ("01", "Data acquisition", "Open Earth observation products and planetary datasets."),
+2873:         ("02", "Data harmonisation", "Coordinate systems, spatial resolution, units and vertical references."),
+2874:         ("03", "Terrain processing", "Slope, roughness, local relief and elevation statistics."),
+2875:         ("04", "Analogue discovery", "Empirical percentile-range screening and spatial intersection."),
+2876:         ("05", "Candidate extraction", "Connected-component extraction and candidate profiling."),
+2877:         ("06", "Scientific interpretation", "Geological context, sensitivity analysis and limitations."),
+2878:     ]
+2879:     cols = st.columns(3)
+2880:     for index, (number, title, description) in enumerate(stages):
+2881:         with cols[index % 3]:
+2882:             st.markdown(
+2883:                 f'<div class="panel"><div class="mono">STAGE {number}</div>'
+2884:                 f'<div style="font-size:17px;color:white;font-weight:700;margin-top:8px;">{title}</div>'
+2885:                 f'<div style="font-size:12px;color:#8FA3B5;margin-top:7px;">{description}</div></div>',
+2886:                 unsafe_allow_html=True
+2887:             )
+2888: 
+2889:     st.divider()
+2890:     st.markdown("### Global Mars terrain analysis")
+2891: 
+2892:     if isinstance(MARS_TERRAIN_REPORT, dict):
+2893:         source = MARS_TERRAIN_REPORT.get("source", {})
+2894:         grid = MARS_TERRAIN_REPORT.get("grid", {})
+2895:         geometry = MARS_TERRAIN_REPORT.get("geometry", {})
+2896:         processing = MARS_TERRAIN_REPORT.get("processing", {})
+2897: 
+2898:         st.markdown("#### Source product and grid")
+2899:         c1, c2, c3 = st.columns(3)
+2900:         c1.metric("Grid", f"{grid.get('rows', 2880):,} × {grid.get('columns', 5760):,}")
+2901:         c2.metric("Grid spacing", f"{grid.get('angular_spacing_degrees', 0.0625)}°")
+2902:         c3.metric("Reference radius", f"{geometry.get('reference_radius_km', 3396):,.0f} km")
+2903: 
+2904:         st.markdown(
+2905:             f"""
+2906:             - **Dataset:** `{source.get('dataset_id', 'MGS-M-MOLA-5-MEGDR-L3-V1.0')}`
+2907:             - **Elevation raster:** `{source.get('elevation', 'megt90n000eb.img')}`
+2908:             - **Observation-count raster:** `{source.get('observation_count', 'megc90n000eb.img')}`
+2909:             - **Longitude convention:** 0–360° east
+2910:             - **Latitude convention:** planetocentric
+2911:             - **Grid:** simple cylindrical, 0.0625° angular spacing
+2912:             - **Elevation reference:** MOLA areoid based on the documented GMM3 model context
+2913:             """
+2914:         )
+2915: 
+2916:         st.markdown("#### Spherical reference-cell area")
+2917:         st.latex(r"A = R^2 \Delta\lambda \left(\sin\phi_N-\sin\phi_S\right)")
+2918:         st.caption(
+2919:             "The area calculation uses a spherical reference geometry. "
+2920:             "It is a reference-cell area, not an exact terrain-surface area."
+2921:         )
+2922: 
+2923:         st.markdown("#### Terrain metric methods")
+2924:         st.markdown(
+2925:             """
+2926:             **Slope:** central finite differences on the spherical reference geometry,
+2927:             with east–west pixel distance adjusted for latitude.
+2928: 
+2929:             **Roughness:** population standard deviation of elevation values in a
+2930:             3×3 angular grid-cell neighbourhood.
+2931: 
+2932:             **Local relief:** maximum elevation minus minimum elevation in a
+2933:             3×3 angular grid-cell neighbourhood.
+2934:             """
+2935:         )
+2936:         st.latex(r"\text{Local relief}_{3\times3}=\max(z)-\min(z)")
+2937:         st.caption(
+2938:             "The 3×3 windows are defined in angular grid cells, not constant physical-distance "
+2939:             "windows. Their east–west physical footprint changes with latitude."
+2940:         )
+2941: 
+2942:         st.markdown("#### Processing configuration")
+2943:         with st.expander("Advanced technical details — JSON"):
+2944:                     st.json(processing)
+2945: 
+2946:         st.markdown("#### Interpretation of observation support")
+2947:         st.markdown(
+2948:             """
+2949:             - The observation-count raster records the number of MOLA observations contributing to a cell.
+2950:             - A zero count does not mean the corresponding elevation value is zero or missing.
+2951:             - The global MOLA elevation product retains interpolated elevation values in zero-observation cells.
+2952:             - Observed-only terrain statistics select centre cells with at least one recorded observation.
+2953:             - Neighbouring cells used by 3×3 metrics can still include interpolated elevations.
+2954:             - Observation count is sampling support, not a direct accuracy measurement.
+2955:             """
+2956:         )
+2957: 
+2958:         st.markdown("#### Mars terrain metric results")
+2959:         terrain_stats = MARS_TERRAIN_REPORT.get("statistics", {})
+2960:         for metric_key, metric_label in [
+2961:             ("slope_degrees", "Slope (degrees)"),
+2962:             ("roughness_3x3_m", "Roughness (metres)"),
+2963:             ("local_relief_3x3_m", "Local relief (metres)"),
+2964:         ]:
+2965:             with st.expander(metric_label):
+
+
+==================== DATA LABORATORY RASTER AND CSV ====================
+3160:         dataframe = earth_df
+3161:         rejected = earth_rejected
+3162:         processing_report = earth_report
+3163:         source = earth_source
+3164:         saved_paths = earth_saved_paths
+3165: 
+3166:     elif selected_planet == "Mars":
+3167:         dataframe = mars_df
+3168:         rejected = mars_rejected
+3169:         processing_report = mars_report
+3170:         source = mars_source
+3171:         saved_paths = mars_saved_paths
+3172: 
+3173:     else:
+3174:         dataframe = pd.DataFrame()
+3175:         rejected = pd.DataFrame()
+3176:         processing_report = None
+3177:         source = config["source"]
+3178:         saved_paths = {}
+3179: 
+3180:     dataframe = (
+3181:         dataframe
+3182:         if isinstance(dataframe, pd.DataFrame)
+3183:         else pd.DataFrame()
+3184:     )
+3185: 
+3186:     rejected = (
+3187:         rejected
+3188:         if isinstance(rejected, pd.DataFrame)
+3189:         else pd.DataFrame()
+3190:     )
+3191: 
+3192:     st.markdown(
+3193:         f'<div class="panel">'
+3194:         f'<div class="mono">ACTIVE PLANETARY DATA SOURCE</div>'
+3195:         f'<div class="panel-title">{html.escape(str(config["source"]))}</div>'
+3196:         f'<div class="panel-description">'
+3197:         f'{html.escape(str(config["description"]))}'
+3198:         f'</div></div>',
+3199:         unsafe_allow_html=True
+3200:     )
+3201: 
+3202:     st.markdown("### Planetary dataset availability")
+3203: 
+3204:     if raster_path.is_file():
+3205:         st.success(f"{selected_planet} raster file detected.")
+3206:     else:
+3207:         st.error(f"{selected_planet} raster file not found.")
+3208: 
+3209:     st.caption("Dataset source metadata is shown above. Local storage paths are hidden.")
+3210: 
+3211:     st.divider()
+3212: 
+3213:     raster_tab, processing_tab, reports_tab = st.tabs(
+3214:         [
+3215:             "Raster Inspection",
+3216:             "CSV Processing",
+3217:             "Research Reports"
+3218:         ]
+3219:     )
+3220: 
+3221:     with raster_tab:
+3222:         st.markdown("### Raster metadata")
+3223: 
+3224:         if not raster_path.is_file():
+3225:             st.warning(
+3226:                 "The registered planetary raster file is unavailable. "
+3227:                 "Check the dataset path before attempting inspection."
+3228:             )
+3229: 
+3230:         elif rasterio is None:
+3231:             st.error(
+3232:                 "Rasterio is not installed or available. "
+3233:                 "Raster metadata cannot be inspected."
+3234:             )
+3235: 
+3236:         else:
+3237:             try:
+3238:                 with rasterio.open(raster_path) as dataset:
+3239:                     width = dataset.width
+3240:                     height = dataset.height
+3241:                     band_count = dataset.count
+3242:                     driver = dataset.driver
+3243:                     data_types = ", ".join(dataset.dtypes)
+3244:                     crs = str(dataset.crs) if dataset.crs else "Not declared"
+3245:                     nodata = dataset.nodata
+3246:                     bounds = dataset.bounds
+3247:                     resolution = dataset.res
+3248:                     transform = dataset.transform
+3249: 
+3250:                     file_size = raster_path.stat().st_size
+3251: 
+3252:                     col1, col2, col3, col4 = st.columns(4)
+3253: 
+3254:                     col1.metric("Raster width", f"{width:,} px")
+3255:                     col2.metric("Raster height", f"{height:,} px")
+3256:                     col3.metric("Bands", f"{band_count:,}")
+3257:                     col4.metric(
+3258:                         "File size",
+3259:                         f"{file_size / (1024 ** 2):,.2f} MB"
+3260:                     )
+3261: 
+3262:                     st.divider()
+3263: 
+3264:                     metadata = pd.DataFrame([
+3265:                         ["Dataset", selected_planet],
+3266:                         ["Product", config["source"]],
+3267:                         ["File", raster_path.name],
+3268:                         ["Driver", driver],
+3269:                         ["Dimensions", f"{width:,} × {height:,}"],
+3270:                         ["Data type", data_types],
+3271:                         ["Coordinate reference system", crs],
+3272:                         ["Reference surface", config["reference"]],
+3273:                         ["Resolution", str(resolution)],
+3274:                         ["NoData value", str(nodata)],
+3275:                         ["Upper-left / lower-right bounds",
+3276:                          f"{bounds}"],
+3277:                         ["Affine transform", str(transform)],
+3278:                     ], columns=["Property", "Value"])
+3279: 
+3280:                     st.dataframe(
+3281:                         metadata,
+3282:                         use_container_width=True,
+3283:                         hide_index=True
+3284:                     )
+3285: 
+3286:                     st.caption(
+3287:                         "Metadata is read from the registered raster. "
+3288:                         "No elevation values are changed or reprocessed."
+3289:                     )
+3290: 
+3291:             except Exception as error:
+3292:                 st.error("Raster metadata inspection failed.")
+3293:                 st.caption("Detailed error information is available in local application logs.")
+3294: 
+3295:     with processing_tab:
+3296:         st.markdown("### CSV processing results")
+3297: 
+3298:         row_count = len(dataframe)
+3299:         rejected_count = len(rejected)
+3300:         column_count = len(dataframe.columns)
+3301:         missing_count = (
+3302:             int(dataframe.isna().sum().sum())
+3303:             if not dataframe.empty else 0
+3304:         )
+3305: 
+3306:         c1, c2, c3, c4 = st.columns(4)
+3307: 
+3308:         c1.metric("Accepted records", f"{row_count:,}")
+3309:         c2.metric("Rejected records", f"{rejected_count:,}")
+3310:         c3.metric("Data columns", f"{column_count:,}")
+3311:         c4.metric("Missing values", f"{missing_count:,}")
+3312: 
+3313:         if dataframe.empty:
+3314:             st.info(
+3315:                 f"No processed CSV records are currently available for "
+3316:                 f"{selected_planet}. This does not mean its planetary "
+3317:                 "raster dataset is unavailable."
+3318:             )
+3319: 
+3320:         else:
+3321:             st.markdown("#### Dataset explorer")
+3322: 
+3323:             selected_columns = st.multiselect(
+3324:                 "Visible columns",
+3325:                 options=list(dataframe.columns),
+3326:                 default=list(dataframe.columns),
+3327:                 key=f"data_lab_columns_{selected_planet}"
+3328:             )
+3329: 
+3330:             preview_limit = st.slider(
+3331:                 "Preview records",
+3332:                 min_value=5,
+3333:                 max_value=100,
+3334:                 value=20,
+3335:                 step=5,
+3336:                 key=f"data_lab_preview_{selected_planet}"
+3337:             )
+3338: 
+3339:             if selected_columns:
+3340:                 st.dataframe(
+3341:                     dataframe[selected_columns].head(preview_limit),
+3342:                     use_container_width=True,
+3343:                     hide_index=True
+3344:                 )
+3345:             else:
+3346:                 st.info("Select at least one column.")
+3347: 
+3348:             st.markdown("#### Column intelligence")
+3349: 
+3350:             metadata = pd.DataFrame({
+3351:                 "Column": dataframe.columns.astype(str),
+3352:                 "Data type": [
+3353:                     str(dataframe[column].dtype)
+3354:                     for column in dataframe.columns
+3355:                 ],
+3356:                 "Non-null records": [
+3357:                     int(dataframe[column].notna().sum())
+3358:                     for column in dataframe.columns
+3359:                 ],
+3360:                 "Missing records": [
+3361:                     int(dataframe[column].isna().sum())
+3362:                     for column in dataframe.columns
+3363:                 ],
+3364:                 "Unique values": [
+3365:                     int(dataframe[column].nunique(dropna=True))
+3366:                     for column in dataframe.columns
+3367:                 ],
+3368:             })
+3369: 
+3370:             st.dataframe(
+3371:                 metadata,
+3372:                 use_container_width=True,
+3373:                 hide_index=True
+3374:             )
+3375: 
+3376:             completeness = (
+3377:                 (1 - missing_count / (row_count * column_count)) * 100
+3378:                 if row_count and column_count else 0
+3379:             )
+3380: 
+3381:             quality_left, quality_right = st.columns(2)
+3382: 
+3383:             quality_left.metric(
+3384:                 "Dataset completeness",
+3385:                 f"{completeness:.2f}%"
+3386:             )
+3387: 
+3388:             quality_right.metric(
+3389:                 "Rejected records",
+3390:                 f"{rejected_count:,}"
+3391:             )
+3392: 
+3393:             if not rejected.empty:
+3394:                 with st.expander("Inspect rejected records"):
+3395:                     st.dataframe(
+3396:                         rejected.head(100),
+3397:                         use_container_width=True,
+3398:                         hide_index=True
+3399:                     )
+3400: 
+3401:                     st.download_button(
+3402:                         "Download rejected records",
+3403:                         data=rejected.to_csv(index=False).encode("utf-8"),
+3404:                         file_name=f"terraform_{selected_planet.lower()}_rejected.csv",
+3405:                         mime="text/csv",
+3406:                         key=f"download_rejected_{selected_planet}"
+3407:                     )
+3408: 
+3409:             st.download_button(
+3410:                 f"Export cleaned {selected_planet} CSV",
+3411:                 data=dataframe.to_csv(index=False).encode("utf-8"),
+3412:                 file_name=f"terraform_{selected_planet.lower()}_cleaned.csv",
+3413:                 mime="text/csv",
+3414:                 key=f"download_cleaned_{selected_planet}"
+3415:             )
+3416: 
+3417:         if saved_paths:
+3418:             with st.expander("Saved CSV processing outputs"):
+3419:                 for name, path in saved_paths.items():
+3420:                     st.markdown(f"**{html.escape(str(name))}**")
+
+
+==================== DATA LABORATORY REPORTS ====================
+3415:             )
+3416: 
+3417:         if saved_paths:
+3418:             with st.expander("Saved CSV processing outputs"):
+3419:                 for name, path in saved_paths.items():
+3420:                     st.markdown(f"**{html.escape(str(name))}**")
+3421:                     st.caption("Saved in the TERRAFORM project workspace.")
+3422: 
+3423:     with reports_tab:
+3424:         st.markdown("### Planetary research report")
+3425: 
+3426:         if report_path.is_file():
+3427:             try:
+3428:                 with open(report_path, "r", encoding="utf-8") as file:
+3429:                     planetary_report = json.load(file)
+3430: 
+3431:                 st.success("Planetary research report detected.")
+3432: 
+3433:                 with st.expander("Advanced technical details — JSON"):
+3434:                                     st.json(planetary_report)
+3435: 
+3436:                 st.download_button(
+3437:                     "Download planetary research report",
+3438:                     data=json.dumps(
+3439:                         planetary_report,
+3440:                         indent=2,
+3441:                         ensure_ascii=False
+3442:                     ).encode("utf-8"),
+3443:                     file_name=f"terraform_{selected_planet.lower()}_global_report.json",
+3444:                     mime="application/json",
+3445:                     key=f"download_global_report_{selected_planet}"
+3446:                 )
+3447: 
+3448:             except Exception as error:
+3449:                 st.error("The planetary report could not be read.")
+3450:                 st.caption("Detailed error information is available in local application logs.")
+3451: 
+3452:         else:
+3453:             st.info("The planetary research report is not available.")
+3454: 
+3455:         st.divider()
+3456: 
+3457:         st.markdown("### CSV processing report")
+3458: 
+3459:         if processing_report is None:
+3460:             st.info(
+3461:                 "No CSV processing report is available for this planet."
+3462:             )
+3463: 
+3464:         elif isinstance(processing_report, (dict, list)):
+3465:             with st.expander("Advanced technical details — JSON"):
+3466:                             st.json(processing_report)
+3467: 
+3468:             st.download_button(
+3469:                 "Download CSV processing report",
+3470:                 data=json.dumps(
+3471:                     processing_report,
+3472:                     indent=2,
+3473:                     ensure_ascii=False
+3474:                 ).encode("utf-8"),
+3475:                 file_name=f"terraform_{selected_planet.lower()}_processing_report.json",
+3476:                 mime="application/json",
+3477:                 key=f"download_processing_report_{selected_planet}"
+3478:             )
+3479: 
+3480:         elif isinstance(processing_report, pd.DataFrame):
+3481:             st.dataframe(
+3482:                 processing_report,
+3483:                 use_container_width=True,
+3484:                 hide_index=True
+3485:             )
+3486: 
+3487:             st.download_button(
+3488:                 "Download CSV processing report",
+3489:                 data=processing_report.to_csv(index=False).encode("utf-8"),
+3490:                 file_name=f"terraform_{selected_planet.lower()}_processing_report.csv",
+3491:                 mime="text/csv",
+3492:                 key=f"download_processing_report_{selected_planet}"
+3493:             )
+3494: 
+3495:         else:
+3496:             st.write(processing_report)
+3497: 
+3498:             st.download_button(
+3499:                 "Download CSV processing report",
+3500:                 data=str(processing_report).encode("utf-8"),
+3501:                 file_name=f"terraform_{selected_planet.lower()}_processing_report.txt",
+3502:                 mime="text/plain",
+3503:                 key=f"download_processing_report_{selected_planet}"
+3504:             )
+3505: 
+3506:     st.divider()
+3507: 
+3508:     st.caption(
+3509:         "Raster inspection displays metadata from the registered planetary "
+3510:         "elevation products. CSV processing results and planetary research "
+3511:         "reports are presented separately. Dataset inspection does not "
+3512:         "independently validate scientific suitability or planetary analogy."
+3513:     )
+3514: 
+3515: 
+3516: 
+3517: # ============================================================
+3518: # MAIN PAGE ROUTER
+3519: # ============================================================
+3520: 

@@ -1,0 +1,45 @@
+{
+    "project": "TERRAFORM",
+    "study_region": "Death Valley, California, USA",
+    "source_dataset": "Copernicus DEM GLO-30",
+    "source_type": "Digital Surface Model",
+    "target_crs": "EPSG:32611",
+    "target_resolution_m": 30.0,
+    "study_bounds": {
+        "west": -117.3,
+        "south": 35.8,
+        "east": -116.7,
+        "north": 36.4
+    },
+    "processing_window": "3x3 pixels",
+    "products": {
+        "elevation": {
+            "valid_pixels": 3994068,
+            "minimum": -90.1938,
+            "maximum": 3356.425,
+            "mean": 849.1208,
+            "standard_deviation": 708.6309
+        },
+        "slope": {
+            "valid_pixels": 3986016,
+            "minimum": 0.0,
+            "maximum": 87.8344,
+            "mean": 14.8462,
+            "standard_deviation": 12.4652
+        },
+        "roughness": {
+            "valid_pixels": 3986016,
+            "minimum": 0.0,
+            "maximum": 671.9214,
+            "mean": 7.1038,
+            "standard_deviation": 9.789
+        },
+        "local_relief": {
+            "valid_pixels": 3986016,
+            "minimum": 0.0,
+            "maximum": 1586.5059,
+            "mean": 22.0894,
+            "standard_deviation": 25.7251
+        }
+    }
+}

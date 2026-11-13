@@ -1,0 +1,31 @@
+
+FullName                                                      Length
+--------                                                      ------
+D:\TERRAFORM\src\__init__.py                                       0
+D:\TERRAFORM\src\analysis\analog_comparison.py                 18457
+D:\TERRAFORM\src\analysis\candidate_extraction.py              16218
+D:\TERRAFORM\src\analysis\comparison.py                         3705
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py             2111
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py       16645
+D:\TERRAFORM\src\analysis\geological_characterization.py       13488
+D:\TERRAFORM\src\analysis\inspect_profile_inputs.py             1431
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py             15356
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py              16071
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py           9778
+D:\TERRAFORM\src\analysis\terrain_analysis.py                  12146
+D:\TERRAFORM\src\analysis\terrain_range_screening.py           14459
+D:\TERRAFORM\src\analysis\__init__.py                              0
+D:\TERRAFORM\src\data\dashboard_pipeline.py                     1867
+D:\TERRAFORM\src\data\download_earth_dem.py                     5704
+D:\TERRAFORM\src\data\download_mars_dem.py                     14369
+D:\TERRAFORM\src\data\inspect_geology.py                        2603
+D:\TERRAFORM\src\data\processing.py                             3154
+D:\TERRAFORM\src\data\validation.py                             9325
+D:\TERRAFORM\src\data\__init__.py                                  0
+D:\TERRAFORM\src\utils\__init__.py                                 0
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py  18423
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py     8744
+D:\TERRAFORM\src\visualization\__init__.py                         0
+
+
+

@@ -1,0 +1,342 @@
+﻿========== DATA LABORATORY ==========
+
+
+
+# ============================================================
+# PAGE ? DATA LABORATORY
+# ============================================================
+
+
+def data_lab_page():
+    section_header(
+        "DATA OPERATIONS",
+        "Data Laboratory",
+        "Inspect planetary elevation datasets, CSV processing results and research reports."
+    )
+
+    datasets = PLANETARY_DATASETS
+
+    selected_planet = st.radio(
+        "SELECT PLANETARY DATASET",
+        ["Earth", "Mars", "Moon"],
+        horizontal=True,
+        key="data_lab_planet"
+    )
+
+    config = datasets[selected_planet]
+
+    raster_path = Path(ROOT) / config["raster"]
+    report_path = Path(OUTPUTS) / config["report"]
+
+    if selected_planet == "Earth":
+        dataframe = earth_df
+        rejected = earth_rejected
+        processing_report = earth_report
+        source = earth_source
+        saved_paths = earth_saved_paths
+
+    elif selected_planet == "Mars":
+        dataframe = mars_df
+        rejected = mars_rejected
+        processing_report = mars_report
+        source = mars_source
+        saved_paths = mars_saved_paths
+
+    else:
+        dataframe = pd.DataFrame()
+        rejected = pd.DataFrame()
+        processing_report = None
+        source = config["source"]
+        saved_paths = {}
+
+    dataframe = (
+        dataframe
+        if isinstance(dataframe, pd.DataFrame)
+        else pd.DataFrame()
+    )
+
+    rejected = (
+        rejected
+        if isinstance(rejected, pd.DataFrame)
+        else pd.DataFrame()
+    )
+
+    st.markdown(
+        f'<div class="panel">'
+        f'<div class="mono">ACTIVE PLANETARY DATA SOURCE</div>'
+        f'<div class="panel-title">{html.escape(str(config["source"]))}</div>'
+        f'<div class="panel-description">'
+        f'{html.escape(str(config["description"]))}'
+        f'</div></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown("### Planetary dataset availability")
+
+    if raster_path.is_file():
+        st.success(f"Registered {selected_planet} elevation raster is available for metadata inspection.")
+    else:
+        st.error(f"{selected_planet} raster file not found.")
+
+    st.caption("Dataset source metadata is shown above. Local storage paths are hidden.")
+
+    st.divider()
+
+    raster_tab, processing_tab, reports_tab = st.tabs(
+        [
+            "Raster Inspection",
+            "CSV Processing",
+            "Research Reports"
+        ]
+    )
+
+    with raster_tab:
+        st.markdown("### Raster metadata")
+
+        if not raster_path.is_file():
+            st.warning(
+                "The registered planetary raster file is unavailable. "
+                "Check the dataset path before attempting inspection."
+            )
+
+        elif rasterio is None:
+            st.error(
+                "Rasterio is not installed or available. "
+                "Raster metadata cannot be inspected."
+            )
+
+        else:
+            try:
+                with rasterio.open(raster_path) as dataset:
+                    width = dataset.width
+                    height = dataset.height
+                    band_count = dataset.count
+                    driver = dataset.driver
+                    data_types = ", ".join(dataset.dtypes)
+                    crs = str(dataset.crs) if dataset.crs else "Not declared"
+                    nodata = dataset.nodata
+                    bounds = dataset.bounds
+                    resolution = dataset.res
+                    transform = dataset.transform
+
+                    file_size = raster_path.stat().st_size
+
+                    col1, col2, col3, col4 = st.columns(4)
+
+                    col1.metric("Raster width", f"{width:,} px")
+                    col2.metric("Raster height", f"{height:,} px")
+                    col3.metric("Bands", f"{band_count:,}")
+                    col4.metric(
+                        "File size",
+                        f"{file_size / (1024 ** 2):,.2f} MB"
+                    )
+
+                    st.divider()
+
+                    metadata = pd.DataFrame([
+                        ["Dataset", selected_planet],
+                        ["Product", config["source"]],
+                        ["File", raster_path.name],
+                        ["Driver", driver],
+                        ["Dimensions", f"{width:,} Ã— {height:,}"],
+                        ["Data type", data_types],
+                        ["Coordinate reference system", crs],
+                        ["Reference surface", config["reference"]],
+                        ["Resolution", str(resolution)],
+                        ["NoData value", str(nodata)],
+                        ["Upper-left / lower-right bounds",
+                         f"{bounds}"],
+                        ["Affine transform", str(transform)],
+                    ], columns=["Property", "Value"])
+
+                    st.dataframe(
+                        metadata,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+                    st.caption(
+                        "Metadata is read from the registered raster. "
+                        "No elevation values are changed or reprocessed."
+                    )
+
+            except Exception as error:
+                st.error("Raster metadata inspection failed.")
+                st.caption("Detailed error information is available in local application logs.")
+
+    with processing_tab:
+        st.markdown("### CSV processing results")
+
+        row_count = len(dataframe)
+        rejected_count = len(rejected)
+        column_count = len(dataframe.columns)
+        missing_count = (
+            int(dataframe.isna().sum().sum())
+            if not dataframe.empty else 0
+        )
+
+        c1, c2, c3, c4 = st.columns(4)
+
+        c1.metric("Accepted records", f"{row_count:,}")
+        c2.metric("Rejected records", f"{rejected_count:,}")
+        c3.metric("Data columns", f"{column_count:,}")
+        c4.metric("Missing values", f"{missing_count:,}")
+
+        if dataframe.empty:
+            st.info(
+                f"No processed CSV records are currently available for "
+                f"{selected_planet}. This does not mean its planetary "
+                "raster dataset is unavailable."
+            )
+
+        else:
+            st.markdown("#### Dataset explorer")
+
+            selected_columns = st.multiselect(
+                "Visible columns",
+                options=list(dataframe.columns),
+                default=list(dataframe.columns),
+                key=f"data_lab_columns_{selected_planet}"
+            )
+
+            preview_limit = st.slider(
+                "Preview records",
+                min_value=5,
+                max_value=100,
+                value=20,
+                step=5,
+                key=f"data_lab_preview_{selected_planet}"
+            )
+
+            if selected_columns:
+                st.dataframe(
+                    dataframe[selected_columns].head(preview_limit),
+                    use_container_width=True,
+                    hide_index=True
+                )
+            else:
+                st.info("Select at least one column.")
+
+            st.markdown("#### Column intelligence")
+
+            metadata = pd.DataFrame({
+                "Column": dataframe.columns.astype(str),
+                "Data type": [
+                    str(dataframe[column].dtype)
+                    for column in dataframe.columns
+                ],
+                "Non-null records": [
+                    int(dataframe[column].notna().sum())
+                    for column in dataframe.columns
+                ],
+                "Missing records": [
+                    int(dataframe[column].isna().sum())
+                    for column in dataframe.columns
+                ],
+                "Unique values": [
+                    int(dataframe[column].nunique(dropna=True))
+                    for column in dataframe.columns
+                ],
+            })
+
+            st.dataframe(
+                metadata,
+                use_container_width=True,
+                hide_index=True
+            )
+
+            completeness = (
+                (1 - missing_count / (row_count * column_count)) * 100
+                if row_count and column_count else 0
+            )
+
+            quality_left, quality_right = st.columns(2)
+
+            quality_left.metric(
+                "Dataset completeness",
+                f"{completeness:.2f}%"
+            )
+
+            quality_right.metric(
+                "Rejected records",
+                f"{rejected_count:,}"
+            )
+
+            if not rejected.empty:
+                with st.expander("Inspect rejected records"):
+                    st.dataframe(
+                        rejected.head(100),
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+                    st.download_button(
+                        "Download rejected records",
+                        data=rejected.to_csv(index=False).encode("utf-8"),
+                        file_name=f"terraform_{selected_planet.lower()}_rejected.csv",
+                        mime="text/csv",
+                        key=f"download_rejected_{selected_planet}"
+                    )
+
+            st.download_button(
+                f"Export cleaned {selected_planet} CSV",
+                data=dataframe.to_csv(index=False).encode("utf-8"),
+                file_name=f"terraform_{selected_planet.lower()}_cleaned.csv",
+                mime="text/csv",
+                key=f"download_cleaned_{selected_planet}"
+            )
+
+        if saved_paths:
+            with st.expander("Saved CSV processing outputs"):
+                for name, path in saved_paths.items():
+                    st.markdown(f"**{html.escape(str(name))}**")
+                    st.caption("Saved in the TERRAFORM project workspace.")
+
+    with reports_tab:
+        st.markdown("### Planetary research report")
+
+        if report_path.is_file():
+            try:
+                with open(report_path, "r", encoding="utf-8") as file:
+                    planetary_report = json.load(file)
+
+                st.success("Planetary research report detected.")
+
+                with st.expander("Planetary research report â€” JSON"):
+                    st.json(planetary_report)
+
+                st.download_button(
+                    "Download planetary research report",
+                    data=json.dumps(
+                        planetary_report,
+                        indent=2,
+                        ensure_ascii=False
+                    ).encode("utf-8"),
+                    file_name=f"terraform_{selected_planet.lower()}_global_report.json",
+                    mime="application/json",
+                    key=f"download_global_report_{selected_planet}"
+                )
+
+            except Exception as error:
+                st.error("The planetary report could not be read.")
+                st.caption("Detailed error information is available in local application logs.")
+
+        else:
+            st.info("The planetary research report is not available.")
+
+    st.divider()
+
+    st.caption(
+        "Raster inspection displays metadata from the registered planetary "
+        "elevation products. CSV processing results and planetary research "
+        "reports are presented separately. Dataset inspection does not "
+        "independently validate scientific suitability or planetary analogy."
+    )
+
+
+
+# ============================================================
+# MAIN PAGE ROUTER
+# ============================================================
+
+if page == "Mission Overview":

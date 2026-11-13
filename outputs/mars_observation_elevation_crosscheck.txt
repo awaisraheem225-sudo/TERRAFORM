@@ -1,0 +1,60 @@
+TERRAFORM - MOLA GLOBAL DATA CROSS-CHECK
+============================================================
+
+1. GRID AND COVERAGE
+---------------------------------------------
+Raster dimensions: (2880, 5760)
+Total cells: 16,588,800
+Cells with observations: 15,685,242 (94.5532%)
+Cells with zero observations: 903,558 (5.4468%)
+Negative observation counts: 0
+
+2. OBSERVATION COUNT DISTRIBUTION
+---------------------------------------------
+Minimum count: 0
+Maximum count: 326
+Mean count across all cells: 34.86
+Mean count among observed cells: 36.87
+
+3. ELEVATION IN CELLS WITH OBSERVATIONS
+---------------------------------------------
+Cell count: 15,685,242
+Minimum elevation: -8,177 m
+Maximum elevation: 21,171 m
+Mean elevation: -767.73 m
+Median elevation: -267.00 m
+Percentiles (1, 25, 50, 75, 99):
+[-5907.0, -3757.0, -267.0, 1589.0, 6032.0]
+
+4. ELEVATION IN CELLS WITH ZERO OBSERVATIONS
+---------------------------------------------
+Cell count: 903,558
+Minimum elevation: -8,149 m
+Maximum elevation: 21,048 m
+Mean elevation: 88.27 m
+Median elevation: -6.50 m
+Percentiles (1, 25, 50, 75, 99):
+[-5186.0, -2331.0, -6.5, 2999.0, 5521.0]
+
+5. ELEVATION ZERO-VALUE CROSS-CHECK
+---------------------------------------------
+Observed cells with zero elevation: 2,059
+Observed cells with nonzero elevation: 15,683,183
+Zero-observation cells with zero elevation: 69
+Zero-observation cells with nonzero elevation: 903,489
+Total zero-elevation cells: 2,128
+
+6. CELLS WITHOUT OBSERVATIONS BUT WITH NONZERO ELEVATION
+---------------------------------------------
+Number of cells: 903,489
+Percentage of zero-observation cells: 99.9924%
+
+7. VALIDATION SUMMARY
+---------------------------------------------
+Elevation dimensions valid: True
+Counts dimensions valid: True
+All observation counts nonnegative: True
+Observed + unobserved cells equal total: True
+Interpretation: zero-count cells have no recorded MOLA observations.
+The product label states that elevation values in observation gaps are interpolated.
+This cross-check does not independently identify the interpolation algorithm or validate each interpolated value.

@@ -1,0 +1,57 @@
+{
+    "project": "TERRAFORM",
+    "analysis": "Terrain-Range Analogue Screening",
+    "earth_study_region": "Atacama Desert pilot area, Chile",
+    "mars_reference_region": "Jezero Crater study area, Mars",
+    "working_resolution_m": 463,
+    "reference_percentiles": {
+        "lower": 10,
+        "upper": 90
+    },
+    "earth_valid_pixels": 52499,
+    "metrics": {
+        "slope": {
+            "reference_range_lower": 0.6519118547439576,
+            "reference_range_upper": 7.3130685806274425,
+            "unit": "degrees",
+            "matching_earth_pixels": 41587,
+            "valid_earth_pixels": 52499,
+            "matching_percentage": 79.21484218747024,
+            "matching_area_km2": 8914.963603
+        },
+        "roughness": {
+            "reference_range_lower": 5.196246147155762,
+            "reference_range_upper": 48.801456832885755,
+            "unit": "metres",
+            "matching_earth_pixels": 40221,
+            "valid_earth_pixels": 52499,
+            "matching_percentage": 76.61288786453075,
+            "matching_area_km2": 8622.135549
+        },
+        "local_relief": {
+            "reference_range_lower": 16.4609619140625,
+            "reference_range_upper": 151.19013671875004,
+            "unit": "metres",
+            "matching_earth_pixels": 39965,
+            "valid_earth_pixels": 52499,
+            "matching_percentage": 76.12525952875293,
+            "matching_area_km2": 8567.257085
+        }
+    },
+    "three_metric_intersection": {
+        "matching_pixels": 38484,
+        "valid_pixels": 52499,
+        "matching_percentage": 73.30425341435075,
+        "matching_area_km2": 8249.776596
+    },
+    "interpretation_limitations": [
+        "This is a preliminary terrain-range screening method.",
+        "The reference intervals are based on Jezero's empirical P10-P90 distributions.",
+        "The intersection identifies Earth pixels satisfying all three independent range conditions.",
+        "It does not establish geological, mineralogical, climatic, biological, or operational equivalence.",
+        "The three conditions are not statistically independent.",
+        "Earth and Mars elevation products have different measurement characteristics.",
+        "MOLA contains interpolated values in areas with insufficient observations.",
+        "Results apply only to the selected Atacama and Jezero study areas."
+    ]
+}

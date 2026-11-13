@@ -1,0 +1,159 @@
+{
+    "project": "TERRAFORM | Planetary Analog Intelligence",
+    "analysis": "Global Mars terrain intelligence",
+    "source": {
+        "elevation": "megt90n000eb.img",
+        "observation_count": "megc90n000eb.img",
+        "dataset_id": "MGS-M-MOLA-5-MEGDR-L3-V1.0"
+    },
+    "grid": {
+        "rows": 2880,
+        "columns": 5760,
+        "angular_spacing_degrees": 0.0625,
+        "longitude_range_degrees_east": [
+            0,
+            360
+        ],
+        "latitude_range_degrees_planetocentric": [
+            -90,
+            90
+        ]
+    },
+    "geometry": {
+        "reference_radius_km": 3396.0,
+        "model": "Spherical reference surface",
+        "analysed_reference_area_km2": 144920121.75891393
+    },
+    "processing": {
+        "intermediate_precision": "float64",
+        "output_raster_precision": "float32",
+        "slope_method": "Central differences with latitude-adjusted east-west distance",
+        "longitude_boundary": "Periodic wrap",
+        "north_south_spacing_m": 3704.4613373579646,
+        "roughness_method": "3x3 grid-cell population standard deviation",
+        "roughness_calculation": "Centred float64 elevation moments",
+        "local_relief_method": "3x3 grid-cell maximum minus minimum elevation",
+        "polar_exclusion": "Absolute planetocentric latitude >= 89.5 degrees",
+        "chunk_rows": 128,
+        "percentile_method": "Area-weighted histogram approximation",
+        "histogram_bins": 4096
+    },
+    "statistics": {
+        "slope_degrees": {
+            "all_analysed": {
+                "cell_count": 16496640,
+                "reference_area_km2": 144920121.7589139,
+                "minimum": 0.0,
+                "maximum": 70.62567901611328,
+                "area_weighted_mean": 1.2328610843590229,
+                "area_weighted_percentiles_approx": {
+                    "P01": 0.025863896124064922,
+                    "P25": 0.21553246770054102,
+                    "P50": 0.5086566237732768,
+                    "P75": 1.2156031178310513,
+                    "P99": 10.526605722494423
+                }
+            },
+            "observed_only": {
+                "cell_count": 15680206,
+                "reference_area_km2": 139764022.35163262,
+                "minimum": 0.0,
+                "maximum": 69.537109375,
+                "area_weighted_mean": 1.229751029104828,
+                "area_weighted_percentiles_approx": {
+                    "P01": 0.025863896124064922,
+                    "P25": 0.21553246770054102,
+                    "P50": 0.5086566237732768,
+                    "P75": 1.2156031178310513,
+                    "P99": 10.50936312507838
+                }
+            }
+        },
+        "roughness_3x3_m": {
+            "all_analysed": {
+                "cell_count": 16496640,
+                "reference_area_km2": 144920121.7589139,
+                "minimum": 0.0,
+                "maximum": 1890.032958984375,
+                "area_weighted_mean": 64.30560473741299,
+                "area_weighted_percentiles_approx": {
+                    "P01": 1.6150183975696564,
+                    "P25": 12.227996438741684,
+                    "P50": 27.45531275868416,
+                    "P75": 65.75432047247887,
+                    "P99": 500.42498633265495
+                }
+            },
+            "observed_only": {
+                "cell_count": 15680206,
+                "reference_area_km2": 139764022.35163262,
+                "minimum": 0.0,
+                "maximum": 1890.032958984375,
+                "area_weighted_mean": 64.24963968642494,
+                "area_weighted_percentiles_approx": {
+                    "P01": 1.6150183975696564,
+                    "P25": 12.227996438741684,
+                    "P50": 27.45531275868416,
+                    "P75": 65.75432047247887,
+                    "P99": 500.42498633265495
+                }
+            }
+        },
+        "local_relief_3x3_m": {
+            "all_analysed": {
+                "cell_count": 16496640,
+                "reference_area_km2": 144920121.7589139,
+                "minimum": 0.0,
+                "maximum": 6017.0,
+                "area_weighted_mean": 195.6499807695689,
+                "area_weighted_percentiles_approx": {
+                    "P01": 5.1414794921875,
+                    "P25": 37.4593505859375,
+                    "P50": 85.9361572265625,
+                    "P75": 204.9246826171875,
+                    "P99": 1462.3836669921875
+                }
+            },
+            "observed_only": {
+                "cell_count": 15680206,
+                "reference_area_km2": 139764022.35163262,
+                "minimum": 0.0,
+                "maximum": 6017.0,
+                "area_weighted_mean": 195.34383367831745,
+                "area_weighted_percentiles_approx": {
+                    "P01": 5.1414794921875,
+                    "P25": 37.4593505859375,
+                    "P50": 85.9361572265625,
+                    "P75": 203.4556884765625,
+                    "P99": 1460.9146728515625
+                }
+            }
+        }
+    },
+    "limitations": [
+        "Slope uses finite differences on a spherical reference geometry.",
+        "East-west pixel distance varies with latitude.",
+        "The cylindrical grid becomes singular at the poles; cells at and beyond the polar cutoff are excluded.",
+        "Roughness and local relief use angular 3x3 grid-cell neighbourhoods, not constant physical-distance windows.",
+        "The global MOLA product includes interpolated elevation values in zero-observation cells.",
+        "Observed-only statistics select centre cells with one or more recorded observations.",
+        "Neighbourhood calculations may still include interpolated neighbouring elevations, even when the centre cell has a recorded observation.",
+        "The observation mask identifies cells with recorded observations, not the quality or accuracy of each individual elevation.",
+        "Area-weighted means use spherical reference cell areas.",
+        "Weighted percentiles are approximate histogram-bin estimates.",
+        "These metrics do not independently validate the source elevation data or interpolation."
+    ],
+    "outputs": {
+        "rasters": {
+            "slope_degrees": "mars_global_slope_degrees.npy",
+            "roughness_3x3_m": "mars_global_roughness_3x3_m.npy",
+            "local_relief_3x3_m": "mars_global_local_relief_3x3_m.npy"
+        },
+        "maps": [
+            "mars_global_slope_degrees.png",
+            "mars_global_roughness_3x3_m.png",
+            "mars_global_local_relief_3x3_m.png",
+            "mars_global_terrain_quality.png"
+        ]
+    }
+}

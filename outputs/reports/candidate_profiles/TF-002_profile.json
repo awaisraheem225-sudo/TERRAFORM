@@ -1,0 +1,181 @@
+{
+  "candidate_id": "TF-002",
+  "area_rank": 2,
+  "ranking_basis": "Connected-region area, descending",
+  "geography": {
+    "region": "Antofagasta",
+    "latitude": -22.9095,
+    "longitude": -68.809654,
+    "area_km2": 80.3884,
+    "pixel_count": 375
+  },
+  "terrain": {
+    "slope": {
+      "mean_deg": 2.2918,
+      "median_deg": 2.2659
+    },
+    "roughness": {
+      "mean_m": 15.2179,
+      "median_m": 15.1213
+    },
+    "local_relief": {
+      "mean_m": 50.1085,
+      "median_m": 49.9465
+    }
+  },
+  "jezero_reference": {
+    "broad_p10_p90": {
+      "slope_deg": [
+        0.6519,
+        7.3131
+      ],
+      "roughness_m": [
+        5.1962,
+        48.8015
+      ],
+      "local_relief_m": [
+        16.461,
+        151.1901
+      ]
+    },
+    "moderate_p25_p75": {
+      "slope_deg": [
+        1.2336,
+        4.1812
+      ],
+      "roughness_m": [
+        8.9783,
+        28.1852
+      ],
+      "local_relief_m": [
+        28.1552,
+        88.0981
+      ]
+    },
+    "strict_p40_p60": {
+      "slope_deg": [
+        1.8181,
+        2.8404
+      ],
+      "roughness_m": [
+        12.6838,
+        19.5101
+      ],
+      "local_relief_m": [
+        39.8235,
+        60.871
+      ]
+    }
+  },
+  "strict_interval_membership": {
+    "slope_median_within_strict_interval": true,
+    "roughness_median_within_strict_interval": true,
+    "local_relief_median_within_strict_interval": true
+  },
+  "screening": {
+    "broad_overlap_percent": 100.0,
+    "moderate_overlap_percent": 100.0,
+    "interpretation": "Inherited screening overlap statistics. Not independent validation or probability."
+  },
+  "geology": {
+    "mapped_coverage": {
+      "mapped_area_km2": 80.078,
+      "coverage_percent": 99.6139,
+      "unmapped_area_km2": 0.3104
+    },
+    "number_of_intersecting_geological_records": 4,
+    "dominant_units": [
+      {
+        "code": "MP1c",
+        "lithostratigraphy": "Secuencias sedimentarias clasticas de piedemonte, aluviales, coluviales o fluvia",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Plioceno",
+        "maximum_age": "Mioceno superior",
+        "lithology": "conglomerado,arenisca,limolita",
+        "intersection_area_km2": 51.9783,
+        "candidate_coverage_percent": 64.659
+      },
+      {
+        "code": "Qa",
+        "lithostratigraphy": "Depositos aluviales, subordinadamente coluviales o lacustres",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Holoceno",
+        "maximum_age": "Pleistoceno",
+        "lithology": "grava,arena,limo",
+        "intersection_area_km2": 24.2869,
+        "candidate_coverage_percent": 30.212
+      },
+      {
+        "code": "CPg",
+        "lithostratigraphy": "Rocas plutonicas del Carbonifero-Permico",
+        "rock_rank": "Batholith",
+        "minimum_age": "Permico",
+        "maximum_age": "Carbonifero",
+        "lithology": "granito,granodiorita,tonalita,diorita",
+        "intersection_area_km2": 3.7081,
+        "candidate_coverage_percent": 4.6128
+      }
+    ],
+    "all_intersecting_units": [
+      {
+        "code": "MP1c",
+        "lithostratigraphy": "Secuencias sedimentarias clasticas de piedemonte, aluviales, coluviales o fluvia",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Plioceno",
+        "maximum_age": "Mioceno superior",
+        "lithology": "conglomerado,arenisca,limolita",
+        "intersection_area_km2": 51.9783,
+        "candidate_coverage_percent": 64.659
+      },
+      {
+        "code": "Qa",
+        "lithostratigraphy": "Depositos aluviales, subordinadamente coluviales o lacustres",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Holoceno",
+        "maximum_age": "Pleistoceno",
+        "lithology": "grava,arena,limo",
+        "intersection_area_km2": 24.2869,
+        "candidate_coverage_percent": 30.212
+      },
+      {
+        "code": "CPg",
+        "lithostratigraphy": "Rocas plutonicas del Carbonifero-Permico",
+        "rock_rank": "Batholith",
+        "minimum_age": "Permico",
+        "maximum_age": "Carbonifero",
+        "lithology": "granito,granodiorita,tonalita,diorita",
+        "intersection_area_km2": 3.7081,
+        "candidate_coverage_percent": 4.6128
+      },
+      {
+        "code": "CP3",
+        "lithostratigraphy": "Secuencias volcanicas continentales",
+        "rock_rank": "Lithostratigraphic Assemblage",
+        "minimum_age": "Permico",
+        "maximum_age": "Carbonifero",
+        "lithology": "andesita,riolita,arenisca,caliza",
+        "intersection_area_km2": 0.5541,
+        "candidate_coverage_percent": 0.6893
+      }
+    ]
+  },
+  "data_quality": {
+    "geological_coverage_percent": 99.6139,
+    "geological_unmapped_area_km2": 0.3104,
+    "profile_status": "Generated from verified candidate and geology outputs"
+  },
+  "scientific_limitations": [
+    "Candidate ranking is by connected-region area, not scientific suitability.",
+    "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+    "Terrain compatibility does not establish geological or mineralogical equivalence.",
+    "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+    "Mars terrain reference is derived from MOLA gridded elevation data.",
+    "The common working resolution is approximately 463 metres.",
+    "Earth and Mars use separate local projected coordinate systems.",
+    "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+    "Geological map coverage does not establish field-verified lithology or mineral composition.",
+    "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+    "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+  ],
+  "map_reference": "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+}

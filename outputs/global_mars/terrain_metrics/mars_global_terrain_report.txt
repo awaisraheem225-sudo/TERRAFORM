@@ -1,0 +1,129 @@
+TERRAFORM | GLOBAL MARS TERRAIN INTELLIGENCE
+=================================================================
+
+REFERENCE GEOMETRY
+-----------------------------------------------------------------
+Reference radius: 3396.0 km
+Grid: 2880 x 5760
+Angular spacing: 0.0625 degrees
+Analysed reference area: 144,920,121.759 km2
+Polar exclusion: |latitude| >= 89.5 degrees
+Intermediate precision: float64
+Output raster precision: float32
+
+
+=================================================================
+SLOPE_DEGREES
+=================================================================
+
+ALL_ANALYSED
+---------------------------------------------
+Cells: 16,496,640
+Reference area: 144,920,121.759 km2
+Minimum: 0.000
+Maximum: 70.626
+Area-weighted mean: 1.233
+Area-weighted P01: 0.026
+Area-weighted P25: 0.216
+Area-weighted P50: 0.509
+Area-weighted P75: 1.216
+Area-weighted P99: 10.527
+
+OBSERVED_ONLY
+---------------------------------------------
+Cells: 15,680,206
+Reference area: 139,764,022.352 km2
+Minimum: 0.000
+Maximum: 69.537
+Area-weighted mean: 1.230
+Area-weighted P01: 0.026
+Area-weighted P25: 0.216
+Area-weighted P50: 0.509
+Area-weighted P75: 1.216
+Area-weighted P99: 10.509
+
+=================================================================
+ROUGHNESS_3X3_M
+=================================================================
+
+ALL_ANALYSED
+---------------------------------------------
+Cells: 16,496,640
+Reference area: 144,920,121.759 km2
+Minimum: 0.000
+Maximum: 1890.033
+Area-weighted mean: 64.306
+Area-weighted P01: 1.615
+Area-weighted P25: 12.228
+Area-weighted P50: 27.455
+Area-weighted P75: 65.754
+Area-weighted P99: 500.425
+
+OBSERVED_ONLY
+---------------------------------------------
+Cells: 15,680,206
+Reference area: 139,764,022.352 km2
+Minimum: 0.000
+Maximum: 1890.033
+Area-weighted mean: 64.250
+Area-weighted P01: 1.615
+Area-weighted P25: 12.228
+Area-weighted P50: 27.455
+Area-weighted P75: 65.754
+Area-weighted P99: 500.425
+
+=================================================================
+LOCAL_RELIEF_3X3_M
+=================================================================
+
+ALL_ANALYSED
+---------------------------------------------
+Cells: 16,496,640
+Reference area: 144,920,121.759 km2
+Minimum: 0.000
+Maximum: 6017.000
+Area-weighted mean: 195.650
+Area-weighted P01: 5.141
+Area-weighted P25: 37.459
+Area-weighted P50: 85.936
+Area-weighted P75: 204.925
+Area-weighted P99: 1462.384
+
+OBSERVED_ONLY
+---------------------------------------------
+Cells: 15,680,206
+Reference area: 139,764,022.352 km2
+Minimum: 0.000
+Maximum: 6017.000
+Area-weighted mean: 195.344
+Area-weighted P01: 5.141
+Area-weighted P25: 37.459
+Area-weighted P50: 85.936
+Area-weighted P75: 203.456
+Area-weighted P99: 1460.915
+
+
+SCIENTIFIC LIMITATIONS
+-----------------------------------------------------------------
+1. Slope uses finite differences on a spherical reference geometry.
+2. East-west pixel distance varies with latitude.
+3. The cylindrical grid becomes singular at the poles; cells at and beyond the polar cutoff are excluded.
+4. Roughness and local relief use angular 3x3 grid-cell neighbourhoods, not constant physical-distance windows.
+5. The global MOLA product includes interpolated elevation values in zero-observation cells.
+6. Observed-only statistics select centre cells with one or more recorded observations.
+7. Neighbourhood calculations may still include interpolated neighbouring elevations, even when the centre cell has a recorded observation.
+8. The observation mask identifies cells with recorded observations, not the quality or accuracy of each individual elevation.
+9. Area-weighted means use spherical reference cell areas.
+10. Weighted percentiles are approximate histogram-bin estimates.
+11. These metrics do not independently validate the source elevation data or interpolation.
+
+OUTPUT FILES
+-----------------------------------------------------------------
+mars_global_slope_degrees.npy
+mars_global_roughness_3x3_m.npy
+mars_global_local_relief_3x3_m.npy
+mars_global_slope_degrees.png
+mars_global_roughness_3x3_m.png
+mars_global_local_relief_3x3_m.png
+mars_global_terrain_quality.png
+mars_global_terrain_report.json

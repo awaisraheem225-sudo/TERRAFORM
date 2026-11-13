@@ -1,0 +1,1083 @@
+
+
+========== project_info.txt ==========
+===== PROJECT FILES =====
+.venv
+.vscode
+data
+docs
+notebooks
+outputs
+src
+__pycache__
+.gitignore
+app.py
+app_pre_expansion_backup.py
+config.py
+mars_files_check.txt
+mars_hdr_check.txt
+moon_files_check.txt
+moon_lbl_check.txt
+project_info.txt
+README.md
+requirements.txt
+run_backend_tests.py
+src_inventory.txt
+
+===== APP.PY CONTENT =====
+
+from pathlib import Path
+import html
+import json
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import folium
+
+from folium.plugins import MarkerCluster
+from streamlit_folium import st_folium
+
+from src.data.dashboard_pipeline import load_and_process
+from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+
+
+# ============================================================
+# TERRAFORM | PLANETARY ANALOG INTELLIGENCE | V4.0
+# ============================================================
+
+ROOT = Path(__file__).resolve().parent
+OUTPUTS = ROOT / "outputs"
+
+ACCENT = "#55D6A0"
+BACKGROUND = "#0A1018"
+PANEL = "#111C27"
+BORDER = "#263746"
+MUTED = "#8FA3B5"
+WHITE = "#EDF4F8"
+
+NUMERIC_COLUMNS = [
+    "latitude", "longitude", "elevation_m", "slope_deg",
+    "roughness_m", "local_relief_m", "surface_temp_c",
+    "precipitation_mm", "similarity_score"
+]
+
+COMPARISON_METRICS = [
+    "slope_deg", "roughness_m", "local_relief_m",
+    "precipitation_mm"
+]
+
+RESEARCH_CSV_FILES = {
+    "Candidate inventory": "maps/candidate_regions/atacama_candidate_inventory.csv",
+    "Master candidate comparison": "dashboard/candidate_master_comparison.csv",
+    "Geological coverage": "maps/geological_characterization/candidate_geological_coverage.csv",
+    "Geological units": "maps/geological_characterization/candidate_geological_units.csv",
+    "Sensitivity summary": "maps/sensitivity_analysis/sensitivity_summary.csv",
+}
+
+RESEARCH_JSON_FILES = {
+    "Candidate profiles": "dashboard/candidate_profiles.json",
+    "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+    "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+    "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+    "Jezero terrain analysis": "reports/jezero_terrain_analysis.json",
+    "Earth validation report": "reports/earth_validation_report.json",
+    "Sensitivity analysis report": "reports/sensitivity_analysis_report.json",
+}
+
+RESEARCH_RASTER_FILES = {
+    "Candidate region IDs": "maps/candidate_regions/atacama_candidate_region_ids.tif",
+    "Broad screening mask": "maps/sensitivity_analysis/broad_three_metric_mask.tif",
+    "Moderate screening mask": "maps/sensitivity_analysis/moderate_three_metric_mask.tif",
+    "Strict screening mask": "maps/sensitivity_analysis/strict_three_metric_mask.tif",
+    "4-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_4_connectivity.tif",
+    "8-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_8_connectivity.tif",
+    "Slope screening mask": "maps/terrain_range_screening/atacama_slope_range_mask.tif",
+    "Roughness screening mask": "maps/terrain_range_screening/atacama_roughness_range_mask.tif",
+    "Local relief screening mask": "maps/terrain_range_screening/atacama_local_relief_range_mask.tif",
+    "Three-metric intersection": "maps/terrain_range_screening/atacama_three_metric_intersection.tif",
+}
+
+MARS_JSON_PATH = OUTPUTS / "global_mars/terrain_metrics/mars_global_terrain_report.json"
+MARS_AREA_REPORT_PATH = OUTPUTS / "global_mars/mars_area_weighted_report.txt"
+
+MARS_IMAGES = {
+    "Global elevation": "global_mars/mars_global_elevation.png",
+    "Elevation distribution": "global_mars/mars_global_elevation_distribution.png",
+    "Observation classification": "global_mars/mars_global_observation_classification.png",
+    "Observation density": "global_mars/mars_global_observation_density.png",
+}
+
+MARS_METRIC_IMAGES = {
+    "Slope": "global_mars/terrain_metrics/mars_global_slope_degrees.png",
+    "Roughness": "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png",
+    "Local relief": "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png",
+    "Terrain quality overview": "global_mars/terrain_metrics/mars_global_terrain_quality.png",
+}
+
+VISUALISATION_GROUPS = {
+    "Global Mars terrain": [
+        ("Global Mars elevation", "global_mars/mars_global_elevation.png"),
+        ("Mars elevation distribution", "global_mars/mars_global_elevation_distribution.png"),
+        ("Mars observation classification", "global_mars/mars_global_observation_classification.png"),
+        ("Mars observation density", "global_mars/mars_global_observation_density.png"),
+    ],
+    "Global Mars terrain metrics": [
+        ("Global Mars slope", "global_mars/terrain_metrics/mars_global_slope_degrees.png"),
+        ("Global Mars roughness", "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png"),
+        ("Global Mars local relief", "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png"),
+        ("Global Mars terrain quality overview", "global_mars/terrain_metrics/mars_global_terrain_quality.png"),
+    ],
+    "Atacama–Jezero regional study": [
+        ("Atacama candidate regions", "maps/candidate_regions/atacama_candidate_regions_map.png"),
+        ("Broad screening map", "maps/sensitivity_analysis/broad_screening_map.png"),
+        ("Moderate screening map", "maps/sensitivity_analysis/moderate_screening_map.png"),
+        ("Strict screening map", "maps/sensitivity_analysis/strict_screening_map.png"),
+        ("Screening sensitivity comparison", "maps/sensitivity_analysis/sensitivity_comparison.png"),
+        ("Largest spatial clusters", "maps/spatial_clusters/atacama_largest_matching_clusters.png"),
+        ("Earth–Mars terrain overview", "maps/terrain_comparison/earth_mars_terrain_overview.png"),
+        ("Local relief distributions", "maps/terrain_comparison/local_relief_distribution.png"),
+        ("Roughness distributions", "maps/terrain_comparison/roughness_distribution.png"),
+        ("Slope distributions", "maps/terrain_comparison/slope_distribution.png"),
+        ("Atacama terrain screening", "maps/terrain_range_screening/atacama_terrain_screening_overview.png"),
+    ],
+    "Global planetary visualisations": [
+        ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+        ("Global elevation distribution comparison", "Visualisations/Global/global_elevation_distribution_comparison.png"),
+        ("Global normalised terrain comparison", "Visualisations/Global/global_normalized_terrain_comparison.png"),
+        ("Global Mars elevation", "Visualisations/Global/mars_global_elevation.png"),
+        ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+    ],
+}
+
+
+st.set_page_config(
+    page_title="TERRAFORM | Planetary Analog Intelligence",
+    page_icon="🌍",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
+# ============================================================
+# GLOBAL STYLING
+# ============================================================
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --background:#0A1018;
+    --panel:#111C27;
+    --border:#263746;
+    --accent:#55D6A0;
+    --text:#EDF4F8;
+    --muted:#8FA3B5;
+}
+html, body, [class*="css"] {font-family:'Inter',sans-serif;}
+.stApp {background:var(--background);color:var(--text);}
+header[data-testid="stHeader"] {background:rgba(10,16,24,.92);}
+[data-testid="stSidebar"] {background:#0D1721;border-right:1px solid var(--border);}
+[data-testid="stSidebar"] > div:first-child {padding-top:1.2rem;}
+[data-testid="stMainBlockContainer"] {padding-top:2rem;padding-bottom:3rem;max-width:1600px;}
+
+
+========== src_inventory.txt ==========
+
+FullName                                                      Length
+--------                                                      ------
+D:\TERRAFORM\src\__init__.py                                       0
+D:\TERRAFORM\src\analysis\analog_comparison.py                 18457
+D:\TERRAFORM\src\analysis\candidate_extraction.py              16218
+D:\TERRAFORM\src\analysis\comparison.py                         3705
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py             2111
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py       16645
+D:\TERRAFORM\src\analysis\geological_characterization.py       13488
+D:\TERRAFORM\src\analysis\inspect_profile_inputs.py             1431
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py             15356
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py              16071
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py           9778
+D:\TERRAFORM\src\analysis\terrain_analysis.py                  12146
+D:\TERRAFORM\src\analysis\terrain_range_screening.py           14459
+D:\TERRAFORM\src\analysis\__init__.py                              0
+D:\TERRAFORM\src\data\dashboard_pipeline.py                     1867
+D:\TERRAFORM\src\data\download_earth_dem.py                     5704
+D:\TERRAFORM\src\data\download_mars_dem.py                     14369
+D:\TERRAFORM\src\data\inspect_geology.py                        2603
+D:\TERRAFORM\src\data\processing.py                             3154
+D:\TERRAFORM\src\data\validation.py                             9325
+D:\TERRAFORM\src\data\__init__.py                                  0
+D:\TERRAFORM\src\utils\__init__.py                                 0
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py  18423
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py     8744
+D:\TERRAFORM\src\visualization\__init__.py                         0
+
+
+
+
+
+========== PLANETARY_ENGINE_REPORT.txt ==========
+
+========== PLANETARY DATASET CATALOG ==========
+
+"""
+TERRAFORM — Planetary Dataset Registry
+Version: 1.0
+
+Central metadata registry for global Earth, Mars and Moon datasets.
+This module records data provenance; it does not download or process data.
+"""
+
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "Global"
+OUTPUT_FILE = OUTPUT_DIR / "dataset_catalog.json"
+
+
+DATASETS = [
+    {
+        "dataset_id": "EARTH_ETOPO_2022",
+        "planet": "Earth",
+        "dataset_name": "ETOPO 2022 Global Relief Model",
+        "provider": "NOAA National Centers for Environmental Information",
+        "instrument": "Multi-source elevation and bathymetry compilation",
+        "product": "Global relief model",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "60 arc-seconds",
+        "approximate_resolution_at_equator": "1.85 km",
+        "measurement": "Elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Geographic coordinates; inspect source metadata",
+        "vertical_reference": "Verify against selected product metadata",
+        "format": ["GeoTIFF", "NetCDF"],
+        "role": "Global Earth terrain overview and screening",
+        "source_url": (
+            "https://www.ncei.noaa.gov/products/"
+            "etopo-global-relief-model"
+        ),
+        "citation": (
+            "NOAA National Centers for Environmental Information. "
+            "2022. ETOPO 2022 Global Relief Model."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "Includes terrestrial elevation and ocean bathymetry.",
+            "Ocean cells must be excluded from terrestrial analog screening.",
+            "Global overview resolution is not equivalent to regional DEM resolution."
+        ]
+    },
+    {
+        "dataset_id": "MARS_MOLA_MEGDR",
+        "planet": "Mars",
+        "dataset_name": "MOLA Mission Experiment Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Mars Orbiter Laser Altimeter",
+        "product": "MEGDR global topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "3.7 km",
+        "measurement": "Topographic elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Planetocentric/planetographic conventions must be verified",
+        "vertical_reference": "Martian areoid reference; verify product label",
+        "format": ["PDS IMG", "PDS label"],
+        "role": "Global Mars terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/mgs/megdr.html"
+        ),
+        "citation": (
+            "NASA Mars Global Surveyor. Mars Orbiter Laser Altimeter "
+            "Mission Experiment Gridded Data Record."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "MEGDR products are available at multiple spatial resolutions.",
+            "PDS labels contain essential map projection and data information.",
+            "Do not interpret raw IMG pixel values without decoding product metadata."
+        ]
+    },
+    {
+        "dataset_id": "MOON_LOLA_GDR",
+        "planet": "Moon",
+        "dataset_name": "LRO LOLA Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Lunar Orbiter Laser Altimeter",
+        "product": "Global cylindrical GDR topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "1.9 km",
+        "measurement": "Lunar topographic elevation",
+        "measurement_unit": "metres after product scaling",
+        "coordinate_reference": "Lunar map projection; verify product label",
+        "vertical_reference": "Lunar radius reference; decode label scaling and offset",
+        "format": ["PDS IMG", "GeoJPEG2000", "PDS label"],
+        "role": "Global lunar terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/lro/lola.htm"
+        ),
+        "citation": (
+            "NASA Lunar Reconnaissance Orbiter. Lunar Orbiter Laser "
+            "Altimeter Gridded Data Records."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "LOLA GDR products contain gridded altimetry measurements.",
+            "Pixel values may require a scale factor and offset.",
+            "Global and polar products use different map projections."
+        ]
+    }
+]
+
+
+def validate_catalog(datasets):
+    required_fields = [
+        "dataset_id",
+        "planet",
+        "dataset_name",
+        "provider",
+        "spatial_coverage",
+        "measurement",
+        "measurement_unit",
+        "source_url",
+        "processing_status"
+    ]
+
+    errors = []
+
+    for dataset in datasets:
+        for field in required_fields:
+            if not dataset.get(field):
+                errors.append(
+                    f"{dataset.get('dataset_id', 'UNKNOWN')}: "
+                    f"missing {field}"
+                )
+
+    identifiers = [item["dataset_id"] for item in datasets]
+
+    if len(identifiers) != len(set(identifiers)):
+        errors.append("Duplicate dataset identifiers detected.")
+
+    return errors
+
+
+def build_catalog():
+    errors = validate_catalog(DATASETS)
+
+    if errors:
+        raise ValueError("\n".join(errors))
+
+    return {
+        "project": "TERRAFORM",
+        "project_title": "Planetary Analog Intelligence",
+        "catalog_version": "1.0",
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "dataset_count": len(DATASETS),
+        "planets": ["Earth", "Mars", "Moon"],
+        "datasets": DATASETS,
+        "methodological_note": (
+            "Dataset resolutions, coordinate systems, vertical references "
+            "and measurement conventions must be verified before "
+            "cross-planetary comparison. Global screening and regional "
+            "analysis are separate processing levels."
+        )
+    }
+
+
+def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    catalog = build_catalog()
+
+    with OUTPUT_FILE.open("w", encoding="utf-8") as file:
+        json.dump(catalog, file, indent=4, ensure_ascii=False)
+
+
+
+========== TERRAFORM_MOLA_VALIDATION.txt ==========
+
+=== data/raw/mars/megt44n000hb.img ===
+File size: 129,761,280 bytes
+
+=== data/processed/mars/mars_mola_128ppd_megt44n000hb.tif ===
+File size: 59,105,277 bytes
+Dimensions: 11520 x 5632
+Bands: 1
+CRS: GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]]
+Resolution: (0.0078125, 0.0078125)
+Bounds: BoundingBox(left=0.0, bottom=0.0, right=90.0, top=44.0)
+NoData: None
+Data type: ('int16',)
+Valid pixels: 64,880,640
+Min elevation/value: -5062.0000
+Max elevation/value: 3210.0000
+
+=== data/processed/mars/jezero_dem_local_mars.tif ===
+File size: 135,268 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 50,192
+Min elevation/value: -3457.1848
+Max elevation/value: -535.8076
+
+=== data/processed/mars/jezero_slope_deg.tif ===
+File size: 168,282 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 0.0100
+Max elevation/value: 31.0750
+
+=== data/processed/mars/jezero_roughness_std_3x3_m.tif ===
+File size: 165,171 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 0.3839
+Max elevation/value: 206.0082
+
+=== data/processed/mars/jezero_local_relief_3x3_m.tif ===
+File size: 147,256 bytes
+Dimensions: 220 x 231
+Bands: 1
+CRS: PROJCS["unknown",GEOGCS["unknown",DATUM["unknown",SPHEROID["unknown",3396000,0]],PRIMEM["Reference meridian",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_center",18.4],PARAMETER["longitude_of_center",77.7],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+Resolution: (463.0, 463.0)
+Bounds: BoundingBox(left=-51051.62629531918, bottom=-53203.247838550786, right=50808.37370468082, top=53749.752161449214)
+NoData: -9999.0
+Data type: ('float32',)
+Valid pixels: 49,298
+Min elevation/value: 1.2693
+Max elevation/value: 661.0845
+
+
+========== processing_rules_audit.txt ==========
+
+========== src\data\dashboard_pipeline.py ==========
+
+"""
+TERRAFORM - Dashboard Data Integration
+Connects uploaded CSV files to the validation and processing backend.
+"""
+
+from pathlib import Path
+import pandas as pd
+
+from src.data.processing import process_dataframe
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+EARTH_RAW = PROJECT_ROOT / "data" / "raw" / "earth"
+MARS_RAW = PROJECT_ROOT / "data" / "raw" / "mars"
+
+EARTH_RAW.mkdir(parents=True, exist_ok=True)
+MARS_RAW.mkdir(parents=True, exist_ok=True)
+
+
+def load_and_process(uploaded_file, dataset_type):
+    """
+    Load a CSV from the dashboard or raw data directory,
+    validate it, and return cleaned/rejected records and report.
+    """
+
+    dataset_type = dataset_type.lower()
+
+    if dataset_type not in ("earth", "mars"):
+        raise ValueError("Dataset type must be earth or mars.")
+
+    raw_directory = EARTH_RAW if dataset_type == "earth" else MARS_RAW
+
+    if uploaded_file is not None:
+
+        dataframe = pd.read_csv(uploaded_file)
+        source = "Dashboard upload"
+
+    else:
+
+        raw_files = sorted(raw_directory.glob("*.csv"))
+
+        if not raw_files:
+
+            return {
+                "cleaned": pd.DataFrame(),
+                "rejected": pd.DataFrame(),
+                "report": None,
+                "source": "No dataset available",
+                "saved_paths": {},
+            }
+
+        selected_file = raw_files[0]
+
+        dataframe = pd.read_csv(selected_file)
+        source = f"Local file: {selected_file.name}"
+
+    result = process_dataframe(
+        dataframe=dataframe,
+        dataset_type=dataset_type,
+        save=True
+    )
+
+    return {
+        "cleaned": result["cleaned"],
+        "rejected": result["rejected"],
+        "report": result["report"],
+        "source": source,
+        "saved_paths": result["saved_paths"],
+    }
+
+========== src\data\processing.py ==========
+
+"""
+TERRAFORM - Data Processing Pipeline
+Version: 1.0
+"""
+
+from pathlib import Path
+import json
+import pandas as pd
+
+from src.data.validation import validate_dataset
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
+REPORT_DIR = PROJECT_ROOT / "outputs" / "reports"
+
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def process_dataframe(dataframe, dataset_type, save=True):
+    """
+    Validate and process a pandas DataFrame.
+
+    Returns a dictionary containing:
+    - cleaned dataset
+    - rejected records
+    - validation report
+    - saved file paths
+    """
+
+    result = validate_dataset(
+        dataframe,
+        dataset_type
+    )
+
+    cleaned = result["cleaned"]
+    rejected = result["rejected"]
+    report = result["report"]
+
+    saved_paths = {}
+
+    if save and report["status"] == "PASSED":
+
+        processed_path = (
+            PROCESSED_DIR
+            / f"{dataset_type}_processed.csv"
+        )
+
+        rejected_path = (
+            PROCESSED_DIR
+            / f"{dataset_type}_rejected.csv"
+        )
+
+        report_path = (
+            REPORT_DIR
+            / f"{dataset_type}_validation_report.json"
+        )
+
+        cleaned.to_csv(
+            processed_path,
+            index=False
+        )
+
+        rejected.to_csv(
+            rejected_path,
+            index=False
+        )
+
+        with open(
+            report_path,
+            "w",
+            encoding="utf-8"
+        ) as report_file:
+
+            json.dump(
+                report,
+                report_file,
+                indent=4,
+                ensure_ascii=False
+            )
+
+        saved_paths = {
+            "processed_data": str(processed_path),
+            "rejected_data": str(rejected_path),
+            "validation_report": str(report_path),
+        }
+
+    return {
+        "cleaned": cleaned,
+        "rejected": rejected,
+        "report": report,
+        "saved_paths": saved_paths,
+    }
+
+
+def process_csv(csv_path, dataset_type, save=True):
+    """Read a CSV file and pass it through the processing pipeline."""
+
+    csv_path = Path(csv_path)
+
+    if not csv_path.exists():
+        raise FileNotFoundError(
+
+
+========== planetary_integration_audit.txt ==========
+========== TERRAFORM INTEGRATION AUDIT ==========
+
+========== GLOBAL VISUALISATION OUTPUTS ==========
+
+Name                                         Size_MB
+----                                         -------
+earth_global_elevation.png                      1.88
+global_elevation_distribution_comparison.png    0.13
+global_normalized_terrain_comparison.png        0.19
+mars_global_elevation.png                       1.51
+moon_global_elevation.png                       2.63
+
+
+
+
+========== GLOBAL MARS OUTPUTS ==========
+
+FullName                                                                            Size_MB
+--------                                                                            -------
+D:\TERRAFORM\outputs\global_mars\mars_area_weighted_latitude_bands.csv                    0
+D:\TERRAFORM\outputs\global_mars\mars_area_weighted_report.txt                            0
+D:\TERRAFORM\outputs\global_mars\mars_global_analysis_report.txt                          0
+D:\TERRAFORM\outputs\global_mars\mars_global_elevation.png                             2.09
+D:\TERRAFORM\outputs\global_mars\mars_global_elevation_distribution.png                 0.1
+D:\TERRAFORM\outputs\global_mars\mars_global_observation_classification.png             0.5
+D:\TERRAFORM\outputs\global_mars\mars_global_observation_density.png                   7.69
+D:\TERRAFORM\outputs\global_mars\mars_latitude_band_coverage.csv                          0
+D:\TERRAFORM\outputs\global_mars\mars_observation_threshold_report.txt                 0.01
+D:\TERRAFORM\outputs\global_mars\mars_outlier_validation_report.txt                    0.06
+D:\TERRAFORM\outputs\global_mars\mars_strict_maxima_audit.txt                          0.02
+D:\TERRAFORM\outputs\global_mars\mars_strict_observation_report.txt                    0.01
+D:\TERRAFORM\outputs\global_mars\outlier_inspection_report.txt                            0
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_local_relief_3x3_m.npy   63.28
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_local_relief_3x3_m.png     3.7
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_roughness_3x3_m.npy      63.28
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_roughness_3x3_m.png       3.76
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_slope_degrees.npy        63.28
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_slope_degrees.png         4.36
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_terrain_quality.png       0.13
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_terrain_report.json       0.01
+D:\TERRAFORM\outputs\global_mars\terrain_metrics\mars_global_terrain_report.txt           0
+
+
+
+
+========== PLANETARY MODULE FUNCTIONS ==========
+
+--- catalog.py ---
+def validate_catalog(datasets):
+def build_catalog():
+def main():
+
+--- earth_global.py ---
+def get_valid_mask(data, nodata):
+def analyse_elevation(src):
+def inspect_crs(src):
+def create_global_map(src):
+def main():
+
+--- global_comparison.py ---
+def latitude_weights(
+def add_to_histogram(
+def calculate_weighted_statistics(
+def make_normalized_histogram(
+def process_earth() -> dict:
+def process_mars() -> dict:
+def process_moon() -> dict:
+def create_elevation_distribution_chart(
+def create_normalized_distribution_chart(
+def clean_for_json(value):
+def main():
+
+--- inspect_raster.py ---
+
+--- mars_global.py ---
+
+--- moon_global.py ---
+
+========== DASHBOARD PAGE NAVIGATION ==========
+118: ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+122: ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+367: # SIDEBAR AND NAVIGATION
+393: st.markdown("##### NAVIGATION")
+394: page = st.radio("Main navigation", PAGES, label_visibility="collapsed")
+567: def overview_page():
+663: def discovery_page():
+693: sort_order = st.selectbox(
+738: selected_id = st.selectbox(
+800: def global_mars_page():
+964: def comparison_page():
+1066: earth_name = st.selectbox("Earth candidate", earth_df["location"].astype(str).tolist(), key="custom_comparison_earth")
+1069: mars_name = st.selectbox("Mars reference region", mars_df["location"].astype(str).tolist(), key="custom_comparison_mars")
+1096: def candidate_page():
+1104: def visualisations_page():
+1166: def data_lab_page():
+1229: selected_name = st.selectbox("Select research dataset", available, key="lab_registry_dataset")
+1258: selected_source = st.radio(
+1268: selected_id = st.selectbox(
+1340: selected_candidate = st.selectbox(
+1499: def technical_deep_dive_page():
+1766: if page == "Mission Overview":
+1769: elif page == "Discovery Explorer":
+1772: elif page == "Global Mars Explorer":
+1775: elif page == "Earth-Mars Comparison":
+1778: elif page == "Candidate Intelligence":
+1781: elif page == "Research Visualisations":
+1784: elif page == "Data Laboratory":
+1787: elif page == "Technical Deep Dive":
+
+========== AUDIT COMPLETE ==========
+
+
+========== PLANETARY_METADATA_REPORT.txt ==========
+
+========== moon_files_check.txt ==========
+
+Name        Extension   Length
+----        ---------   ------
+ldem_16.img .img      33177600
+LDEM_16.LBL .LBL          5119
+
+
+
+========== moon_lbl_check.txt ==========
+PDS_VERSION_ID            = "PDS3"
+
+/*** GENERAL DATA DESCRIPTION PARAMETERS ***/
+PRODUCT_VERSION_ID        = "V3.1"
+DATA_SET_ID               = "LRO-L-LOLA-4-GDR-V1.0"
+PRODUCT_ID                = "LDEM_16"
+INSTRUMENT_HOST_NAME      = "LUNAR RECONNAISSANCE ORBITER"
+INSTRUMENT_NAME           = "LUNAR ORBITER LASER ALTIMETER"
+INSTRUMENT_ID             = "LOLA"
+MISSION_PHASE_NAME        = {"COMMISSIONING","NOMINAL MISSION","SCIENCE
+                            MISSION","EXTENDED SCIENCE MISSION",
+                            "SECOND EXTENDED SCIENCE MISSION","THIRD
+                            EXTENDED SCIENCE MISSION"} 
+TARGET_NAME               = MOON
+START_TIME                = 2009-07-13T17:33:17
+STOP_TIME                 = 2016-11-29T05:48:19
+PRODUCT_CREATION_TIME     = 2019-03-15
+PRODUCER_ID               = LRO_LOLA_TEAM
+PRODUCER_FULL_NAME        = "DAVID E. SMITH"
+PRODUCER_INSTITUTION_NAME = "GODDARD SPACE FLIGHT CENTER"
+DESCRIPTION               = "This data product is a shape map (radius)
+   of the Moon at a resolution of 1895.21 m/pix by 1895.21 m/pix,
+   based on altimetry data acquired through mission phase LRO_ES_52
+   by the LOLA instrument. All LOLA data used for the generation of 
+   this GDR products are geolocated using precision orbits based on a 
+   revised lunar gravity field GRGM 900C[LEMOINEETAL2014].  The previous
+   version of this product was generated with data through LRO_ES_21.
+   An additional 505,763,339 data points have been added.
+
+   The gridfiles were produced in 45 degree latitude bands, and there 
+   may be edge artifacts at this boundary.  Unlike previous versions of
+   these products, the Generic Mapping Tools (GMT) program 'grdblend' was 
+   not used.  At higher resolutions, the GMT5.4.2 program 'surface' was
+   used to compensate for incomplete coverage. Tension was set to 0.5
+   and Anisotropy to 0.5 to minimize latitude distortion. The map is in
+   the form of a binary table with one row for each 0.0625 degrees of 
+   latitude, pixel registered.  Map values are relative to a radius of 
+   1737.4 km.
+
+   This label describes an IMG file in the form of a binary resampling
+   to pixel registration.
+"
+
+OBJECT                    = UNCOMPRESSED_FILE
+FILE_NAME                 = "LDEM_16.IMG"
+RECORD_TYPE               = FIXED_LENGTH
+FILE_RECORDS              = 2880
+RECORD_BYTES              = 11520
+^IMAGE                    = "LDEM_16.IMG"
+
+
+  OBJECT                  = IMAGE
+    NAME                  = HEIGHT
+    DESCRIPTION           = "Each sample represents height relative to a
+      reference radius (OFFSET) and is generated using geolocated LOLA data
+      produced by the LOLA team."
+    LINES                 = 2880
+    LINE_SAMPLES          = 5760
+    MAXIMUM               = 21580
+    MINIMUM               = -18150
+    SAMPLE_TYPE           = LSB_INTEGER
+    SAMPLE_BITS           = 16
+    UNIT                  = METER
+    SCALING_FACTOR        = 0.5
+    OFFSET                = 1737400.
+
+/* NOTE:                                                                   */
+/* Conversion from Digital Number to HEIGHT, i.e. elevation in meters, is: */
+/* HEIGHT = (DN * SCALING_FACTOR).                                         */
+/* The conversion from Digital Number to PLANETARY_RADIUS in meters is:    */
+/* PLANETARY_RADIUS = (DN * SCALING_FACTOR) + OFFSET                       */
+/* where OFFSET is the radius of a reference sphere.                       */
+/* The planetopotential TOPOGRAPHY is PLANETARY_RADIUS - GEOID_RADIUS,     */
+/* where GEOID_RADIUS is derived from a gravitational equipotential model. */
+/* By convention, the average GEOID_RADIUS at the equator is OFFSET.       */
+
+  END_OBJECT              = IMAGE
+END_OBJECT                = UNCOMPRESSED_FILE
+OBJECT                    = IMAGE_MAP_PROJECTION
+ ^DATA_SET_MAP_PROJECTION     = "DSMAP.CAT"
+
+========== mars_files_check.txt ==========
+
+Name             Extension   Length
+----             ---------   ------
+megt90n000eb.hdr .hdr          1060
+megt90n000eb.img .img      33177600
+megt90n000eb.lbl .lbl          4811
+
+
+
+========== mars_hdr_check.txt ==========
+ENVI
+description = {
+  PDS File Imported into ENVI [Wed Aug 09 13:20:25 2017]"Each}
+samples = 5760
+lines   = 2880
+bands   = 1
+header offset = 0
+file type = PDS Image
+data type = 2
+interleave = bsq
+sensor type = Unknown
+byte order = 1
+map info = {Mars Equirectangular 3396km C180, 2881.0000, 1441.0000, 0.0000, 0.0000, 3.7044613374e+003, 3.7044613374e+003, MARS Sphere3396kmD, units=Meters}
+projection info = {17, 3396000.0, 0.000000, 180.000000, 0.0, 0.0, MARS Sphere3396kmD, Mars Equirectangular 3396km C180, units=Meters}
+coordinate system string = {PROJCS["Mars Equirectangular 3396km C180",GEOGCS["GCS_Unknown",DATUM["D_Unknown",SPHEROID["S_Unknown",3396000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Equidistant_Cylindrical"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",180.0],PARAMETER["Standard_Parallel_1",0.0],UNIT["Meter",1.0]]}
+acquisition time = 1997-09-15T19:10:00.000Z
+sun azimuth = 0.00000000
+wavelength units = Unknown
+data ignore value = 0
+
+========== deployment_audit_2.txt ==========
+===== DATA PROCESSING MODULE =====
+
+"""
+TERRAFORM - Data Processing Pipeline
+Version: 1.0
+"""
+
+from pathlib import Path
+import json
+import pandas as pd
+
+from src.data.validation import validate_dataset
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
+REPORT_DIR = PROJECT_ROOT / "outputs" / "reports"
+
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def process_dataframe(dataframe, dataset_type, save=True):
+    """
+    Validate and process a pandas DataFrame.
+
+    Returns a dictionary containing:
+    - cleaned dataset
+    - rejected records
+    - validation report
+    - saved file paths
+    """
+
+    result = validate_dataset(
+        dataframe,
+        dataset_type
+    )
+
+    cleaned = result["cleaned"]
+    rejected = result["rejected"]
+    report = result["report"]
+
+    saved_paths = {}
+
+    if save and report["status"] == "PASSED":
+
+        processed_path = (
+            PROCESSED_DIR
+            / f"{dataset_type}_processed.csv"
+        )
+
+        rejected_path = (
+            PROCESSED_DIR
+            / f"{dataset_type}_rejected.csv"
+        )
+
+
+========== mars_files_check.txt ==========
+
+Name             Extension   Length
+----             ---------   ------
+megt90n000eb.hdr .hdr          1060
+megt90n000eb.img .img      33177600
+megt90n000eb.lbl .lbl          4811
+
+
+
+
+========== moon_files_check.txt ==========
+
+Name        Extension   Length
+----        ---------   ------
+ldem_16.img .img      33177600
+LDEM_16.LBL .LBL          5119
+
+
+
+
+========== moon_lbl_check.txt ==========
+PDS_VERSION_ID            = "PDS3"
+
+/*** GENERAL DATA DESCRIPTION PARAMETERS ***/
+PRODUCT_VERSION_ID        = "V3.1"
+DATA_SET_ID               = "LRO-L-LOLA-4-GDR-V1.0"
+PRODUCT_ID                = "LDEM_16"
+INSTRUMENT_HOST_NAME      = "LUNAR RECONNAISSANCE ORBITER"
+INSTRUMENT_NAME           = "LUNAR ORBITER LASER ALTIMETER"
+INSTRUMENT_ID             = "LOLA"
+MISSION_PHASE_NAME        = {"COMMISSIONING","NOMINAL MISSION","SCIENCE
+                            MISSION","EXTENDED SCIENCE MISSION",
+                            "SECOND EXTENDED SCIENCE MISSION","THIRD
+                            EXTENDED SCIENCE MISSION"} 
+TARGET_NAME               = MOON
+START_TIME                = 2009-07-13T17:33:17
+STOP_TIME                 = 2016-11-29T05:48:19
+PRODUCT_CREATION_TIME     = 2019-03-15
+PRODUCER_ID               = LRO_LOLA_TEAM
+PRODUCER_FULL_NAME        = "DAVID E. SMITH"
+PRODUCER_INSTITUTION_NAME = "GODDARD SPACE FLIGHT CENTER"
+DESCRIPTION               = "This data product is a shape map (radius)
+   of the Moon at a resolution of 1895.21 m/pix by 1895.21 m/pix,
+   based on altimetry data acquired through mission phase LRO_ES_52
+   by the LOLA instrument. All LOLA data used for the generation of 
+   this GDR products are geolocated using precision orbits based on a 
+   revised lunar gravity field GRGM 900C[LEMOINEETAL2014].  The previous
+   version of this product was generated with data through LRO_ES_21.
+   An additional 505,763,339 data points have been added.
+
+   The gridfiles were produced in 45 degree latitude bands, and there 
+   may be edge artifacts at this boundary.  Unlike previous versions of
+   these products, the Generic Mapping Tools (GMT) program 'grdblend' was 
+   not used.  At higher resolutions, the GMT5.4.2 program 'surface' was
+   used to compensate for incomplete coverage. Tension was set to 0.5
+   and Anisotropy to 0.5 to minimize latitude distortion. The map is in
+   the form of a binary table with one row for each 0.0625 degrees of 
+   latitude, pixel registered.  Map values are relative to a radius of 
+   1737.4 km.
+
+   This label describes an IMG file in the form of a binary resampling
+   to pixel registration.
+"
+
+OBJECT                    = UNCOMPRESSED_FILE
+FILE_NAME                 = "LDEM_16.IMG"
+RECORD_TYPE               = FIXED_LENGTH
+FILE_RECORDS              = 2880
+RECORD_BYTES              = 11520
+^IMAGE                    = "LDEM_16.IMG"
+
+
+  OBJECT                  = IMAGE
+    NAME                  = HEIGHT
+    DESCRIPTION           = "Each sample represents height relative to a
+      reference radius (OFFSET) and is generated using geolocated LOLA data
+      produced by the LOLA team."
+    LINES                 = 2880
+    LINE_SAMPLES          = 5760
+    MAXIMUM               = 21580
+    MINIMUM               = -18150
+    SAMPLE_TYPE           = LSB_INTEGER
+    SAMPLE_BITS           = 16
+    UNIT                  = METER
+    SCALING_FACTOR        = 0.5
+    OFFSET                = 1737400.
+
+/* NOTE:                                                                   */
+/* Conversion from Digital Number to HEIGHT, i.e. elevation in meters, is: */
+/* HEIGHT = (DN * SCALING_FACTOR).                                         */
+/* The conversion from Digital Number to PLANETARY_RADIUS in meters is:    */
+/* PLANETARY_RADIUS = (DN * SCALING_FACTOR) + OFFSET                       */
+/* where OFFSET is the radius of a reference sphere.                       */
+/* The planetopotential TOPOGRAPHY is PLANETARY_RADIUS - GEOID_RADIUS,     */
+/* where GEOID_RADIUS is derived from a gravitational equipotential model. */
+/* By convention, the average GEOID_RADIUS at the equator is OFFSET.       */
+
+  END_OBJECT              = IMAGE
+END_OBJECT                = UNCOMPRESSED_FILE
+OBJECT                    = IMAGE_MAP_PROJECTION
+ ^DATA_SET_MAP_PROJECTION     = "DSMAP.CAT"
+ MAP_PROJECTION_TYPE          = "SIMPLE CYLINDRICAL"
+ MAP_RESOLUTION               = 16 <pix/deg>
+ A_AXIS_RADIUS                = 1737.4 <km>
+ B_AXIS_RADIUS                = 1737.4 <km>
+ C_AXIS_RADIUS                = 1737.4 <km>
+ FIRST_STANDARD_PARALLEL      = 'N/A'
+ SECOND_STANDARD_PARALLEL     = 'N/A'
+ POSITIVE_LONGITUDE_DIRECTION = "EAST"
+ CENTER_LATITUDE              = 0 <deg>
+ CENTER_LONGITUDE             = 180 <deg>
+ REFERENCE_LATITUDE           = 'N/A'
+ REFERENCE_LONGITUDE          = 'N/A'
+ LINE_FIRST_PIXEL             = 1
+ LINE_LAST_PIXEL              = 2880
+ SAMPLE_FIRST_PIXEL           = 1
+ SAMPLE_LAST_PIXEL            = 5760
+ MAP_PROJECTION_ROTATION      = 0.0
+ MAP_SCALE                    = 1895.21 <m/pix>
+ MAXIMUM_LATITUDE             = 90 <deg>
+ MINIMUM_LATITUDE             = -90 <deg>
+ WESTERNMOST_LONGITUDE        = 0 <deg>
+ EASTERNMOST_LONGITUDE        = 360 <deg>
+ LINE_PROJECTION_OFFSET       = 1439.5 <pix>
+ SAMPLE_PROJECTION_OFFSET     = 2879.5 <pix>
+ COORDINATE_SYSTEM_TYPE       = "BODY-FIXED ROTATING"
+ COORDINATE_SYSTEM_NAME       = "MEAN EARTH/POLAR AXIS OF DE421"
+END_OBJECT                    = IMAGE_MAP_PROJECTION
+
+END

@@ -1,0 +1,252 @@
+========== 1. APPLICATION STRUCTURE ==========
+
+
+app.py:91:VISUALISATION_GROUPS = {
+app.py:129:    page_icon="??",
+app.py:199:def format_number(value, suffix=""):
+app.py:208:def section_header(label, title, description=""):
+app.py:217:def empty_state(title, message):
+app.py:225:def metric_card(label, value, help_text=""):
+app.py:235:def load_research_csv(relative_path):
+app.py:246:def load_research_json(relative_path):
+app.py:258:def safe_metric_value(row, column, suffix="", digits=2):
+app.py:270:def get_profile_data(candidate_id):
+app.py:279:def load_text_report(path):
+app.py:288:def show_image(relative_path, caption=None, width="stretch"):
+app.py:297:def show_report_file(path, title):
+app.py:344:def repository_statistics():
+app.py:467:def create_candidate_map(df):
+app.py:513:def create_research_candidate_map(df):
+app.py:567:def overview_page():
+app.py:663:def discovery_page():
+app.py:800:def global_mars_page():
+app.py:964:def comparison_page():
+app.py:1096:def candidate_page():
+app.py:1104:def visualisations_page():
+app.py:1111:    total_images = sum(len(items) for items in VISUALISATION_GROUPS.values())
+app.py:1114:        for items in VISUALISATION_GROUPS.values()
+app.py:1129:    for group_name, images in VISUALISATION_GROUPS.items():
+app.py:1140:    for group_name, images in VISUALISATION_GROUPS.items():
+app.py:1166:def data_lab_page():
+app.py:1499:def technical_deep_dive_page():
+
+
+
+
+========== 2. NAVIGATION AND PAGE DISPATCHER ==========
+
+TERRAIN_COMPARISON_STATS = RESEARCH_JSON.get("Terrain comparison statistics")
+EARTH_MARS_REPORT = RESEARCH_JSON.get("Earth-Mars comparison report")
+EARTH_TERRAIN_REPORT = RESEARCH_JSON.get("Earth terrain analysis")
+JEZERO_TERRAIN_REPORT = RESEARCH_JSON.get("Jezero terrain analysis")
+EARTH_VALIDATION_REPORT = RESEARCH_JSON.get("Earth validation report")
+SENSITIVITY_REPORT = RESEARCH_JSON.get("Sensitivity analysis report")
+
+MARS_TERRAIN_REPORT = load_research_json(
+    "global_mars/terrain_metrics/mars_global_terrain_report.json"
+)
+MARS_AREA_REPORT = load_text_report(MARS_AREA_REPORT_PATH)
+
+
+def repository_statistics():
+    csv_count = sum(frame is not None for frame in RESEARCH_CSV.values())
+    json_count = sum(report is not None for report in RESEARCH_JSON.values())
+    raster_count = sum(
+        (OUTPUTS / path).exists()
+        for path in RESEARCH_RASTER_FILES.values()
+    )
+    return {
+        "inventory": len(CANDIDATE_INVENTORY) if CANDIDATE_INVENTORY is not None else 0,
+        "profiles": len(MASTER_CANDIDATES) if MASTER_CANDIDATES is not None else 0,
+        "geology": len(GEOLOGICAL_UNITS) if GEOLOGICAL_UNITS is not None else 0,
+        "sensitivity": len(SENSITIVITY_SUMMARY) if SENSITIVITY_SUMMARY is not None else 0,
+        "csv": csv_count,
+        "json": json_count,
+        "rasters": raster_count,
+        "assets": csv_count + json_count + raster_count,
+    }
+
+
+REPOSITORY_STATS = repository_statistics()
+
+
+# ============================================================
+# SIDEBAR AND NAVIGATION
+# ============================================================
+
+PAGES = [
+    "Mission Overview",
+    "Discovery Explorer",
+    "Global Mars Explorer",
+    "Earth-Mars Comparison",
+    "Candidate Intelligence",
+    "Research Visualisations",
+    "Data Laboratory",
+    "Technical Deep Dive",
+]
+
+with st.sidebar:
+    st.markdown(
+        '<div class="terraform-brand">TERRAFORM<span style="color:#55D6A0">.</span></div>'
+        '<div class="terraform-subbrand">PLANETARY ANALOG INTELLIGENCE</div>',
+        unsafe_allow_html=True
+    )
+    st.write("")
+    st.markdown(
+        '<span class="status-dot"></span><span class="status-text">RESEARCH ENVIRONMENT</span>',
+        unsafe_allow_html=True
+    )
+    st.divider()
+    st.markdown("##### NAVIGATION")
+    page = st.radio("Main navigation", PAGES, label_visibility="collapsed")
+    st.divider()
+    st.markdown("##### DATA CONNECTIONS")
+    earth_upload = st.file_uploader(
+        "Additional Earth dataset", type=["csv"], key="earth_upload",
+        help="Optional custom Earth CSV containing location, latitude and longitude."
+    )
+    mars_upload = st.file_uploader(
+        "Additional Mars dataset", type=["csv"], key="mars_upload",
+        help="Optional custom Mars CSV containing documented measurements."
+    )
+    st.caption(
+        "Existing TERRAFORM research outputs load automatically. "
+        "Uploads are optional additional datasets."
+    )
+    st.divider()
+    st.markdown("##### RESEARCH TARGET")
+    st.markdown("**Planet:** Mars")
+    st.markdown("**Reference:** Jezero Crater")
+    st.markdown("**Mission context:** Perseverance")
+    st.divider()
+    st.caption("TERRAFORM V4.0 | PRODUCTION BUILD")
+    st.caption("Independent research platform")
+
+
+# ============================================================
+# BACKEND DATA INTEGRATION
+# ============================================================
+
+try:
+    earth_result = load_and_process(earth_upload, "earth")
+    mars_result = load_and_process(mars_upload, "mars")
+
+    earth_df = earth_result["cleaned"]
+    mars_df = mars_result["cleaned"]
+
+    earth_source = earth_result["source"]
+
+
+========== 3. VISUALISATION PAGE ==========
+
+                    "Measurement": common,
+                    str(earth_name): [earth_row[m] for m in common],
+                    str(mars_name): [mars_row[m] for m in common],
+                })
+                st.dataframe(frame, use_container_width=True, hide_index=True)
+            else:
+                st.warning("The uploaded records do not share enough valid numeric measurements.")
+
+
+# ============================================================
+# PAGE 5 — CANDIDATE INTELLIGENCE
+# ============================================================
+
+# This page intentionally uses your existing dedicated module.
+# Its original functionality is retained.
+def candidate_page():
+    candidate_intelligence_page(ROOT)
+
+
+# ============================================================
+# PAGE 6 — RESEARCH VISUALISATIONS
+# ============================================================
+
+def visualisations_page():
+    section_header(
+        "MODULE 05 / SCIENTIFIC VISUALISATION",
+        "Research Visualisations",
+        "A visual archive of the global planetary analysis and the Atacama–Jezero regional investigation."
+    )
+
+    total_images = sum(len(items) for items in VISUALISATION_GROUPS.values())
+    available_images = sum(
+        (OUTPUTS / path).exists()
+        for items in VISUALISATION_GROUPS.values()
+        for _, path in items
+    )
+
+    a, b, c = st.columns(3)
+    a.metric("Visual assets catalogued", total_images)
+    b.metric("Images available", available_images)
+    c.metric("Missing images", total_images - available_images)
+
+    st.caption(
+        "The gallery uses the existing image files in the outputs directory. "
+        "No image is regenerated or altered by this page."
+    )
+    st.divider()
+
+    for group_name, images in VISUALISATION_GROUPS.items():
+        st.markdown(f"### {group_name}")
+        cols = st.columns(2)
+        for index, (title, relative_path) in enumerate(images):
+            with cols[index % 2]:
+                st.markdown(f"**{title}**")
+                show_image(relative_path, title)
+        st.divider()
+
+    st.markdown("### Visualisation inventory")
+    inventory_rows = []
+    for group_name, images in VISUALISATION_GROUPS.items():
+        for title, relative_path in images:
+            path = OUTPUTS / relative_path
+            inventory_rows.append({
+                "Research stream": group_name,
+                "Visualisation": title,
+                "Status": "Available" if path.exists() else "Missing",
+                "Path": f"outputs/{relative_path}",
+            })
+    st.dataframe(
+        pd.DataFrame(inventory_rows),
+        use_container_width=True,
+        hide_index=True
+    )
+    st.download_button(
+        "Download visualisation inventory",
+        data=pd.DataFrame(inventory_rows).to_csv(index=False).encode("utf-8"),
+        file_name="terraform_visualisation_inventory.csv",
+        mime="text/csv"
+    )
+
+
+# ============================================================
+# PAGE 7 — DATA LABORATORY
+# ============================================================
+
+def data_lab_page():
+    section_header(
+        "MODULE 06 / DATA MANAGEMENT",
+        "Data Laboratory",
+        "Explore the actual TERRAFORM research repository, inspect datasets, review geological evidence and examine analytical outputs."
+    )
+
+    CSV_FILES, JSON_FILES, RASTER_FILES = (
+        RESEARCH_CSV_FILES, RESEARCH_JSON_FILES, RESEARCH_RASTER_FILES
+    )
+    csv_data, json_data = RESEARCH_CSV, RESEARCH_JSON
+    inventory = csv_data["Candidate inventory"]
+    master = csv_data["Master candidate comparison"]
+    coverage = csv_data["Geological coverage"]
+    geology = csv_data["Geological units"]
+    sensitivity = csv_data["Sensitivity summary"]
+
+    def number(value, digits=2):
+        try:
+            if pd.isna(value):
+                return "—"
+            return f"{float(value):,.{digits}f}"
+        except (TypeError, ValueError):
+            return str(value)
+
+

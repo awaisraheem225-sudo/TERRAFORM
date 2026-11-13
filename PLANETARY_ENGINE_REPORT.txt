@@ -1,0 +1,1547 @@
+﻿
+========== PLANETARY DATASET CATALOG ==========
+
+"""
+TERRAFORM â€” Planetary Dataset Registry
+Version: 1.0
+
+Central metadata registry for global Earth, Mars and Moon datasets.
+This module records data provenance; it does not download or process data.
+"""
+
+import json
+from pathlib import Path
+from datetime import datetime, timezone
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "Global"
+OUTPUT_FILE = OUTPUT_DIR / "dataset_catalog.json"
+
+
+DATASETS = [
+    {
+        "dataset_id": "EARTH_ETOPO_2022",
+        "planet": "Earth",
+        "dataset_name": "ETOPO 2022 Global Relief Model",
+        "provider": "NOAA National Centers for Environmental Information",
+        "instrument": "Multi-source elevation and bathymetry compilation",
+        "product": "Global relief model",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "60 arc-seconds",
+        "approximate_resolution_at_equator": "1.85 km",
+        "measurement": "Elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Geographic coordinates; inspect source metadata",
+        "vertical_reference": "Verify against selected product metadata",
+        "format": ["GeoTIFF", "NetCDF"],
+        "role": "Global Earth terrain overview and screening",
+        "source_url": (
+            "https://www.ncei.noaa.gov/products/"
+            "etopo-global-relief-model"
+        ),
+        "citation": (
+            "NOAA National Centers for Environmental Information. "
+            "2022. ETOPO 2022 Global Relief Model."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "Includes terrestrial elevation and ocean bathymetry.",
+            "Ocean cells must be excluded from terrestrial analog screening.",
+            "Global overview resolution is not equivalent to regional DEM resolution."
+        ]
+    },
+    {
+        "dataset_id": "MARS_MOLA_MEGDR",
+        "planet": "Mars",
+        "dataset_name": "MOLA Mission Experiment Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Mars Orbiter Laser Altimeter",
+        "product": "MEGDR global topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "3.7 km",
+        "measurement": "Topographic elevation",
+        "measurement_unit": "metres",
+        "coordinate_reference": "Planetocentric/planetographic conventions must be verified",
+        "vertical_reference": "Martian areoid reference; verify product label",
+        "format": ["PDS IMG", "PDS label"],
+        "role": "Global Mars terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/mgs/megdr.html"
+        ),
+        "citation": (
+            "NASA Mars Global Surveyor. Mars Orbiter Laser Altimeter "
+            "Mission Experiment Gridded Data Record."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "MEGDR products are available at multiple spatial resolutions.",
+            "PDS labels contain essential map projection and data information.",
+            "Do not interpret raw IMG pixel values without decoding product metadata."
+        ]
+    },
+    {
+        "dataset_id": "MOON_LOLA_GDR",
+        "planet": "Moon",
+        "dataset_name": "LRO LOLA Gridded Data Record",
+        "provider": "NASA Planetary Data System",
+        "instrument": "Lunar Orbiter Laser Altimeter",
+        "product": "Global cylindrical GDR topography",
+        "spatial_coverage": "Global",
+        "nominal_resolution": "16 pixels per degree",
+        "approximate_resolution_at_equator": "1.9 km",
+        "measurement": "Lunar topographic elevation",
+        "measurement_unit": "metres after product scaling",
+        "coordinate_reference": "Lunar map projection; verify product label",
+        "vertical_reference": "Lunar radius reference; decode label scaling and offset",
+        "format": ["PDS IMG", "GeoJPEG2000", "PDS label"],
+        "role": "Global lunar terrain overview and regional reference selection",
+        "source_url": (
+            "https://pds-geosciences.wustl.edu/"
+            "missions/lro/lola.htm"
+        ),
+        "citation": (
+            "NASA Lunar Reconnaissance Orbiter. Lunar Orbiter Laser "
+            "Altimeter Gridded Data Records."
+        ),
+        "processing_status": "catalogued_not_downloaded",
+        "scientific_notes": [
+            "LOLA GDR products contain gridded altimetry measurements.",
+            "Pixel values may require a scale factor and offset.",
+            "Global and polar products use different map projections."
+        ]
+    }
+]
+
+
+def validate_catalog(datasets):
+    required_fields = [
+        "dataset_id",
+        "planet",
+        "dataset_name",
+        "provider",
+        "spatial_coverage",
+        "measurement",
+        "measurement_unit",
+        "source_url",
+        "processing_status"
+    ]
+
+    errors = []
+
+    for dataset in datasets:
+        for field in required_fields:
+            if not dataset.get(field):
+                errors.append(
+                    f"{dataset.get('dataset_id', 'UNKNOWN')}: "
+                    f"missing {field}"
+                )
+
+    identifiers = [item["dataset_id"] for item in datasets]
+
+    if len(identifiers) != len(set(identifiers)):
+        errors.append("Duplicate dataset identifiers detected.")
+
+    return errors
+
+
+def build_catalog():
+    errors = validate_catalog(DATASETS)
+
+    if errors:
+        raise ValueError("\n".join(errors))
+
+    return {
+        "project": "TERRAFORM",
+        "project_title": "Planetary Analog Intelligence",
+        "catalog_version": "1.0",
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "dataset_count": len(DATASETS),
+        "planets": ["Earth", "Mars", "Moon"],
+        "datasets": DATASETS,
+        "methodological_note": (
+            "Dataset resolutions, coordinate systems, vertical references "
+            "and measurement conventions must be verified before "
+            "cross-planetary comparison. Global screening and regional "
+            "analysis are separate processing levels."
+        )
+    }
+
+
+def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    catalog = build_catalog()
+
+    with OUTPUT_FILE.open("w", encoding="utf-8") as file:
+        json.dump(catalog, file, indent=4, ensure_ascii=False)
+
+    print("=" * 55)
+    print("TERRAFORM â€” PLANETARY DATASET REGISTRY")
+    print("=" * 55)
+
+    for dataset in catalog["datasets"]:
+        print(
+            f"{dataset['planet']:8} | "
+            f"{dataset['dataset_name']}"
+        )
+
+    print("-" * 55)
+    print(f"Datasets registered: {catalog['dataset_count']}")
+    print(f"Output: {OUTPUT_FILE}")
+    print("CATALOG VALIDATION: PASSED")
+    print("=" * 55)
+
+
+if __name__ == "__main__":
+    main()
+
+========== ANALOG COMPARISON ENGINE ==========
+
+from pathlib import Path
+import json
+import math
+
+import numpy as np
+import rasterio
+
+from rasterio.transform import from_origin
+from rasterio.warp import reproject, Resampling
+
+from scipy.ndimage import (
+    uniform_filter,
+    maximum_filter,
+    minimum_filter
+)
+
+
+# ============================================================
+# TERRAFORM â€” EARTH / MARS ANALOG COMPARISON ENGINE
+# Earth study area: Atacama, Chile
+# Mars study area: Jezero Crater
+# ============================================================
+
+ROOT = Path(__file__).resolve().parents[2]
+
+EARTH_SOURCE = (
+    ROOT / "data" / "processed" / "earth"
+    / "earth_dem_projected_utm19s.tif"
+)
+
+MARS_SOURCE = (
+    ROOT / "data" / "processed" / "mars"
+    / "jezero_dem_local_mars.tif"
+)
+
+EARTH_OUTPUT = ROOT / "data" / "processed" / "earth" / "comparison_scale"
+MARS_OUTPUT = ROOT / "data" / "processed" / "mars" / "comparison_scale"
+
+REPORT_DIR = ROOT / "outputs" / "reports"
+
+REPORT_PATH = REPORT_DIR / "earth_mars_terrain_comparison.json"
+
+TARGET_RESOLUTION = 463.0
+NEIGHBOURHOOD_SIZE = 3
+NODATA = -9999.0
+HISTOGRAM_BINS = 20
+
+
+# ============================================================
+# DIRECTORY SETUP
+# ============================================================
+
+def create_directories():
+
+    for directory in [
+        EARTH_OUTPUT,
+        MARS_OUTPUT,
+        REPORT_DIR
+    ]:
+        directory.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+
+# ============================================================
+# READ MARS ELEVATION
+# ============================================================
+
+def read_mars_dem():
+
+    print("\n[1/7] LOADING JEZERO ELEVATION MODEL")
+
+    if not MARS_SOURCE.exists():
+        raise FileNotFoundError(
+            f"Mars DEM not found:\n{MARS_SOURCE}"
+        )
+
+    with rasterio.open(MARS_SOURCE) as source:
+
+        elevation = source.read(
+            1,
+            masked=True
+        ).astype(np.float64).filled(np.nan)
+
+        transform = source.transform
+        crs = source.crs
+        resolution = source.res
+
+        print(f"Dimensions: {source.width} x {source.height}")
+        print(f"Resolution: {resolution}")
+        print(f"CRS: {crs}")
+
+        if not np.isclose(
+            abs(resolution[0]),
+            TARGET_RESOLUTION,
+            atol=1.0
+        ):
+            raise ValueError(
+                "Mars DEM does not have the expected "
+                "approximately 463 m pixel resolution."
+            )
+
+    print(
+        f"Valid Mars pixels: "
+        f"{np.isfinite(elevation).sum():,}"
+    )
+
+    return elevation, transform, crs
+
+
+# ============================================================
+# AGGREGATE EARTH DEM TO 463 METRES
+# ============================================================
+
+def aggregate_earth_dem():
+
+    print("\n[2/7] AGGREGATING ATACAMA DEM TO 463 METRES")
+
+    if not EARTH_SOURCE.exists():
+        raise FileNotFoundError(
+            f"Earth DEM not found:\n{EARTH_SOURCE}"
+        )
+
+    with rasterio.open(EARTH_SOURCE) as source:
+
+        bounds = source.bounds
+        source_crs = source.crs
+        source_nodata = source.nodata
+
+        print(f"Original dimensions: {source.width} x {source.height}")
+        print(f"Original resolution: {source.res}")
+        print(f"Source CRS: {source_crs}")
+
+        width = math.ceil(
+            (bounds.right - bounds.left) / TARGET_RESOLUTION
+        )
+
+        height = math.ceil(
+            (bounds.top - bounds.bottom) / TARGET_RESOLUTION
+        )
+
+        target_transform = from_origin(
+            bounds.left,
+            bounds.top,
+            TARGET_RESOLUTION,
+            TARGET_RESOLUTION
+        )
+
+        aggregated = np.full(
+            (height, width),
+            np.nan,
+            dtype=np.float32
+        )
+
+        reproject(
+            source=rasterio.band(source, 1),
+            destination=aggregated,
+            src_transform=source.transform,
+            src_crs=source_crs,
+            src_nodata=source_nodata,
+            dst_transform=target_transform,
+            dst_crs=source_crs,
+            dst_nodata=np.nan,
+            resampling=Resampling.average,
+            num_threads=2
+        )
+
+    valid = np.isfinite(aggregated)
+
+    if not valid.any():
+        raise ValueError(
+            "Earth DEM aggregation produced no valid pixels."
+        )
+
+    print(f"Aggregated dimensions: {width} x {height}")
+    print(f"Target resolution: {TARGET_RESOLUTION} m")
+    print(f"Valid Earth pixels: {valid.sum():,}")
+
+    return (
+        aggregated.astype(np.float64),
+        target_transform,
+        source_crs
+    )
+
+
+# ============================================================
+# COMMON TERRAIN NEIGHBOURHOOD
+# ============================================================
+
+def complete_neighbourhood_mask(valid):
+
+    count = uniform_filter(
+        valid.astype(np.float64),
+        size=NEIGHBOURHOOD_SIZE,
+        mode="constant",
+        cval=0.0
+    )
+
+    return count >= (1.0 - 1e-9)
+
+
+# ============================================================
+# SLOPE
+# ============================================================
+
+def calculate_slope(elevation):
+
+    valid = np.isfinite(elevation)
+
+    complete = complete_neighbourhood_mask(valid)
+
+    slope = np.full(
+        elevation.shape,
+        np.nan,
+        dtype=np.float64
+    )
+
+    dz_dx = (
+        elevation[1:-1, 2:]
+        - elevation[1:-1, :-2]
+    ) / (2.0 * TARGET_RESOLUTION)
+
+    dz_dy = (
+        elevation[2:, 1:-1]
+        - elevation[:-2, 1:-1]
+    ) / (2.0 * TARGET_RESOLUTION)
+
+    gradient = np.sqrt(
+        dz_dx ** 2 + dz_dy ** 2
+    )
+
+    interior_complete = complete[1:-1, 1:-1]
+
+    interior = slope[1:-1, 1:-1]
+
+    interior[interior_complete] = np.degrees(
+        np.arctan(
+            gradient[interior_complete]
+        )
+    )
+
+    return slope
+
+
+# ============================================================
+# ROUGHNESS
+# ============================================================
+
+def calculate_roughness(elevation):
+
+    valid = np.isfinite(elevation)
+
+    complete = complete_neighbourhood_mask(valid)
+
+    filled = np.where(
+        valid,
+        elevation,
+        0.0
+    )
+
+    mean = uniform_filter(
+        filled,
+        size=NEIGHBOURHOOD_SIZE,
+        mode="constant",
+        cval=0.0
+    )
+
+    mean_square = uniform_filter(
+        filled ** 2,
+        size=NEIGHBOURHOOD_SIZE,
+        mode="constant",
+        cval=0.0
+    )
+
+    variance = np.maximum(
+        mean_square - mean ** 2,
+        0.0
+    )
+
+    roughness = np.sqrt(variance)
+
+    roughness[~complete] = np.nan
+
+    return roughness
+
+
+# ============================================================
+# LOCAL RELIEF
+# ============================================================
+
+def calculate_local_relief(elevation):
+
+    valid = np.isfinite(elevation)
+
+    complete = complete_neighbourhood_mask(valid)
+
+    filled_max = np.where(
+        valid,
+        elevation,
+        -np.inf
+    )
+
+    filled_min = np.where(
+        valid,
+        elevation,
+        np.inf
+    )
+
+    local_max = maximum_filter(
+        filled_max,
+        size=NEIGHBOURHOOD_SIZE,
+        mode="constant",
+        cval=-np.inf
+    )
+
+    local_min = minimum_filter(
+        filled_min,
+        size=NEIGHBOURHOOD_SIZE,
+        mode="constant",
+        cval=np.inf
+    )
+
+    relief = local_max - local_min
+
+    relief[~complete] = np.nan
+
+    return relief
+
+
+# ============================================================
+# CALCULATE ALL TERRAIN METRICS
+# ============================================================
+
+def analyse_terrain(elevation, planet):
+
+    print(f"\nCalculating terrain metrics: {planet}")
+
+    return {
+        "slope_degrees": calculate_slope(elevation),
+        "roughness_m": calculate_roughness(elevation),
+        "local_relief_m": calculate_local_relief(elevation)
+    }
+
+
+# ============================================================
+# SAVE RASTER
+# ============================================================
+
+def save_raster(
+    path,
+    array,
+    transform,
+    crs,
+    description,
+    units,
+    planet
+):
+
+    output = np.asarray(
+        array,
+        dtype=np.float32
+    ).copy()
+
+    output[~np.isfinite(output)] = NODATA
+
+    profile = {
+        "driver": "GTiff",
+        "height": output.shape[0],
+        "width": output.shape[1],
+        "count": 1,
+        "dtype": "float32",
+        "crs": crs,
+        "transform": transform,
+        "nodata": NODATA,
+        "compress": "deflate",
+        "predictor": 3,
+        "BIGTIFF": "IF_SAFER"
+    }
+
+    with rasterio.open(
+        path,
+        "w",
+        **profile
+    ) as destination:
+
+        destination.write(output, 1)
+
+        destination.set_band_description(
+            1,
+            description
+        )
+
+        destination.update_tags(
+            PROJECT="TERRAFORM",
+            PLANET=planet,
+            RESOLUTION_METRES=str(TARGET_RESOLUTION),
+            NEIGHBOURHOOD="3 x 3 pixels"
+        )
+
+
+def save_metric_products(
+    metrics,
+    output_dir,
+    transform,
+    crs,
+    planet
+):
+
+    for name, array in metrics.items():
+
+        filename = f"{planet.lower()}_{name}.tif"
+
+        save_raster(
+            output_dir / filename,
+            array,
+            transform,
+            crs,
+            name,
+            "degrees" if name == "slope_degrees" else "metres",
+            planet
+        )
+
+        print(f"Saved: {filename}")
+
+
+# ============================================================
+# DISTRIBUTION STATISTICS
+# ============================================================
+
+def distribution_statistics(array):
+
+    values = array[np.isfinite(array)]
+
+    if values.size == 0:
+        raise ValueError(
+            "No valid values for distribution statistics."
+        )
+
+    percentiles = np.percentile(
+        values,
+        [10, 25, 50, 75, 90]
+    )
+
+    return {
+        "valid_pixels": int(values.size),
+        "minimum": float(np.min(values)),
+        "maximum": float(np.max(values)),
+        "mean": float(np.mean(values)),
+        "median": float(np.median(values)),
+        "standard_deviation": float(np.std(values)),
+        "percentiles": {
+            "p10": float(percentiles[0]),
+            "p25": float(percentiles[1]),
+            "p50": float(percentiles[2]),
+            "p75": float(percentiles[3]),
+            "p90": float(percentiles[4])
+        }
+    }
+
+
+# ============================================================
+# COMPARATIVE HISTOGRAMS
+# ============================================================
+
+def create_histogram_comparison(earth, mars):
+
+    results = {}
+
+    for metric in earth:
+
+        earth_values = earth[metric]
+        mars_values = mars[metric]
+
+        earth_values = earth_values[
+            np.isfinite(earth_values)
+        ]
+
+        mars_values = mars_values[
+            np.isfinite(mars_values)
+        ]
+
+        combined_min = float(
+            min(
+                earth_values.min(),
+                mars_values.min()
+            )
+        )
+
+        combined_max = float(
+            max(
+                earth_values.max(),
+                mars_values.max()
+            )
+        )
+
+        edges = np.linspace(
+            combined_min,
+            combined_max,
+            HISTOGRAM_BINS + 1
+        )
+
+        earth_counts, _ = np.histogram(
+            earth_values,
+            bins=edges
+        )
+
+        mars_counts, _ = np.histogram(
+            mars_values,
+            bins=edges
+        )
+
+        results[metric] = {
+            "bin_edges": edges.tolist(),
+            "earth_counts": earth_counts.tolist(),
+            "mars_counts": mars_counts.tolist()
+        }
+
+    return results
+
+
+# ============================================================
+# COMPARISON REPORT
+# ============================================================
+
+def build_report(
+    earth_metrics,
+    mars_metrics,
+    earth_elevation,
+    mars_elevation
+):
+
+    print("\n[7/7] BUILDING EARTH-MARS COMPARISON REPORT")
+
+    report = {
+        "project": "TERRAFORM - Planetary Analog Intelligence",
+        "comparison": {
+            "earth_study_area": "San Pedro de Atacama region, Chile",
+            "mars_study_area": "Jezero Crater, Mars",
+            "target_resolution_metres": TARGET_RESOLUTION,
+            "neighbourhood": "3 x 3 pixels",
+            "neighbourhood_approximate_width_metres": (
+                NEIGHBOURHOOD_SIZE * TARGET_RESOLUTION
+            )
+        },
+        "processing_methods": {
+            "earth_resampling": "Average aggregation from 30 m DEM",
+            "mars_resampling": (
+                "Previously reprojected to local Mars metric grid "
+                "using bilinear resampling"
+            ),
+            "slope": "Central difference elevation gradient",
+            "roughness": "3 x 3 local elevation standard deviation",
+            "local_relief": "3 x 3 local maximum minus minimum",
+            "edge_handling": "Only complete valid neighbourhoods retained"
+        },
+        "elevation_note": (
+            "Absolute elevation is reported separately and is not "
+            "used as a direct similarity metric. Earth elevation "
+            "and Mars elevation use different vertical reference surfaces."
+        ),
+        "elevation_context": {
+            "earth": distribution_statistics(earth_elevation),
+            "mars": distribution_statistics(mars_elevation)
+        },
+        "terrain_metrics": {},
+        "histograms": create_histogram_comparison(
+            earth_metrics,
+            mars_metrics
+        ),
+        "scientific_limitations": [
+            "The Earth Copernicus DEM is a digital surface model.",
+            "MOLA MEGDR represents median observed topography and includes interpolated cells.",
+            "The two regions have different geological histories and surface processes.",
+            "Matching spatial resolution does not make the underlying sensors or data products identical.",
+            "Terrain similarity alone does not establish geological or operational equivalence.",
+            "These results are a regional screening comparison, not proof of a planetary analogue."
+        ]
+    }
+
+    for metric in earth_metrics:
+
+        earth_stats = distribution_statistics(
+            earth_metrics[metric]
+        )
+
+        mars_stats = distribution_statistics(
+            mars_metrics[metric]
+        )
+
+        earth_percentiles = earth_stats["percentiles"]
+        mars_percentiles = mars_stats["percentiles"]
+
+        percentile_differences = {
+            key: (
+                mars_percentiles[key]
+                - earth_percentiles[key]
+            )
+            for key in earth_percentiles
+        }
+
+        report["terrain_metrics"][metric] = {
+            "earth": earth_stats,
+            "mars": mars_stats,
+            "mars_minus_earth_percentile_difference": (
+                percentile_differences
+            )
+        }
+
+    REPORT_PATH.write_text(
+        json.dumps(report, indent=4),
+        encoding="utf-8"
+    )
+
+    print(f"\nComparison report saved:\n{REPORT_PATH}")
+
+    return report
+
+
+# ============================================================
+# PRINT SUMMARY
+# ============================================================
+
+def print_summary(report):
+
+    print("\n")
+    print("=" * 68)
+    print("TERRAFORM â€” EARTH / MARS TERRAIN COMPARISON")
+    print("=" * 68)
+
+    for metric, comparison in report["terrain_metrics"].items():
+
+        earth = comparison["earth"]
+        mars = comparison["mars"]
+
+        print(f"\n{metric.upper()}")
+        print("-" * 55)
+
+        print(
+            f"Earth mean:   {earth['mean']:.4f}"
+        )
+
+        print(
+            f"Mars mean:    {mars['mean']:.4f}"
+        )
+
+        print(
+            f"Earth median: {earth['median']:.4f}"
+        )
+
+        print(
+            f"Mars median:  {mars['median']:.4f}"
+        )
+
+        print(
+            f"Earth pixels: {earth['valid_pixels']:,}"
+        )
+
+        print(
+            f"Mars pixels:  {mars['valid_pixels']:,}"
+        )
+
+        print("\nPercentile differences (Mars - Earth):")
+
+        for key, value in comparison[
+            "mars_minus_earth_percentile_difference"
+        ].items():
+
+            print(f"  {key}: {value:.4f}")
+
+    print("\n" + "=" * 68)
+    print("EARTH-MARS COMPARISON COMPLETED")
+    print("=" * 68)
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def main():
+
+    print("=" * 68)
+    print("TERRAFORM â€” EARTH / MARS COMPARISON ENGINE")
+    print("=" * 68)
+
+    create_directories()
+
+    # Load the corrected Jezero elevation raster.
+    mars_elevation, mars_transform, mars_crs = (
+        read_mars_dem()
+    )
+
+    # Aggregate Atacama elevation to the same working scale.
+    (
+        earth_elevation,
+        earth_transform,
+        earth_crs
+    ) = aggregate_earth_dem()
+
+    # Calculate comparable terrain metrics.
+    earth_metrics = analyse_terrain(
+        earth_elevation,
+        "EARTH"
+    )
+
+    mars_metrics = analyse_terrain(
+        mars_elevation,
+        "MARS"
+    )
+
+    # Save Earth products.
+    save_metric_products(
+        earth_metrics,
+        EARTH_OUTPUT,
+        earth_transform,
+        earth_crs,
+        "EARTH"
+    )
+
+    # Save Mars products.
+    save_metric_products(
+        mars_metrics,
+        MARS_OUTPUT,
+        mars_transform,
+        mars_crs,
+        "MARS"
+    )
+
+    # Build and save the scientific comparison report.
+    report = build_report(
+        earth_metrics,
+        mars_metrics,
+        earth_elevation,
+        mars_elevation
+    )
+
+    print_summary(report)
+
+
+if __name__ == "__main__":
+    main()
+
+========== PLANETARY MODULE FILES ==========
+
+FullName                                        Length
+--------                                        ------
+D:\TERRAFORM\src\planetary\catalog.py             7156
+D:\TERRAFORM\src\planetary\earth_global.py       14759
+D:\TERRAFORM\src\planetary\global_comparison.py  27710
+D:\TERRAFORM\src\planetary\inspect_raster.py      1085
+D:\TERRAFORM\src\planetary\mars_global.py         8820
+D:\TERRAFORM\src\planetary\moon_global.py        11205
+
+
+
+
+========== PLANETARY CODE REFERENCES ==========
+
+
+Path       : D:\TERRAFORM\src\crosscheck_mola_global.py
+LineNumber : 5
+Line       : # TERRAFORM: MOLA ELEVATION / OBSERVATION CROSS-CHECK
+
+Path       : D:\TERRAFORM\src\crosscheck_mola_global.py
+LineNumber : 10
+Line       : elevation_path = mars_dir / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\crosscheck_mola_global.py
+LineNumber : 44
+Line       :     add("TERRAFORM - MOLA GLOBAL DATA CROSS-CHECK")
+
+Path       : D:\TERRAFORM\src\crosscheck_mola_global.py
+LineNumber : 122
+Line       :     add("Interpretation: zero-count cells have no recorded MOLA observations.")
+
+Path       : D:\TERRAFORM\src\inspect_mars_outliers.py
+LineNumber : 11
+Line       : ELEVATION_FILE = ROOT / "data" / "Global" / "Mars" / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\inspect_mars_outliers.py
+LineNumber : 29
+Line       :     print("\nOriginal MOLA elevation neighbourhood (metres):")
+
+Path       : D:\TERRAFORM\src\inspect_mars_outliers.py
+LineNumber : 62
+Line       :         raise FileNotFoundError("Original MOLA input files were not found.")
+
+Path       : D:\TERRAFORM\src\mars_area_weighted_analysis.py
+LineNumber : 13
+Line       : ELEVATION_FILE = DATA / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\mars_area_weighted_analysis.py
+LineNumber : 372
+Line       : 3. Elevations are relative to the MOLA areoid.
+
+Path       : D:\TERRAFORM\src\mars_area_weighted_analysis.py
+LineNumber : 374
+Line       :    MOLA observations. Their supplied elevations are retained.
+
+Path       : D:\TERRAFORM\src\mars_global_terrain.py
+LineNumber : 30
+Line       : ELEVATION_FILE = DATA / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\mars_global_terrain.py
+LineNumber : 89
+Line       : print("\nLoading MOLA elevation and observation-count rasters...")
+
+Path       : D:\TERRAFORM\src\mars_global_terrain.py
+LineNumber : 851
+Line       :     "MOLA OBSERVATION COVERAGE AND TERRAIN MASK",
+
+Path       : D:\TERRAFORM\src\mars_global_terrain.py
+LineNumber : 933
+Line       :             "MGS-M-MOLA-5-MEGDR-L3-V1.0"
+
+Path       : D:\TERRAFORM\src\mars_global_terrain.py
+LineNumber : 1033
+Line       :             "The global MOLA product includes interpolated "
+
+Path       : D:\TERRAFORM\src\mars_observation_threshold_audit.py
+LineNumber : 60
+Line       :     print("TERRAFORM — MOLA OBSERVATION THRESHOLD AUDIT")
+
+Path       : D:\TERRAFORM\src\mars_observation_threshold_audit.py
+LineNumber : 63
+Line       :     print("must have at least that many MOLA observations.")
+
+Path       : D:\TERRAFORM\src\mars_outlier_validation.py
+LineNumber : 17
+Line       :     ROOT / "data" / "Global" / "Mars" / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\mars_strict_maxima_audit.py
+LineNumber : 10
+Line       : ELEVATION = ROOT / "data/Global/Mars/megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\mars_strict_observation_validation.py
+LineNumber : 10
+Line       : ELEVATION_FILE = ROOT / "data/Global/Mars/megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 18
+Line       : # TERRAFORM | GLOBAL MARS MOLA PROCESSING MODULE
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 26
+Line       : ELEVATION_FILE = DATA / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 50
+Line       : print("\nLoading MOLA elevation raster...")
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 56
+Line       : print("Loading MOLA observation-count raster...")
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 130
+Line       :     "MARS | GLOBAL MOLA MEDIAN TOPOGRAPHY",
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 144
+Line       : cbar.set_label("Elevation relative to MOLA areoid (m)")
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 148
+Line       :     "Source: MGS MOLA MEGDR | 0.0625° angular grid | "
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 182
+Line       :     "MARS | MOLA OBSERVATION DENSITY",
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 235
+Line       :     "MARS | MOLA OBSERVATION STATUS",
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 248
+Line       :     Patch(color="#25C7A5", label="Recorded MOLA observations"),
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 301
+Line       : ax.set_xlabel("Elevation relative to MOLA areoid (m)")
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 390
+Line       : TERRAFORM - GLOBAL MARS MOLA ANALYSIS
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 395
+Line       : Elevation: MEGT90N000EB.IMG
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 397
+Line       : Instrument: Mars Orbiter Laser Altimeter (MOLA)
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 399
+Line       : Dataset: MGS-M-MOLA-5-MEGDR-L3-V1.0
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 439
+Line       : The elevation product contains median topography where MOLA
+
+Path       : D:\TERRAFORM\src\process_global_mars.py
+LineNumber : 444
+Line       : MOLA observations.
+
+Path       : D:\TERRAFORM\src\verify_mola_global.py
+LineNumber : 7
+Line       :     "Elevation": mars_dir / "megt90n000eb.img",
+
+Path       : D:\TERRAFORM\src\verify_mola_global.py
+LineNumber : 16
+Line       : report.append("TERRAFORM - GLOBAL MOLA RASTER VERIFICATION")
+
+Path       : D:\TERRAFORM\src\analysis\analog_comparison.py
+LineNumber : 80
+Line       :     with rasterio.open(MARS_SOURCE) as source:
+
+Path       : D:\TERRAFORM\src\analysis\analog_comparison.py
+LineNumber : 126
+Line       :     with rasterio.open(EARTH_SOURCE) as source:
+
+Path       : D:\TERRAFORM\src\analysis\analog_comparison.py
+LineNumber : 382
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\analysis\analog_comparison.py
+LineNumber : 574
+Line       :             "MOLA MEGDR represents median observed topography and includes interpolated 
+             cells.",
+
+Path       : D:\TERRAFORM\src\analysis\candidate_extraction.py
+LineNumber : 62
+Line       :     with rasterio.open(path) as src:
+
+Path       : D:\TERRAFORM\src\analysis\candidate_extraction.py
+LineNumber : 157
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py
+LineNumber : 25
+Line       : with rasterio.open(RASTER) as src:
+
+Path       : D:\TERRAFORM\src\analysis\generate_candidate_profiles.py
+LineNumber : 52
+Line       :     "Mars terrain reference is derived from MOLA gridded elevation data.",
+
+Path       : D:\TERRAFORM\src\analysis\geological_characterization.py
+LineNumber : 93
+Line       :     with rasterio.open(CANDIDATE_RASTER) as src:
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 24
+Line       : # Source: NASA MOLA MEGDR 128 pixels/degree
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 31
+Line       :     / "mars_mola_128ppd_megt44n000hb.tif"
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 133
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 149
+Line       :             SOURCE="NASA MOLA MEGDR",
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 168
+Line       :             f"MOLA raster not found:\n{SOURCE_DEM}"
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 171
+Line       :     with rasterio.open(SOURCE_DEM) as source:
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 517
+Line       :         "source": "NASA MOLA MEGDR 128 pixels per degree",
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 552
+Line       :             "MOLA MEGDR represents median observed topography.",
+
+Path       : D:\TERRAFORM\src\analysis\mars_terrain_analysis.py
+LineNumber : 554
+Line       :             "MOLA resolution is substantially coarser than Earth GLO-30.",
+
+Path       : D:\TERRAFORM\src\analysis\sensitivity_analysis.py
+LineNumber : 85
+Line       :     with rasterio.open(path) as src:
+
+Path       : D:\TERRAFORM\src\analysis\sensitivity_analysis.py
+LineNumber : 228
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py
+LineNumber : 46
+Line       :     with rasterio.open(INPUT_MASK) as src:
+
+Path       : D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py
+LineNumber : 167
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\analysis\terrain_analysis.py
+LineNumber : 109
+Line       :     with rasterio.open(path, "w", **output_profile) as dst:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_analysis.py
+LineNumber : 131
+Line       :     with rasterio.open(source_file) as src:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_analysis.py
+LineNumber : 185
+Line       :     with rasterio.open(PROJECTED_FILE, "w", **profile) as dst:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_analysis.py
+LineNumber : 223
+Line       :     with rasterio.open(PROJECTED_FILE) as src:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_range_screening.py
+LineNumber : 73
+Line       :     with rasterio.open(path) as src:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_range_screening.py
+LineNumber : 131
+Line       :     with rasterio.open(output_path, "w", **output_profile) as dst:
+
+Path       : D:\TERRAFORM\src\analysis\terrain_range_screening.py
+LineNumber : 510
+Line       :             "MOLA contains interpolated values in areas with insufficient observations.",
+
+Path       : D:\TERRAFORM\src\data\download_earth_dem.py
+LineNumber : 156
+Line       :     with rasterio.open(OUTPUT_FILE) as dataset:
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 15
+Line       : # TERRAFORM — MARS MOLA DATA ACQUISITION
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 16
+Line       : # NASA Mars Global Surveyor / MOLA MEGDR
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 27
+Line       :     "mgs/mgs-m-mola-5-megdr-l3-v1/"
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 36
+Line       : OUTPUT_TIF = OUTPUT_DIR / f"mars_mola_128ppd_{PRODUCT}.tif"
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 37
+Line       : REPORT_PATH = REPORT_DIR / "mars_mola_metadata.json"
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 266
+Line       :     print("\n[3/5] VALIDATING MOLA BINARY DATA")
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 286
+Line       : # MOLA IMAGE CONVERSION
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 290
+Line       :     print("\n[4/5] CONVERTING MOLA DATA TO GEOTIFF")
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 292
+Line       :     # MOLA topography uses signed 16-bit,
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 362
+Line       :     with rasterio.open(
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 375
+Line       :             "MOLA median topography above Martian areoid"
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 379
+Line       :             SOURCE="NASA Mars Global Surveyor MOLA MEGDR",
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 404
+Line       :     with rasterio.open(OUTPUT_TIF) as dataset:
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 449
+Line       :             f"Approximate MOLA elevation at reference pixel: "
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 454
+Line       :             "dataset": "NASA MOLA MEGDR",
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 489
+Line       :                 "MOLA MEGDR cells represent median observed "
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 509
+Line       :     print("TERRAFORM — MARS MOLA DATA ACQUISITION")
+
+Path       : D:\TERRAFORM\src\data\download_mars_dem.py
+LineNumber : 520
+Line       :     print("MARS MOLA ACQUISITION COMPLETED SUCCESSFULLY")
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 6
+Line       : Central metadata registry for global Earth, Mars and Moon datasets.
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 53
+Line       :         "dataset_id": "MARS_MOLA_MEGDR",
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 55
+Line       :         "dataset_name": "MOLA Mission Experiment Gridded Data Record",
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 84
+Line       :         "dataset_id": "MOON_LOLA_GDR",
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 85
+Line       :         "planet": "Moon",
+
+Path       : D:\TERRAFORM\src\planetary\catalog.py
+LineNumber : 160
+Line       :         "planets": ["Earth", "Mars", "Moon"],
+
+Path       : D:\TERRAFORM\src\planetary\earth_global.py
+LineNumber : 531
+Line       :     with rasterio.open(INPUT_FILE) as src:
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 7
+Line       : Compare global elevation distributions for Earth, Mars and the Moon
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 13
+Line       : - Mars and Moon use their full gridded surfaces.
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 37
+Line       : MARS_FILE = ROOT / "data" / "Global" / "Mars" / "megt90n000eb.img"
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 38
+Line       : MOON_FILE = ROOT / "data" / "Global" / "Moon" / "ldem_16.img"
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 72
+Line       : MOON_NATIVE_DEGREES = 0.0625
+
+Path       : D:\TERRAFORM\src\planetary\global_comparison.py
+LineNumber : 73
+Line       : MOON_AGGREGATION_FACTOR = 2
+
+
+
+
+
+========== APP ENTRY POINT ==========
+
+from pathlib import Path
+import html
+import json
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import folium
+
+from folium.plugins import MarkerCluster
+from streamlit_folium import st_folium
+
+from src.data.dashboard_pipeline import load_and_process
+from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+
+
+# ============================================================
+# TERRAFORM | PLANETARY ANALOG INTELLIGENCE | V4.0
+# ============================================================
+
+ROOT = Path(__file__).resolve().parent
+OUTPUTS = ROOT / "outputs"
+
+ACCENT = "#55D6A0"
+BACKGROUND = "#0A1018"
+PANEL = "#111C27"
+BORDER = "#263746"
+MUTED = "#8FA3B5"
+WHITE = "#EDF4F8"
+
+NUMERIC_COLUMNS = [
+    "latitude", "longitude", "elevation_m", "slope_deg",
+    "roughness_m", "local_relief_m", "surface_temp_c",
+    "precipitation_mm", "similarity_score"
+]
+
+COMPARISON_METRICS = [
+    "slope_deg", "roughness_m", "local_relief_m",
+    "precipitation_mm"
+]
+
+RESEARCH_CSV_FILES = {
+    "Candidate inventory": "maps/candidate_regions/atacama_candidate_inventory.csv",
+    "Master candidate comparison": "dashboard/candidate_master_comparison.csv",
+    "Geological coverage": "maps/geological_characterization/candidate_geological_coverage.csv",
+    "Geological units": "maps/geological_characterization/candidate_geological_units.csv",
+    "Sensitivity summary": "maps/sensitivity_analysis/sensitivity_summary.csv",
+}
+
+RESEARCH_JSON_FILES = {
+    "Candidate profiles": "dashboard/candidate_profiles.json",
+    "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+    "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+    "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+    "Jezero terrain analysis": "reports/jezero_terrain_analysis.json",
+    "Earth validation report": "reports/earth_validation_report.json",
+    "Sensitivity analysis report": "reports/sensitivity_analysis_report.json",
+}
+
+RESEARCH_RASTER_FILES = {
+    "Candidate region IDs": "maps/candidate_regions/atacama_candidate_region_ids.tif",
+    "Broad screening mask": "maps/sensitivity_analysis/broad_three_metric_mask.tif",
+    "Moderate screening mask": "maps/sensitivity_analysis/moderate_three_metric_mask.tif",
+    "Strict screening mask": "maps/sensitivity_analysis/strict_three_metric_mask.tif",
+    "4-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_4_connectivity.tif",
+    "8-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_8_connectivity.tif",
+    "Slope screening mask": "maps/terrain_range_screening/atacama_slope_range_mask.tif",
+    "Roughness screening mask": "maps/terrain_range_screening/atacama_roughness_range_mask.tif",
+    "Local relief screening mask": "maps/terrain_range_screening/atacama_local_relief_range_mask.tif",
+    "Three-metric intersection": "maps/terrain_range_screening/atacama_three_metric_intersection.tif",
+}
+
+MARS_JSON_PATH = OUTPUTS / "global_mars/terrain_metrics/mars_global_terrain_report.json"
+MARS_AREA_REPORT_PATH = OUTPUTS / "global_mars/mars_area_weighted_report.txt"
+
+MARS_IMAGES = {
+    "Global elevation": "global_mars/mars_global_elevation.png",
+    "Elevation distribution": "global_mars/mars_global_elevation_distribution.png",
+    "Observation classification": "global_mars/mars_global_observation_classification.png",
+    "Observation density": "global_mars/mars_global_observation_density.png",
+}
+
+MARS_METRIC_IMAGES = {
+    "Slope": "global_mars/terrain_metrics/mars_global_slope_degrees.png",
+    "Roughness": "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png",
+    "Local relief": "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png",
+    "Terrain quality overview": "global_mars/terrain_metrics/mars_global_terrain_quality.png",
+}
+
+VISUALISATION_GROUPS = {
+    "Global Mars terrain": [
+        ("Global Mars elevation", "global_mars/mars_global_elevation.png"),
+        ("Mars elevation distribution", "global_mars/mars_global_elevation_distribution.png"),
+        ("Mars observation classification", "global_mars/mars_global_observation_classification.png"),
+        ("Mars observation density", "global_mars/mars_global_observation_density.png"),
+    ],
+    "Global Mars terrain metrics": [
+        ("Global Mars slope", "global_mars/terrain_metrics/mars_global_slope_degrees.png"),
+        ("Global Mars roughness", "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png"),
+        ("Global Mars local relief", "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png"),
+        ("Global Mars terrain quality overview", "global_mars/terrain_metrics/mars_global_terrain_quality.png"),
+    ],
+    "Atacamaâ€“Jezero regional study": [
+        ("Atacama candidate regions", "maps/candidate_regions/atacama_candidate_regions_map.png"),
+        ("Broad screening map", "maps/sensitivity_analysis/broad_screening_map.png"),
+        ("Moderate screening map", "maps/sensitivity_analysis/moderate_screening_map.png"),
+        ("Strict screening map", "maps/sensitivity_analysis/strict_screening_map.png"),
+        ("Screening sensitivity comparison", "maps/sensitivity_analysis/sensitivity_comparison.png"),
+        ("Largest spatial clusters", "maps/spatial_clusters/atacama_largest_matching_clusters.png"),
+        ("Earthâ€“Mars terrain overview", "maps/terrain_comparison/earth_mars_terrain_overview.png"),
+        ("Local relief distributions", "maps/terrain_comparison/local_relief_distribution.png"),
+        ("Roughness distributions", "maps/terrain_comparison/roughness_distribution.png"),
+        ("Slope distributions", "maps/terrain_comparison/slope_distribution.png"),
+        ("Atacama terrain screening", "maps/terrain_range_screening/atacama_terrain_screening_overview.png"),
+    ],
+    "Global planetary visualisations": [
+        ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+        ("Global elevation distribution comparison", "Visualisations/Global/global_elevation_distribution_comparison.png"),
+        ("Global normalised terrain comparison", "Visualisations/Global/global_normalized_terrain_comparison.png"),
+        ("Global Mars elevation", "Visualisations/Global/mars_global_elevation.png"),
+        ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+    ],
+}
+
+
+st.set_page_config(
+    page_title="TERRAFORM | Planetary Analog Intelligence",
+    page_icon="ðŸŒ",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
+# ============================================================
+# GLOBAL STYLING
+# ============================================================
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --background:#0A1018;
+    --panel:#111C27;
+    --border:#263746;
+    --accent:#55D6A0;
+    --text:#EDF4F8;
+    --muted:#8FA3B5;
+}
+html, body, [class*="css"] {font-family:'Inter',sans-serif;}
+.stApp {background:var(--background);color:var(--text);}
+header[data-testid="stHeader"] {background:rgba(10,16,24,.92);}
+[data-testid="stSidebar"] {background:#0D1721;border-right:1px solid var(--border);}
+[data-testid="stSidebar"] > div:first-child {padding-top:1.2rem;}
+[data-testid="stMainBlockContainer"] {padding-top:2rem;padding-bottom:3rem;max-width:1600px;}
+.block-container {padding-left:2.5rem;padding-right:2.5rem;}
+h1,h2,h3 {color:var(--text);letter-spacing:-.6px;}
+p,li,label {color:#BDCAD5;}
+small {color:var(--muted);}
+hr {border-color:var(--border);}
+div[data-testid="stMetric"] {background:var(--panel);border:1px solid var(--border);padding:17px 20px;border-radius:12px;}
+div[data-testid="stMetricLabel"] {color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+div[data-testid="stMetricValue"] {color:var(--text);font-weight:700;}
+.stButton > button,.stDownloadButton > button {background:#162B32;color:var(--accent);border:1px solid #326452;border-radius:8px;font-weight:600;}
+.stButton > button:hover {background:#1C3B36;border-color:var(--accent);color:white;}
+.stTextInput input,.stNumberInput input,.stSelectbox div[data-baseweb="select"],.stMultiSelect div[data-baseweb="select"] {background:#111C27;border-color:var(--border);}
+.stTabs [data-baseweb="tab-list"] {gap:18px;background:transparent;}
+.stTabs [data-baseweb="tab"] {color:var(--muted);font-weight:600;}
+.stTabs [aria-selected="true"] {color:var(--accent)!important;}
+[data-testid="stDataFrame"] {border:1px solid var(--border);border-radius:10px;}
+.terraform-brand {font-size:25px;font-weight:800;letter-spacing:2px;color:white;}
+.terraform-subbrand {font-family:'DM Mono',monospace;color:var(--accent);font-size:9px;letter-spacing:2.3px;margin-top:-5px;}
+.eyebrow {color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:9px;}
+.page-title {color:white;font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-1.3px;margin-bottom:8px;}
+.page-description {color:var(--muted);font-size:14px;margin-bottom:27px;}
+.hero {background:radial-gradient(circle at 90% 15%,rgba(85,214,160,.13),transparent 28%),linear-gradient(120deg,#142633,#0D1721 70%);border:1px solid #304553;border-radius:17px;padding:31px 34px;margin-bottom:24px;}
+.hero-title {font-size:39px;font-weight:800;color:white;letter-spacing:-1.5px;line-height:1.15;}
+.hero-description {color:#A9BAC7;font-size:14px;max-width:720px;margin-top:12px;line-height:1.8;}
+.hero-tag {display:inline-block;color:var(--accent);background:rgba(85,214,160,.09);border:1px solid rgba(85,214,160,.25);border-radius:5px;padding:5px 9px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;margin-bottom:17px;}

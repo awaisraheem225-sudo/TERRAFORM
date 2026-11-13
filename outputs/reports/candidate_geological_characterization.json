@@ -1,0 +1,86 @@
+{
+    "source": "Geología Base.shp",
+    "source_crs": "EPSG:4326",
+    "analysis_crs": "PROJCS[\"WGS 84 / UTM zone 19S\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-69],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"32719\"]]",
+    "original_feature_count": 16364,
+    "missing_geometries_excluded": 115,
+    "invalid_geometries_before_repair": 94,
+    "failed_repairs_excluded": 0,
+    "invalid_geometries_remaining": 0,
+    "geological_features_near_candidates": 73,
+    "candidates_analyzed": 10,
+    "intersection_records": 17,
+    "candidate_coverage": [
+        {
+            "candidate_id": "TF-001",
+            "candidate_area_km2": 3.644273,
+            "mapped_geology_area_km2": 3.644273,
+            "mapped_coverage_percent": 100.0,
+            "unmapped_area_km2": 0.0
+        },
+        {
+            "candidate_id": "TF-002",
+            "candidate_area_km2": 0.643107,
+            "mapped_geology_area_km2": 0.6430630177519567,
+            "mapped_coverage_percent": 99.99316097507207,
+            "unmapped_area_km2": 4.398224804325057e-05
+        },
+        {
+            "candidate_id": "TF-003",
+            "candidate_area_km2": 1.929321,
+            "mapped_geology_area_km2": 1.8857341308049085,
+            "mapped_coverage_percent": 97.7408181844757,
+            "unmapped_area_km2": 0.04358686919509158
+        },
+        {
+            "candidate_id": "TF-004",
+            "candidate_area_km2": 13.505247,
+            "mapped_geology_area_km2": 13.274668352606014,
+            "mapped_coverage_percent": 98.29267360016453,
+            "unmapped_area_km2": 0.2305786473939868
+        },
+        {
+            "candidate_id": "TF-005",
+            "candidate_area_km2": 0.214369,
+            "mapped_geology_area_km2": 0.214369,
+            "mapped_coverage_percent": 100.0,
+            "unmapped_area_km2": 0.0
+        },
+        {
+            "candidate_id": "TF-006",
+            "candidate_area_km2": 119.832271,
+            "mapped_geology_area_km2": 119.63167712548486,
+            "mapped_coverage_percent": 99.83260446218603,
+            "unmapped_area_km2": 0.20059387451514965
+        },
+        {
+            "candidate_id": "TF-007",
+            "candidate_area_km2": 0.214369,
+            "mapped_geology_area_km2": 0.214369,
+            "mapped_coverage_percent": 100.0,
+            "unmapped_area_km2": 0.0
+        },
+        {
+            "candidate_id": "TF-008",
+            "candidate_area_km2": 0.214369,
+            "mapped_geology_area_km2": 0.214369,
+            "mapped_coverage_percent": 100.0,
+            "unmapped_area_km2": 0.0
+        },
+        {
+            "candidate_id": "TF-009",
+            "candidate_area_km2": 0.643107,
+            "mapped_geology_area_km2": 0.643107,
+            "mapped_coverage_percent": 100.0,
+            "unmapped_area_km2": 0.0
+        },
+        {
+            "candidate_id": "TF-010",
+            "candidate_area_km2": 1.286214,
+            "mapped_geology_area_km2": 1.2860045722663218,
+            "mapped_coverage_percent": 99.98371750473264,
+            "unmapped_area_km2": 0.00020942773367815803
+        }
+    ],
+    "methodology": "Area-weighted intersection of strict terrain-screening candidate polygons with regional Chilean geological map polygons. Geological coverage is not evidence of mineralogical equivalence to Mars."
+}

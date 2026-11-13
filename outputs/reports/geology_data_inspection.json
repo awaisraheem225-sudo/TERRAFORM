@@ -1,0 +1,68 @@
+{
+    "source_file": "Geología Base.shp",
+    "feature_count": 16364,
+    "crs": "EPSG:4326",
+    "geometry_types": {
+        "Polygon": 16249
+    },
+    "bounds": [
+        -75.68628253899993,
+        -56.53294564799995,
+        -66.42395245199998,
+        -17.498473204999982
+    ],
+    "fields": {
+        "objectid": {
+            "dtype": "int64",
+            "unique_values": 16364,
+            "missing_values": 0
+        },
+        "region": {
+            "dtype": "str",
+            "unique_values": 16,
+            "missing_values": 0
+        },
+        "cod_geolog": {
+            "dtype": "str",
+            "unique_values": 160,
+            "missing_values": 0
+        },
+        "lithostrat": {
+            "dtype": "str",
+            "unique_values": 129,
+            "missing_values": 239
+        },
+        "rock_rank": {
+            "dtype": "str",
+            "unique_values": 8,
+            "missing_values": 1515
+        },
+        "age_min": {
+            "dtype": "str",
+            "unique_values": 28,
+            "missing_values": 1420
+        },
+        "age_max": {
+            "dtype": "str",
+            "unique_values": 32,
+            "missing_values": 1516
+        },
+        "lithology": {
+            "dtype": "str",
+            "unique_values": 131,
+            "missing_values": 1529
+        },
+        "cod_epsg": {
+            "dtype": "int64",
+            "unique_values": 1,
+            "missing_values": 0
+        },
+        "area_hecta": {
+            "dtype": "float64",
+            "unique_values": 5312,
+            "missing_values": 115
+        }
+    },
+    "invalid_geometries": 209,
+    "empty_geometries": 0
+}

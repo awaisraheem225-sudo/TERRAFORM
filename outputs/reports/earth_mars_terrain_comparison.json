@@ -1,0 +1,387 @@
+{
+    "project": "TERRAFORM - Planetary Analog Intelligence",
+    "comparison": {
+        "earth_study_area": "San Pedro de Atacama region, Chile",
+        "mars_study_area": "Jezero Crater, Mars",
+        "target_resolution_metres": 463.0,
+        "neighbourhood": "3 x 3 pixels",
+        "neighbourhood_approximate_width_metres": 1389.0
+    },
+    "processing_methods": {
+        "earth_resampling": "Average aggregation from 30 m DEM",
+        "mars_resampling": "Previously reprojected to local Mars metric grid using bilinear resampling",
+        "slope": "Central difference elevation gradient",
+        "roughness": "3 x 3 local elevation standard deviation",
+        "local_relief": "3 x 3 local maximum minus minimum",
+        "edge_handling": "Only complete valid neighbourhoods retained"
+    },
+    "elevation_note": "Absolute elevation is reported separately and is not used as a direct similarity metric. Earth elevation and Mars elevation use different vertical reference surfaces.",
+    "elevation_context": {
+        "earth": {
+            "valid_pixels": 53421,
+            "minimum": 2100.455078125,
+            "maximum": 5821.82763671875,
+            "mean": 3108.7654722664365,
+            "median": 2980.604736328125,
+            "standard_deviation": 581.6801064993969,
+            "percentiles": {
+                "p10": 2497.964599609375,
+                "p25": 2665.3330078125,
+                "p50": 2980.604736328125,
+                "p75": 3392.989501953125,
+                "p90": 4022.55322265625
+            }
+        },
+        "mars": {
+            "valid_pixels": 50192,
+            "minimum": -3457.184814453125,
+            "maximum": -535.8075561523438,
+            "mean": -2288.214466970515,
+            "median": -2275.91357421875,
+            "standard_deviation": 424.0737504970227,
+            "percentiles": {
+                "p10": -2794.948291015625,
+                "p25": -2620.57763671875,
+                "p50": -2275.91357421875,
+                "p75": -1992.2612609863281,
+                "p90": -1759.64482421875
+            }
+        }
+    },
+    "terrain_metrics": {
+        "slope_degrees": {
+            "earth": {
+                "valid_pixels": 52499,
+                "minimum": 0.0035653222254900443,
+                "maximum": 36.86563507630059,
+                "mean": 3.780052988170486,
+                "median": 2.4470065905148313,
+                "standard_deviation": 3.9153617940021004,
+                "percentiles": {
+                    "p10": 0.7421637639172758,
+                    "p25": 1.3795506111938685,
+                    "p50": 2.4470065905148313,
+                    "p75": 4.632668289630887,
+                    "p90": 8.5352814733607
+                }
+            },
+            "mars": {
+                "valid_pixels": 49298,
+                "minimum": 0.010014155566754493,
+                "maximum": 31.074971693103475,
+                "mean": 3.278078784249956,
+                "median": 2.2646007230510516,
+                "standard_deviation": 3.125867291960389,
+                "percentiles": {
+                    "p10": 0.6519118457967522,
+                    "p25": 1.233550881083963,
+                    "p50": 2.2646007230510516,
+                    "p75": 4.18121895857394,
+                    "p90": 7.313068669448094
+                }
+            },
+            "mars_minus_earth_percentile_difference": {
+                "p10": -0.09025191812052358,
+                "p25": -0.1459997301099054,
+                "p50": -0.18240586746377963,
+                "p75": -0.4514493310569474,
+                "p90": -1.2222128039126057
+            }
+        },
+        "roughness_m": {
+            "earth": {
+                "valid_pixels": 52499,
+                "minimum": 0.06736797362873888,
+                "maximum": 262.5610347878867,
+                "mean": 26.023378575488593,
+                "median": 17.124569948610862,
+                "standard_deviation": 26.2335720134192,
+                "percentiles": {
+                    "p10": 5.257468689003914,
+                    "p25": 9.664346367054467,
+                    "p50": 17.124569948610862,
+                    "p75": 32.09399119452905,
+                    "p90": 58.71161868841652
+                }
+            },
+            "mars": {
+                "valid_pixels": 49298,
+                "minimum": 0.3839096518095285,
+                "maximum": 206.00818752284755,
+                "mean": 22.32104980462893,
+                "median": 15.625005349689284,
+                "standard_deviation": 20.5544801396723,
+                "percentiles": {
+                    "p10": 5.196246176502653,
+                    "p25": 8.978257514596331,
+                    "p50": 15.625005349689284,
+                    "p75": 28.18520856230558,
+                    "p90": 48.801456633876874
+                }
+            },
+            "mars_minus_earth_percentile_difference": {
+                "p10": -0.06122251250126087,
+                "p25": -0.6860888524581359,
+                "p50": -1.4995645989215785,
+                "p75": -3.908782632223474,
+                "p90": -9.910162054539647
+            }
+        },
+        "local_relief_m": {
+            "earth": {
+                "valid_pixels": 52499,
+                "minimum": 0.26220703125,
+                "maximum": 790.3291015625,
+                "mean": 81.74048901154664,
+                "median": 54.373779296875,
+                "standard_deviation": 81.93658221873672,
+                "percentiles": {
+                    "p10": 16.44755859375,
+                    "p25": 30.5693359375,
+                    "p50": 54.373779296875,
+                    "p75": 101.2841796875,
+                    "p90": 183.8126953125
+                }
+            },
+            "mars": {
+                "valid_pixels": 49298,
+                "minimum": 1.269287109375,
+                "maximum": 661.08447265625,
+                "mean": 69.84383245280337,
+                "median": 49.04669189453125,
+                "standard_deviation": 64.18235762385511,
+                "percentiles": {
+                    "p10": 16.4609619140625,
+                    "p25": 28.15521240234375,
+                    "p50": 49.04669189453125,
+                    "p75": 88.09814453125,
+                    "p90": 151.19013671875004
+                }
+            },
+            "mars_minus_earth_percentile_difference": {
+                "p10": 0.013403320312502132,
+                "p25": -2.41412353515625,
+                "p50": -5.32708740234375,
+                "p75": -13.18603515625,
+                "p90": -32.62255859374997
+            }
+        }
+    },
+    "histograms": {
+        "slope_degrees": {
+            "bin_edges": [
+                0.0035653222254900443,
+                1.8466688099292452,
+                3.689772297633,
+                5.532875785336755,
+                7.37597927304051,
+                9.219082760744266,
+                11.062186248448022,
+                12.905289736151776,
+                14.748393223855532,
+                16.591496711559287,
+                18.43460019926304,
+                20.277703686966795,
+                22.120807174670553,
+                23.963910662374307,
+                25.80701415007806,
+                27.65011763778182,
+                29.493221125485572,
+                31.336324613189326,
+                33.179428100893084,
+                35.022531588596834,
+                36.86563507630059
+            ],
+            "earth_counts": [
+                19324,
+                15709,
+                7194,
+                3616,
+                2077,
+                1428,
+                1023,
+                692,
+                472,
+                299,
+                207,
+                159,
+                98,
+                70,
+                58,
+                37,
+                18,
+                8,
+                8,
+                2
+            ],
+            "mars_counts": [
+                20072,
+                14631,
+                6549,
+                3201,
+                1906,
+                1234,
+                775,
+                453,
+                171,
+                115,
+                75,
+                57,
+                27,
+                19,
+                9,
+                3,
+                1,
+                0,
+                0,
+                0
+            ]
+        },
+        "roughness_m": {
+            "bin_edges": [
+                0.06736797362873888,
+                13.192051314341636,
+                26.316734655054532,
+                39.44141799576743,
+                52.56610133648033,
+                65.69078467719322,
+                78.81546801790611,
+                91.94015135861902,
+                105.06483469933191,
+                118.1895180400448,
+                131.3142013807577,
+                144.4388847214706,
+                157.5635680621835,
+                170.68825140289638,
+                183.8129347436093,
+                196.9376180843222,
+                210.0623014250351,
+                223.18698476574798,
+                236.31166810646087,
+                249.4363514471738,
+                262.5610347878867
+            ],
+            "earth_counts": [
+                19987,
+                15373,
+                7285,
+                3490,
+                2155,
+                1537,
+                930,
+                622,
+                366,
+                244,
+                169,
+                118,
+                86,
+                52,
+                34,
+                24,
+                12,
+                9,
+                4,
+                2
+            ],
+            "mars_counts": [
+                20631,
+                15068,
+                6311,
+                3112,
+                1706,
+                1191,
+                644,
+                263,
+                152,
+                80,
+                62,
+                40,
+                21,
+                12,
+                4,
+                1,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "local_relief_m": {
+            "bin_edges": [
+                0.26220703125,
+                39.7655517578125,
+                79.268896484375,
+                118.77224121093751,
+                158.2755859375,
+                197.7789306640625,
+                237.28227539062502,
+                276.78562011718753,
+                316.28896484375,
+                355.7923095703125,
+                395.295654296875,
+                434.79899902343755,
+                474.30234375000003,
+                513.8056884765625,
+                553.3090332031251,
+                592.8123779296875,
+                632.31572265625,
+                671.8190673828126,
+                711.322412109375,
+                750.8257568359376,
+                790.3291015625
+            ],
+            "earth_counts": [
+                18989,
+                15404,
+                7600,
+                3726,
+                2226,
+                1578,
+                1004,
+                666,
+                457,
+                274,
+                187,
+                139,
+                84,
+                55,
+                38,
+                31,
+                16,
+                12,
+                8,
+                5
+            ],
+            "mars_counts": [
+                19686,
+                15279,
+                6592,
+                3217,
+                1846,
+                1213,
+                663,
+                353,
+                182,
+                109,
+                65,
+                43,
+                26,
+                12,
+                6,
+                4,
+                2,
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "scientific_limitations": [
+        "The Earth Copernicus DEM is a digital surface model.",
+        "MOLA MEGDR represents median observed topography and includes interpolated cells.",
+        "The two regions have different geological histories and surface processes.",
+        "Matching spatial resolution does not make the underlying sensors or data products identical.",
+        "Terrain similarity alone does not establish geological or operational equivalence.",
+        "These results are a regional screening comparison, not proof of a planetary analogue."
+    ]
+}

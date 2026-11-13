@@ -1,0 +1,145 @@
+{
+    "project": "TERRAFORM - Planetary Analog Intelligence",
+    "analysis": "Moon Global Terrain Analysis",
+    "version": "1.1",
+    "dataset": {
+        "product": "LOLA Global Digital Elevation Model",
+        "product_id": "LDEM_16",
+        "data_set_id": "LRO-L-LOLA-4-GDR-V1.0",
+        "product_version": "V3.1",
+        "source": "NASA Planetary Data System - LRO LOLA",
+        "filename": "ldem_16.img",
+        "dimensions": {
+            "columns": 5760,
+            "rows": 2880,
+            "total_cells": 16588800
+        },
+        "data_type": "Signed 16-bit integer",
+        "byte_order": "Little-endian",
+        "scaling_factor": 0.5,
+        "reference_radius_m": 1737400.0,
+        "pixel_resolution_degrees": 0.0625,
+        "equatorial_pixel_scale_m": 1895.2094015093426,
+        "projection": "Simple cylindrical",
+        "longitude_range_degrees": [
+            0,
+            360
+        ],
+        "latitude_range_degrees": [
+            -90,
+            90
+        ],
+        "pixel_registration": "Pixel registered"
+    },
+    "raw_data_validation": {
+        "file_size_validation": "PASS",
+        "cell_count_validation": "PASS",
+        "observed_raw_minimum": -17963,
+        "observed_raw_maximum": 21371,
+        "label_raw_minimum": -18150,
+        "label_raw_maximum": 21580,
+        "range_matches_label": false,
+        "range_discrepancy": "UNRESOLVED_METADATA_DISCREPANCY"
+    },
+    "elevation_statistics": {
+        "valid_pixels": 16588800,
+        "minimum": -8981.5,
+        "maximum": 10685.5,
+        "mean": -519.2021854504244,
+        "median": -794.0,
+        "standard_deviation": 2203.904412919551,
+        "percentiles": {
+            "p05": -3825.5,
+            "p10": -2862.0,
+            "p25": -1904.0,
+            "p50": -794.0,
+            "p75": 628.0,
+            "p90": 2488.5,
+            "p95": 3586.0
+        }
+    },
+    "terrain_statistics": {
+        "slope_degrees": {
+            "valid_pixels": 15667200,
+            "minimum": 0.0,
+            "maximum": 62.2330436706543,
+            "mean": 5.24384069442749,
+            "median": 3.6750850677490234,
+            "standard_deviation": 5.10604190826416,
+            "percentiles": {
+                "p05": 0.22510045766830444,
+                "p10": 0.4052067995071411,
+                "p25": 1.2817680835723877,
+                "p50": 3.6750850677490234,
+                "p75": 7.631713390350342,
+                "p90": 12.506672859191895,
+                "p95": 15.750648498535156
+            }
+        },
+        "roughness_m": {
+            "valid_pixels": 16577280,
+            "minimum": 0.157135009765625,
+            "maximum": 1041.1524658203125,
+            "mean": 121.04219055175781,
+            "median": 84.87101745605469,
+            "standard_deviation": 118.0206069946289,
+            "percentiles": {
+                "p05": 6.532444953918457,
+                "p10": 11.42149829864502,
+                "p25": 32.91328048706055,
+                "p50": 84.87101745605469,
+                "p75": 170.9271697998047,
+                "p90": 284.146484375,
+                "p95": 363.6875
+            }
+        },
+        "local_relief_m": {
+            "valid_pixels": 16577280,
+            "minimum": 0.5,
+            "maximum": 3543.0,
+            "mean": 363.8357238769531,
+            "median": 258.5,
+            "standard_deviation": 349.89178466796875,
+            "percentiles": {
+                "p05": 20.5,
+                "p10": 35.5,
+                "p25": 101.5,
+                "p50": 258.5,
+                "p75": 514.5,
+                "p90": 847.0,
+                "p95": 1080.5
+            }
+        }
+    },
+    "processing": {
+        "conversion": "height_m = digital_number * 0.5",
+        "coordinate_system": "Lunar spherical geographic CRS",
+        "reference_radius_m": 1737400.0,
+        "slope_method": "Spherical central differences",
+        "roughness_method": "3x3 local elevation standard deviation using float64 intermediate calculations",
+        "local_relief_method": "3x3 local maximum minus minimum",
+        "longitude_edge_handling": "Periodic wrap",
+        "latitude_edge_handling": "Outer rows excluded",
+        "polar_slope_exclusion": "Absolute latitude >= 85 degrees",
+        "polar_exclusion_reason": "Longitude convergence makes east-west derivatives unstable near the poles.",
+        "numerical_precision": "Float64 intermediate calculations; float32 GeoTIFF outputs.",
+        "source_data_modified": false
+    },
+    "scientific_limitations": [
+        "LOLA elevations are relative to a 1737.4 km reference sphere.",
+        "Observed raster extrema do not match the PDS label extrema; discrepancy remains unresolved.",
+        "The source grid is approximately 1895.21 m at the equator.",
+        "Physical east-west pixel spacing decreases with latitude.",
+        "Slope statistics exclude latitudes at or beyond 85 degrees.",
+        "The 3x3 neighbourhood has latitude-dependent physical dimensions.",
+        "The PDS label describes surface generation using interpolation to compensate for incomplete coverage.",
+        "Terrain derivatives are not equivalent to geological or operational suitability.",
+        "Resampling cannot create additional source terrain detail."
+    ],
+    "outputs": {
+        "elevation": "data/processed/moon/moon_global_dem.tif",
+        "slope": "data/processed/moon/moon_global_slope_degrees.tif",
+        "roughness": "data/processed/moon/moon_global_roughness_3x3_m.tif",
+        "local_relief": "data/processed/moon/moon_global_local_relief_3x3_m.tif"
+    }
+}

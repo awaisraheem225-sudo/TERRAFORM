@@ -1,0 +1,66 @@
+{
+    "project": "TERRAFORM \u2014 Planetary Analog Intelligence",
+    "analysis": "Mars Global Elevation Analysis",
+    "version": "1.0",
+    "generated_utc": "2026-11-10T13:43:01.550121+00:00",
+    "dataset": {
+        "product": "MOLA MEGDR Median Topography",
+        "product_id": "MEGT90N000EB",
+        "source": "NASA Planetary Data System \u2014 Mars Global Surveyor MOLA MEGDR, MEGT90N000EB",
+        "filename": "megt90n000eb.img",
+        "dimensions": {
+            "columns": 5760,
+            "rows": 2880,
+            "bands": 1,
+            "total_cells": 16588800
+        },
+        "data_type": "Signed 16-bit integer",
+        "byte_order": "Big-endian",
+        "pixel_resolution_degrees": 0.0625,
+        "equatorial_pixel_scale_km": 3.7044613374,
+        "projection": "Simple cylindrical / equirectangular",
+        "central_meridian_degrees": 180,
+        "vertical_reference": "MOLA areoid",
+        "elevation_unit": "metres"
+    },
+    "elevation_statistics": {
+        "minimum_m": -8177.0,
+        "maximum_m": 21171.0,
+        "mean_m": -721.1070556640625,
+        "median_m": -257.0,
+        "standard_deviation_m": 2976.964111328125,
+        "percentiles_m": {
+            "p05": -4829.0,
+            "p25": -3702.0,
+            "p75": 1619.0,
+            "p95": 3604.0
+        },
+        "zero_valued_cells": 2128
+    },
+    "processing": {
+        "longitude_display_range": [
+            -180,
+            180
+        ],
+        "latitude_display_range": [
+            -90,
+            90
+        ],
+        "zero_values_retained": true,
+        "nodata_mask_applied": false,
+        "display_downsampling": "Every third row and column",
+        "source_data_modified": false
+    },
+    "scientific_limitations": [
+        "MOLA grid cells represent median observed topography where observations are available.",
+        "Interpolated values are supplied where no observations fall within a grid cell.",
+        "Observation coverage is uneven, with lower density near the equator.",
+        "Global statistics are unweighted grid-cell statistics; they are not area-weighted.",
+        "Elevation is referenced to the MOLA areoid.",
+        "Terrain elevation alone does not establish geological, environmental or habitation suitability."
+    ],
+    "outputs": {
+        "map": "outputs\\Visualisations\\Global\\mars_global_elevation.png",
+        "report": "outputs\\Global\\Mars\\mars_global_report.json"
+    }
+}

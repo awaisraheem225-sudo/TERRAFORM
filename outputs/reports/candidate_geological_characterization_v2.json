@@ -1,0 +1,92 @@
+{
+    "version": 2,
+    "source_file": "Geología Base.shp",
+    "source_feature_count": 16364,
+    "missing_geometries_excluded": 115,
+    "invalid_geometries_before_repair": 94,
+    "failed_repairs": 0,
+    "invalid_geometries_remaining": 0,
+    "candidate_label_mapping_verified": true,
+    "candidate_polygon_area_verified": true,
+    "candidates_analyzed": 10,
+    "geological_polygons_near_candidates": 340,
+    "intersection_records": 60,
+    "coverage": [
+        {
+            "candidate_id": "TF-001",
+            "candidate_area_km2": 119.832271,
+            "mapped_geology_area_km2": 119.63167712548486,
+            "mapped_coverage_percent": 99.83260446218603,
+            "unmapped_area_km2": 0.20059387451514965
+        },
+        {
+            "candidate_id": "TF-002",
+            "candidate_area_km2": 80.3883750000004,
+            "mapped_geology_area_km2": 80.07796984257543,
+            "mapped_coverage_percent": 99.61386810291293,
+            "unmapped_area_km2": 0.31040515742496666
+        },
+        {
+            "candidate_id": "TF-003",
+            "candidate_area_km2": 74.171674,
+            "mapped_geology_area_km2": 73.96918700823399,
+            "mapped_coverage_percent": 99.72700226266161,
+            "unmapped_area_km2": 0.20248699176600837
+        },
+        {
+            "candidate_id": "TF-004",
+            "candidate_area_km2": 73.957305,
+            "mapped_geology_area_km2": 72.57229148099626,
+            "mapped_coverage_percent": 98.12727962571954,
+            "unmapped_area_km2": 1.3850135190037491
+        },
+        {
+            "candidate_id": "TF-005",
+            "candidate_area_km2": 72.88546,
+            "mapped_geology_area_km2": 72.27579065111686,
+            "mapped_coverage_percent": 99.16352404322737,
+            "unmapped_area_km2": 0.6096693488831306
+        },
+        {
+            "candidate_id": "TF-006",
+            "candidate_area_km2": 62.595748,
+            "mapped_geology_area_km2": 62.03568778093116,
+            "mapped_coverage_percent": 99.10527434056888,
+            "unmapped_area_km2": 0.5600602190688377
+        },
+        {
+            "candidate_id": "TF-007",
+            "candidate_area_km2": 43.516907,
+            "mapped_geology_area_km2": 43.330299499355085,
+            "mapped_coverage_percent": 99.57118390641845,
+            "unmapped_area_km2": 0.18660750064491793
+        },
+        {
+            "candidate_id": "TF-008",
+            "candidate_area_km2": 43.302538,
+            "mapped_geology_area_km2": 43.23024515349686,
+            "mapped_coverage_percent": 99.83305171049527,
+            "unmapped_area_km2": 0.07229284650313872
+        },
+        {
+            "candidate_id": "TF-009",
+            "candidate_area_km2": 38.58642000000012,
+            "mapped_geology_area_km2": 37.80490187186208,
+            "mapped_coverage_percent": 97.97462908417512,
+            "unmapped_area_km2": 0.781518128138039
+        },
+        {
+            "candidate_id": "TF-010",
+            "candidate_area_km2": 38.372051,
+            "mapped_geology_area_km2": 38.30757194432245,
+            "mapped_coverage_percent": 99.8319634890573,
+            "unmapped_area_km2": 0.06447905567755186
+        }
+    ],
+    "methodology": "Candidate raster labels were matched to inventory records by pixel counts and polygon area verification. Regional geological polygons were intersected with the ten largest strict terrain-screening candidates.",
+    "limitations": [
+        "Regional geological map scale limits site-level detail.",
+        "Mapped lithology does not establish exact mineral composition.",
+        "Geological resemblance does not establish Mars analogue suitability."
+    ]
+}

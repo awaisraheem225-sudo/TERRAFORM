@@ -1,0 +1,255 @@
+========== VISUALISATION GROUP CONFIGURATION ==========
+
+from pathlib import Path
+import html
+import json
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import folium
+
+from folium.plugins import MarkerCluster
+from streamlit_folium import st_folium
+
+from src.data.dashboard_pipeline import load_and_process
+from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+
+
+# ============================================================
+# TERRAFORM | PLANETARY ANALOG INTELLIGENCE | V4.0
+# ============================================================
+
+ROOT = Path(__file__).resolve().parent
+OUTPUTS = ROOT / "outputs"
+
+ACCENT = "#55D6A0"
+BACKGROUND = "#0A1018"
+PANEL = "#111C27"
+BORDER = "#263746"
+MUTED = "#8FA3B5"
+WHITE = "#EDF4F8"
+
+NUMERIC_COLUMNS = [
+    "latitude", "longitude", "elevation_m", "slope_deg",
+    "roughness_m", "local_relief_m", "surface_temp_c",
+    "precipitation_mm", "similarity_score"
+]
+
+COMPARISON_METRICS = [
+    "slope_deg", "roughness_m", "local_relief_m",
+    "precipitation_mm"
+]
+
+RESEARCH_CSV_FILES = {
+    "Candidate inventory": "maps/candidate_regions/atacama_candidate_inventory.csv",
+    "Master candidate comparison": "dashboard/candidate_master_comparison.csv",
+    "Geological coverage": "maps/geological_characterization/candidate_geological_coverage.csv",
+    "Geological units": "maps/geological_characterization/candidate_geological_units.csv",
+    "Sensitivity summary": "maps/sensitivity_analysis/sensitivity_summary.csv",
+}
+
+RESEARCH_JSON_FILES = {
+    "Candidate profiles": "dashboard/candidate_profiles.json",
+    "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+    "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+    "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+    "Jezero terrain analysis": "reports/jezero_terrain_analysis.json",
+    "Earth validation report": "reports/earth_validation_report.json",
+    "Sensitivity analysis report": "reports/sensitivity_analysis_report.json",
+}
+
+RESEARCH_RASTER_FILES = {
+    "Candidate region IDs": "maps/candidate_regions/atacama_candidate_region_ids.tif",
+    "Broad screening mask": "maps/sensitivity_analysis/broad_three_metric_mask.tif",
+    "Moderate screening mask": "maps/sensitivity_analysis/moderate_three_metric_mask.tif",
+    "Strict screening mask": "maps/sensitivity_analysis/strict_three_metric_mask.tif",
+    "4-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_4_connectivity.tif",
+    "8-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_8_connectivity.tif",
+    "Slope screening mask": "maps/terrain_range_screening/atacama_slope_range_mask.tif",
+    "Roughness screening mask": "maps/terrain_range_screening/atacama_roughness_range_mask.tif",
+    "Local relief screening mask": "maps/terrain_range_screening/atacama_local_relief_range_mask.tif",
+    "Three-metric intersection": "maps/terrain_range_screening/atacama_three_metric_intersection.tif",
+}
+
+MARS_JSON_PATH = OUTPUTS / "global_mars/terrain_metrics/mars_global_terrain_report.json"
+MARS_AREA_REPORT_PATH = OUTPUTS / "global_mars/mars_area_weighted_report.txt"
+
+MARS_IMAGES = {
+    "Global elevation": "global_mars/mars_global_elevation.png",
+    "Elevation distribution": "global_mars/mars_global_elevation_distribution.png",
+    "Observation classification": "global_mars/mars_global_observation_classification.png",
+    "Observation density": "global_mars/mars_global_observation_density.png",
+}
+
+MARS_METRIC_IMAGES = {
+    "Slope": "global_mars/terrain_metrics/mars_global_slope_degrees.png",
+    "Roughness": "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png",
+    "Local relief": "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png",
+    "Terrain quality overview": "global_mars/terrain_metrics/mars_global_terrain_quality.png",
+}
+
+VISUALISATION_GROUPS = {
+    "Global Mars terrain": [
+        ("Global Mars elevation", "global_mars/mars_global_elevation.png"),
+        ("Mars elevation distribution", "global_mars/mars_global_elevation_distribution.png"),
+        ("Mars observation classification", "global_mars/mars_global_observation_classification.png"),
+        ("Mars observation density", "global_mars/mars_global_observation_density.png"),
+    ],
+    "Global Mars terrain metrics": [
+        ("Global Mars slope", "global_mars/terrain_metrics/mars_global_slope_degrees.png"),
+        ("Global Mars roughness", "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png"),
+        ("Global Mars local relief", "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png"),
+        ("Global Mars terrain quality overview", "global_mars/terrain_metrics/mars_global_terrain_quality.png"),
+    ],
+    "Atacama–Jezero regional study": [
+        ("Atacama candidate regions", "maps/candidate_regions/atacama_candidate_regions_map.png"),
+        ("Broad screening map", "maps/sensitivity_analysis/broad_screening_map.png"),
+        ("Moderate screening map", "maps/sensitivity_analysis/moderate_screening_map.png"),
+        ("Strict screening map", "maps/sensitivity_analysis/strict_screening_map.png"),
+        ("Screening sensitivity comparison", "maps/sensitivity_analysis/sensitivity_comparison.png"),
+        ("Largest spatial clusters", "maps/spatial_clusters/atacama_largest_matching_clusters.png"),
+        ("Earth–Mars terrain overview", "maps/terrain_comparison/earth_mars_terrain_overview.png"),
+        ("Local relief distributions", "maps/terrain_comparison/local_relief_distribution.png"),
+        ("Roughness distributions", "maps/terrain_comparison/roughness_distribution.png"),
+        ("Slope distributions", "maps/terrain_comparison/slope_distribution.png"),
+        ("Atacama terrain screening", "maps/terrain_range_screening/atacama_terrain_screening_overview.png"),
+    ],
+    "Global planetary visualisations": [
+        ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+        ("Global elevation distribution comparison", "Visualisations/Global/global_elevation_distribution_comparison.png"),
+        ("Global normalised terrain comparison", "Visualisations/Global/global_normalized_terrain_comparison.png"),
+        ("Global Mars elevation", "Visualisations/Global/mars_global_elevation.png"),
+        ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+    ],
+}
+
+
+st.set_page_config(
+    page_title="TERRAFORM | Planetary Analog Intelligence",
+    page_icon="🌍",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+
+# ============================================================
+# GLOBAL STYLING
+# ============================================================
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --background:#0A1018;
+    --panel:#111C27;
+    --border:#263746;
+    --accent:#55D6A0;
+    --text:#EDF4F8;
+    --muted:#8FA3B5;
+}
+
+
+========== APPLICATION PAGE DISPATCHER ==========
+        ("Sensitivity analysis", OUTPUTS / "reports/sensitivity_analysis_report.json"),
+    ]
+    for title, path in regional_report_paths:
+        if path.exists():
+            with st.expander(title):
+                try:
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                    st.json(data)
+                    st.download_button(
+                        f"Download {title}",
+                        data=json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8"),
+                        file_name=path.name,
+                        mime="application/json",
+                        key=f"deep_dive_{path.name}"
+                    )
+                except Exception:
+                    st.code(load_text_report(path), language="text")
+
+    st.divider()
+    st.markdown("### Scientific limitations and interpretation")
+    st.warning(
+        "Earth analogues cannot reproduce the complete Martian environment. "
+        "Gravity, atmospheric pressure, radiation, atmospheric chemistry and "
+        "other planetary conditions remain fundamentally different."
+    )
+    limitations = [
+        "The spherical Mars reference geometry is not an exact model of the physical terrain surface.",
+        "The cylindrical grid becomes singular near the poles; terrain-metric cells at and beyond 89.5° absolute planetocentric latitude are excluded.",
+        "The maximum slope is an extreme, outlier-sensitive value and should not be treated as representative.",
+        "The 3×3 roughness and relief windows are angular grid-cell neighbourhoods rather than fixed-distance windows.",
+        "Interpolated elevations remain in zero-observation cells in the source product.",
+        "Observed-only centre-cell selection does not guarantee that every neighbouring cell used in a metric was directly observed.",
+        "Area-weighted percentile values are approximate histogram-bin estimates.",
+        "Regional geological mapping is not field verification.",
+        "Percentile overlap is descriptive screening, not a probability of planetary analogy.",
+        "No universal similarity score or validated site-suitability ranking is produced.",
+    ]
+    for item in limitations:
+        st.markdown(f"- {item}")
+
+    st.divider()
+    st.markdown("### Research provenance")
+    provenance = pd.DataFrame([
+        ("Earth terrain", "Copernicus DEM GLO-30 DSM"),
+        ("Mars global elevation", "MOLA MEGDR / MGS-M-MOLA-5-MEGDR-L3-V1.0"),
+        ("Mars regional reference", "Jezero Crater terrain analysis"),
+        ("Mars global reference radius", "3,396 km spherical reference radius"),
+        ("Geological mapping", "SERNAGEOMIN regional geological map"),
+        ("Regional common working resolution", "Approximately 463 m"),
+    ], columns=["Component", "Documented source / context"])
+    st.dataframe(provenance, use_container_width=True, hide_index=True)
+
+    st.caption(
+        "TERRAFORM is an independent research platform. It is not an official NASA product, "
+        "a NASA mission instrument, or a validated planetary site-selection system."
+    )
+
+
+# ============================================================
+# MAIN PAGE ROUTER
+# ============================================================
+
+if page == "Mission Overview":
+    overview_page()
+
+elif page == "Discovery Explorer":
+    discovery_page()
+
+elif page == "Global Mars Explorer":
+    global_mars_page()
+
+elif page == "Earth-Mars Comparison":
+    comparison_page()
+
+elif page == "Candidate Intelligence":
+    candidate_page()
+
+elif page == "Research Visualisations":
+    visualisations_page()
+
+elif page == "Data Laboratory":
+    data_lab_page()
+
+elif page == "Technical Deep Dive":
+    technical_deep_dive_page()
+
+
+# ============================================================
+# GLOBAL FOOTER
+# ============================================================
+
+st.markdown("""
+<div class="footer">
+    TERRAFORM // PLANETARY ANALOG INTELLIGENCE
+    <br><br>
+    INDEPENDENT RESEARCH PROJECT · NASA SPACE APPS CHALLENGE 2026
+    <br>
+    SCIENTIFIC OBSERVATIONS ONLY · NO FABRICATED DISCOVERIES
+</div>
+""", unsafe_allow_html=True)
+

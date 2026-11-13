@@ -1,0 +1,705 @@
+﻿===== OUTPUT FILES =====
+outputs\dashboard\candidate_master_comparison.csv
+outputs\dashboard\candidate_profiles.json
+outputs\maps\candidate_regions\atacama_candidate_inventory.csv
+outputs\maps\candidate_regions\atacama_candidate_region_ids.tif
+outputs\maps\geological_characterization\candidate_geological_coverage.csv
+outputs\maps\geological_characterization\candidate_geological_intersections.geojson
+outputs\maps\geological_characterization\candidate_geological_units.csv
+outputs\maps\geological_characterization\verified_candidate_polygons.geojson
+outputs\maps\sensitivity_analysis\broad_three_metric_mask.tif
+outputs\maps\sensitivity_analysis\moderate_three_metric_mask.tif
+outputs\maps\sensitivity_analysis\sensitivity_summary.csv
+outputs\maps\sensitivity_analysis\strict_three_metric_mask.tif
+outputs\maps\spatial_clusters\atacama_clusters_4_connectivity.tif
+outputs\maps\spatial_clusters\atacama_clusters_8_connectivity.tif
+outputs\maps\terrain_comparison\terrain_visualisation_statistics.json
+outputs\maps\terrain_range_screening\atacama_local_relief_range_mask.tif
+outputs\maps\terrain_range_screening\atacama_roughness_range_mask.tif
+outputs\maps\terrain_range_screening\atacama_slope_range_mask.tif
+outputs\maps\terrain_range_screening\atacama_three_metric_intersection.tif
+outputs\reports\candidate_geological_characterization.json
+outputs\reports\candidate_geological_characterization_v2.json
+outputs\reports\candidate_region_extraction_report.json
+outputs\reports\earth_mars_terrain_comparison.json
+outputs\reports\earth_terrain_analysis.json
+outputs\reports\earth_validation_report.json
+outputs\reports\geology_data_inspection.json
+outputs\reports\jezero_terrain_analysis.json
+outputs\reports\mars_mola_metadata.json
+outputs\reports\sensitivity_analysis_report.json
+outputs\reports\spatial_cluster_analysis.json
+outputs\reports\terrain_range_screening_report.json
+outputs\reports\candidate_profiles\candidate_master_comparison.csv
+outputs\reports\candidate_profiles\TF-001_profile.json
+outputs\reports\candidate_profiles\TF-001_profile.md
+outputs\reports\candidate_profiles\TF-002_profile.json
+
+===== MASTER CSV =====
+Rows: 10
+Columns: candidate_id, area_rank, latitude, longitude, area_km2, slope_mean_deg, slope_median_deg, roughness_mean_m, roughness_median_m, local_relief_mean_m, local_relief_median_m, geology_coverage_percent, geological_unit_count, dominant_geological_unit, broad_overlap_percent, moderate_overlap_percent
+First record:
+
+
+candidate_id             : TF-001
+area_rank                : 1
+latitude                 : -22.0853
+longitude                : -68.534159
+area_km2                 : 119.8323
+slope_mean_deg           : 2.2802
+slope_median_deg         : 2.2611
+roughness_mean_m         : 15.2088
+roughness_median_m       : 15.1693
+local_relief_mean_m      : 47.5652
+local_relief_median_m    : 46.8018
+geology_coverage_percent : 99.8326
+geological_unit_count    : 2
+dominant_geological_unit : MP1c
+broad_overlap_percent    : 100.0
+moderate_overlap_percent : 100.0
+
+
+
+
+
+===== CANDIDATE JSON =====
+Root type: System.Management.Automation.PSCustomObject
+Root keys: project, title, profile_count, ranking_basis, reference_region, earth_study_region, reference_intervals, profiles, scientific_limitations
+Sample:
+{
+    "project":  "TERRAFORM",
+    "title":  "Planetary Analog Intelligence",
+    "profile_count":  10,
+    "ranking_basis":  "Connected-region area, descending",
+    "reference_region":  "Jezero Crater, Mars",
+    "earth_study_region":  "Atacama Desert, Chile",
+    "reference_intervals":  {
+                                "broad_p10_p90":  {
+                                                      "slope_deg":  [
+                                                                        0.6519,
+                                                                        7.3131
+                                                                    ],
+                                                      "roughness_m":  [
+                                                                          5.1962,
+                                                                          48.8015
+                                                                      ],
+                                                      "local_relief_m":  [
+                                                                             16.461,
+                                                                             151.1901
+                                                                         ]
+                                                  },
+                                "moderate_p25_p75":  {
+                                                         "slope_deg":  [
+                                                                           1.2336,
+                                                                           4.1812
+                                                                       ],
+                                                         "roughness_m":  [
+                                                                             8.9783,
+                                                                             28.1852
+                                                                         ],
+                                                         "local_relief_m":  [
+                                                                                28.1552,
+                                                                                88.0981
+                                                                            ]
+                                                     },
+                                "strict_p40_p60":  {
+                                                       "slope_deg":  [
+                                                                         1.8181,
+                                                                         2.8404
+                                                                     ],
+                                                       "roughness_m":  [
+                                                                           12.6838,
+                                                                           19.5101
+                                                                       ],
+                                                       "local_relief_m":  [
+                                                                              39.8235,
+                                                                              60.871
+                                                                          ]
+                                                   }
+                            },
+    "profiles":  [
+                     {
+                         "candidate_id":  "TF-001",
+                         "area_rank":  1,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.0853,
+                                           "longitude":  -68.534159,
+                                           "area_km2":  119.8323,
+                                           "pixel_count":  559
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2802; median_deg=2.2611}",
+                                         "roughness":  "@{mean_m=15.2088; median_m=15.1693}",
+                                         "local_relief":  "@{mean_m=47.5652; median_m=46.8018}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=119.6317; coverage_percent=99.8326; unmapped_area_km2=0.2006}",
+                                         "number_of_intersecting_geological_records":  2,
+                                         "dominant_units":  " ",
+                                         "all_intersecting_units":  " "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.8326,
+                                              "geological_unmapped_area_km2":  0.2006,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-002",
+                         "area_rank":  2,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.9095,
+                                           "longitude":  -68.809654,
+                                           "area_km2":  80.3884,
+                                           "pixel_count":  375
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2918; median_deg=2.2659}",
+                                         "roughness":  "@{mean_m=15.2179; median_m=15.1213}",
+                                         "local_relief":  "@{mean_m=50.1085; median_m=49.9465}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=80.078; coverage_percent=99.6139; unmapped_area_km2=0.3104}",
+                                         "number_of_intersecting_geological_records":  4,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "   "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.6139,
+                                              "geological_unmapped_area_km2":  0.3104,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-003",
+                         "area_rank":  3,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.744204,
+                                           "longitude":  -68.903604,
+                                           "area_km2":  74.1717,
+                                           "pixel_count":  346
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.3305; median_deg=2.3299}",
+                                         "roughness":  "@{mean_m=15.4453; median_m=15.3439}",
+                                         "local_relief":  "@{mean_m=49.2745; median_m=48.7063}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=73.9692; coverage_percent=99.727; unmapped_area_km2=0.2025}",
+                                         "number_of_intersecting_geological_records":  6,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "     "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.727,
+                                              "geological_unmapped_area_km2":  0.2025,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-004",
+                         "area_rank":  4,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.796768,
+                                           "longitude":  -68.521902,
+                                           "area_km2":  73.9573,
+                                           "pixel_count":  345
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2457; median_deg=2.2365}",
+                                         "roughness":  "@{mean_m=14.8316; median_m=14.7504}",
+                                         "local_relief":  "@{mean_m=47.7436; median_m=46.9753}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=72.5723; coverage_percent=98.1273; unmapped_area_km2=1.385}",
+                                         "number_of_intersecting_geological_records":  3,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "  "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  98.1273,
+                                              "geological_unmapped_area_km2":  1.385,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-005",
+                         "area_rank":  5,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.531194,
+                                           "longitude":  -68.511769,
+                                           "area_km2":  72.8855,
+                                           "pixel_count":  340
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2283; median_deg=2.2048}",
+                                         "roughness":  "@{mean_m=14.8195; median_m=14.6215}",
+                                         "local_relief":  "@{mean_m=49.596; median_m=49.256}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=72.2758; coverage_percent=99.1635; unmapped_area_km2=0.6097}",
+                                         "number_of_intersecting_geological_records":  5,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "    "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.1635,
+                                              "geological_unmapped_area_km2":  0.6097,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-006",
+                         "area_rank":  6,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.457414,
+                                           "longitude":  -68.399337,
+                                           "area_km2":  62.5957,
+                                           "pixel_count":  292
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2722; median_deg=2.2494}",
+                                         "roughness":  "@{mean_m=15.0008; median_m=14.8938}",
+                                         "local_relief":  "@{mean_m=49.3624; median_m=49.1802}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=62.0357; coverage_percent=99.1053; unmapped_area_km2=0.5601}",
+                                         "number_of_intersecting_geological_records":  5,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "    "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.1053,
+                                              "geological_unmapped_area_km2":  0.5601,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-007",
+                         "area_rank":  7,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.619772,
+                                           "longitude":  -68.537988,
+                                           "area_km2":  43.5169,
+                                           "pixel_count":  203
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.3133; median_deg=2.3069}",
+                                         "roughness":  "@{mean_m=15.3761; median_m=15.3721}",
+                                         "local_relief":  "@{mean_m=46.1915; median_m=45.6189}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=43.3303; coverage_percent=99.5712; unmapped_area_km2=0.1866}",
+                                         "number_of_intersecting_geological_records":  4,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "   "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.5712,
+                                              "geological_unmapped_area_km2":  0.1866,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-008",
+                         "area_rank":  8,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.540403,
+                                           "longitude":  -68.918086,
+                                           "area_km2":  43.3025,
+                                           "pixel_count":  202
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.3468; median_deg=2.3638}",
+                                         "roughness":  "@{mean_m=15.5173; median_m=15.5772}",
+                                         "local_relief":  "@{mean_m=50.7667; median_m=50.8755}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=43.2302; coverage_percent=99.8331; unmapped_area_km2=0.0723}",
+                                         "number_of_intersecting_geological_records":  3,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "  "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.8331,
+                                              "geological_unmapped_area_km2":  0.0723,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-009",
+                         "area_rank":  9,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.147722,
+                                           "longitude":  -68.707454,
+                                           "area_km2":  38.5864,
+                                           "pixel_count":  180
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.4297; median_deg=2.4548}",
+                                         "roughness":  "@{mean_m=16.1126; median_m=16.2441}",
+                                         "local_relief":  "@{mean_m=49.0727; median_m=48.4965}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=37.8049; coverage_percent=97.9746; unmapped_area_km2=0.7815}",
+                                         "number_of_intersecting_geological_records":  4,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "   "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  97.9746,
+                                              "geological_unmapped_area_km2":  0.7815,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     },
+                     {
+                         "candidate_id":  "TF-010",
+                         "area_rank":  10,
+                         "ranking_basis":  "Connected-region area, descending",
+                         "geography":  {
+                                           "region":  "Antofagasta",
+                                           "latitude":  -22.188293,
+                                           "longitude":  -68.259624,
+                                           "area_km2":  38.3721,
+                                           "pixel_count":  179
+                                       },
+                         "terrain":  {
+                                         "slope":  "@{mean_deg=2.2649; median_deg=2.2311}",
+                                         "roughness":  "@{mean_m=15.1536; median_m=15.0086}",
+                                         "local_relief":  "@{mean_m=48.412; median_m=47.8828}"
+                                     },
+                         "jezero_reference":  {
+                                                  "broad_p10_p90":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "moderate_p25_p75":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}",
+                                                  "strict_p40_p60":  "@{slope_deg=System.Object[]; roughness_m=System.Object[]; local_relief_m=System.Object[]}"
+                                              },
+                         "strict_interval_membership":  {
+                                                            "slope_median_within_strict_interval":  true,
+                                                            "roughness_median_within_strict_interval":  true,
+                                                            "local_relief_median_within_strict_interval":  true
+                                                        },
+                         "screening":  {
+                                           "broad_overlap_percent":  100.0,
+                                           "moderate_overlap_percent":  100.0,
+                                           "interpretation":  "Inherited screening overlap statistics. Not independent validation or probability."
+                                       },
+                         "geology":  {
+                                         "mapped_coverage":  "@{mapped_area_km2=38.3076; coverage_percent=99.832; unmapped_area_km2=0.0645}",
+                                         "number_of_intersecting_geological_records":  5,
+                                         "dominant_units":  "  ",
+                                         "all_intersecting_units":  "    "
+                                     },
+                         "data_quality":  {
+                                              "geological_coverage_percent":  99.832,
+                                              "geological_unmapped_area_km2":  0.0645,
+                                              "profile_status":  "Generated from verified candidate and geology outputs"
+                                          },
+                         "scientific_limitations":  [
+                                                        "Candidate ranking is by connected-region area, not scientific suitability.",
+                                                        "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                                        "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                                        "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                                        "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                                        "The common working resolution is approximately 463 metres.",
+                                                        "Earth and Mars use separate local projected coordinate systems.",
+                                                        "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                                        "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                                        "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                                        "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                                                    ],
+                         "map_reference":  "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+                     }
+                 ],
+    "scientific_limitations":  [
+                                   "Candidate ranking is by connected-region area, not scientific suitability.",
+                                   "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+                                   "Terrain compatibility does not establish geological or mineralogical equivalence.",
+                                   "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+                                   "Mars terrain reference is derived from MOLA gridded elevation data.",
+                                   "The common working resolution is approximately 463 metres.",
+                                   "Earth and Mars use separate local projected coordinate systems.",
+                                   "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+                                   "Geological map coverage does not establish field-verified lithology or mineral composition.",
+                                   "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+                                   "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+                               ]
+}

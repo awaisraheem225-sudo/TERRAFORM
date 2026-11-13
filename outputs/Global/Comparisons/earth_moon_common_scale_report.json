@@ -1,0 +1,258 @@
+{
+    "project": "TERRAFORM - Planetary Analog Intelligence",
+    "analysis": "Earth-Moon Latitude-Matched Terrain Comparison",
+    "version": "1.0",
+    "reference_dataset": "NASA LRO LOLA LDEM_16 V3.1",
+    "methodology": {
+        "earth_source": "Copernicus GLO-30 DSM",
+        "earth_aggregation": "Average resampling",
+        "reference_equatorial_pixel_scale_m": 1895.21,
+        "earth_pixel_spacing": "East-west spacing adjusted by cosine of region latitude; north-south spacing fixed at reference scale.",
+        "terrain_neighbourhood": "3x3",
+        "moon_reference": "Global lunar terrain metrics restricted to a 1.5-degree latitude band on either side of each Earth region's centre latitude.",
+        "comparison_type": "Statistical distribution comparison"
+    },
+    "regions": {
+        "Atacama": {
+            "region": "Atacama",
+            "centre": {
+                "latitude": -22.500754204592067,
+                "longitude": -68.49831871738184
+            },
+            "comparison_scale": {
+                "east_west_pixel_size_m": 1750.9361817333825,
+                "north_south_pixel_size_m": 1895.21,
+                "neighbourhood": "3x3",
+                "neighbourhood_east_west_m": 5252.808545200147,
+                "neighbourhood_north_south_m": 5685.63,
+                "aggregation": "Average"
+            },
+            "earth_statistics": {
+                "slope_degrees": {
+                    "valid_pixels": 3249,
+                    "minimum": 0.04182552173733711,
+                    "maximum": 18.963308334350586,
+                    "mean": 2.7722160816192627,
+                    "median": 2.121166467666626,
+                    "standard_deviation": 2.3759682178497314,
+                    "percentiles": {
+                        "p05": 0.4405084252357483,
+                        "p25": 1.2092163562774658,
+                        "p50": 2.121166467666626,
+                        "p75": 3.587761878967285,
+                        "p95": 7.265181541442871
+                    }
+                },
+                "roughness_m": {
+                    "valid_pixels": 3249,
+                    "minimum": 3.316624879837036,
+                    "maximum": 477.2525634765625,
+                    "mean": 74.17097473144531,
+                    "median": 57.41950988769531,
+                    "standard_deviation": 59.9375114440918,
+                    "percentiles": {
+                        "p05": 13.910428047180176,
+                        "p25": 34.2344856262207,
+                        "p50": 57.41950988769531,
+                        "p75": 97.07213592529297,
+                        "p95": 187.60699462890625
+                    }
+                },
+                "local_relief_m": {
+                    "valid_pixels": 3249,
+                    "minimum": 11.29296875,
+                    "maximum": 1554.85546875,
+                    "mean": 236.00311279296875,
+                    "median": 182.997314453125,
+                    "standard_deviation": 193.0420684814453,
+                    "percentiles": {
+                        "p05": 42.86127853393555,
+                        "p25": 107.517578125,
+                        "p50": 182.997314453125,
+                        "p75": 310.20556640625,
+                        "p95": 599.5997924804688
+                    }
+                }
+            },
+            "lunar_reference": {
+                "latitude_band_degrees": [
+                    -24.000754204592067,
+                    -21.000754204592067
+                ],
+                "metrics": {
+                    "slope_degrees": {
+                        "valid_pixels": 276480,
+                        "minimum": 0.00755797466263175,
+                        "maximum": 34.8857421875,
+                        "mean": 5.290707111358643,
+                        "median": 3.808643102645874,
+                        "standard_deviation": 4.977424144744873,
+                        "percentiles": {
+                            "p05": 0.2599126100540161,
+                            "p25": 1.4324235916137695,
+                            "p50": 3.808643102645874,
+                            "p75": 7.701870918273926,
+                            "p95": 15.432687759399414
+                        }
+                    },
+                    "roughness_m": {
+                        "valid_pixels": 276480,
+                        "minimum": 0.0,
+                        "maximum": 956.32275390625,
+                        "mean": 144.03367614746094,
+                        "median": 107.62300109863281,
+                        "standard_deviation": 129.38873291015625,
+                        "percentiles": {
+                            "p05": 8.455767631530762,
+                            "p25": 46.16453170776367,
+                            "p50": 107.62300109863281,
+                            "p75": 205.72340393066406,
+                            "p95": 404.4349060058594
+                        }
+                    },
+                    "local_relief_m": {
+                        "valid_pixels": 276480,
+                        "minimum": 1.5,
+                        "maximum": 3113.5,
+                        "mean": 445.2784423828125,
+                        "median": 336.0,
+                        "standard_deviation": 395.4987487792969,
+                        "percentiles": {
+                            "p05": 26.5,
+                            "p25": 145.5,
+                            "p50": 336.0,
+                            "p75": 635.0,
+                            "p95": 1239.0
+                        }
+                    }
+                }
+            }
+        },
+        "Death Valley": {
+            "region": "Death Valley",
+            "centre": {
+                "latitude": 36.100158407848824,
+                "longitude": -117.00001590710367
+            },
+            "comparison_scale": {
+                "east_west_pixel_size_m": 1531.307420608972,
+                "north_south_pixel_size_m": 1895.21,
+                "neighbourhood": "3x3",
+                "neighbourhood_east_west_m": 4593.922261826916,
+                "neighbourhood_north_south_m": 5685.63,
+                "aggregation": "Average"
+            },
+            "earth_statistics": {
+                "slope_degrees": {
+                    "valid_pixels": 1156,
+                    "minimum": 0.0014625765616074204,
+                    "maximum": 21.6391658782959,
+                    "mean": 6.2325310707092285,
+                    "median": 5.275500297546387,
+                    "standard_deviation": 4.49082088470459,
+                    "percentiles": {
+                        "p05": 0.12216278910636902,
+                        "p25": 2.8456451892852783,
+                        "p50": 5.275500297546387,
+                        "p75": 9.057024955749512,
+                        "p95": 14.76585578918457
+                    }
+                },
+                "roughness_m": {
+                    "valid_pixels": 1156,
+                    "minimum": 0.1939011514186859,
+                    "maximum": 484.426025390625,
+                    "mean": 153.99208068847656,
+                    "median": 143.799072265625,
+                    "standard_deviation": 97.4983901977539,
+                    "percentiles": {
+                        "p05": 7.894593238830566,
+                        "p25": 82.008544921875,
+                        "p50": 143.799072265625,
+                        "p75": 218.37039184570312,
+                        "p95": 337.6003723144531
+                    }
+                },
+                "local_relief_m": {
+                    "valid_pixels": 1156,
+                    "minimum": 0.6229248046875,
+                    "maximum": 1415.2657470703125,
+                    "mean": 478.46063232421875,
+                    "median": 451.8839111328125,
+                    "standard_deviation": 298.1683654785156,
+                    "percentiles": {
+                        "p05": 25.808687210083008,
+                        "p25": 255.0188751220703,
+                        "p50": 451.8839111328125,
+                        "p75": 677.9705810546875,
+                        "p95": 1025.233154296875
+                    }
+                }
+            },
+            "lunar_reference": {
+                "latitude_band_degrees": [
+                    34.600158407848824,
+                    37.600158407848824
+                ],
+                "metrics": {
+                    "slope_degrees": {
+                        "valid_pixels": 276480,
+                        "minimum": 0.0,
+                        "maximum": 33.913150787353516,
+                        "mean": 4.379986763000488,
+                        "median": 2.5188803672790527,
+                        "standard_deviation": 5.044553756713867,
+                        "percentiles": {
+                            "p05": 0.1168171763420105,
+                            "p25": 0.5557498335838318,
+                            "p50": 2.5188803672790527,
+                            "p75": 6.389048099517822,
+                            "p95": 15.12027645111084
+                        }
+                    },
+                    "roughness_m": {
+                        "valid_pixels": 276480,
+                        "minimum": 0.0,
+                        "maximum": 899.8113403320312,
+                        "mean": 112.12824249267578,
+                        "median": 70.32278442382812,
+                        "standard_deviation": 124.2797622680664,
+                        "percentiles": {
+                            "p05": 3.240370273590088,
+                            "p25": 15.85086727142334,
+                            "p50": 70.32278442382812,
+                            "p75": 162.8956756591797,
+                            "p95": 371.80322265625
+                        }
+                    },
+                    "local_relief_m": {
+                        "valid_pixels": 276480,
+                        "minimum": 0.5,
+                        "maximum": 2903.0,
+                        "mean": 345.3788146972656,
+                        "median": 220.5,
+                        "standard_deviation": 377.7564392089844,
+                        "percentiles": {
+                            "p05": 10.5,
+                            "p25": 50.0,
+                            "p50": 220.5,
+                            "p75": 504.0,
+                            "p95": 1130.5
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "scientific_limitations": [
+        "The comparison is statistical, not spatially matched.",
+        "The lunar reference uses latitude bands, not a selected lunar site.",
+        "The LOLA source grid has latitude-dependent physical spacing.",
+        "Earth source elevation is a digital surface model, not a bare-earth terrain model.",
+        "LOLA elevations are relative to a lunar reference sphere.",
+        "Earth and Moon elevation datums are not directly comparable.",
+        "Aggregation reduces Earth detail to the planetary reference scale.",
+        "Terrain similarity alone does not establish landing or base suitability.",
+        "The lunar PDS label extrema discrepancy remains unresolved."
+    ]
+}

@@ -1,0 +1,11 @@
+PASS: Overview metric labels
+PASS: Overview repository explanation
+PASS: Overview regional scope
+PASS: Analytical card heights (1 cards)
+PASS: Discovery heading
+PASS: Discovery inventory metrics
+PASS: Discovery profile heading
+PASS: Discovery profile distinction and geographic coverage
+
+PATCH FAILED ? app.py was NOT modified.
+ERROR: RuntimeError: Technical architecture card height: expected 1 match, found 0. No changes saved.

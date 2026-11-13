@@ -1,0 +1,103 @@
+TERRAFORM - MARS AREA-WEIGHTED GLOBAL STATISTICS
+============================================================
+
+REFERENCE GEOMETRY
+------------------------------------------------------------
+Reference radius: 3396.0 km
+Geometry: Spherical reference surface
+Grid: 2880 x 5760
+Angular spacing: 0.0625 degrees
+Longitude coverage: 360 degrees
+Latitude coverage: 180 degrees
+
+CELL AREA METHOD
+------------------------------------------------------------
+A = R^2 * delta_longitude *
+    (sin(north_latitude) - sin(south_latitude))
+
+Each latitude row receives its own spherical cell area.
+All cells in the same latitude row have equal area.
+
+GLOBAL REFERENCE SURFACE AREA
+------------------------------------------------------------
+Calculated area: 144,925,640.083 km²
+Theoretical sphere area: 144,925,640.083 km²
+Difference: 0.000000 km²
+
+OBSERVATION COVERAGE
+------------------------------------------------------------
+Observed cells: 15,685,242
+Zero-observation cells: 903,558
+
+Observed reference area: 139,764,331.335 km²
+Zero-observation reference area: 5,161,308.748 km²
+
+Area-weighted observed coverage: 96.43865%
+Area-weighted zero-observation coverage: 3.56135%
+
+
+Entire global elevation grid
+Cells: 16,588,800
+Reference surface area: 144,925,640.083 km²
+Minimum: -8177 m
+Maximum: 21171 m
+Area-weighted mean: -550.692 m
+Area-weighted P01: -6125.00 m
+Area-weighted P25: -3242.00 m
+Area-weighted median: -154.00 m
+Area-weighted P75: 1559.00 m
+Area-weighted P99: 6667.00 m
+
+
+
+Cells with recorded observations
+Cells: 15,685,242
+Reference surface area: 139,764,331.335 km²
+Minimum: -8177 m
+Maximum: 21171 m
+Area-weighted mean: -556.276 m
+Area-weighted P01: -6115.00 m
+Area-weighted P25: -3255.00 m
+Area-weighted median: -157.00 m
+Area-weighted P75: 1557.00 m
+Area-weighted P99: 6658.00 m
+
+
+
+Cells with zero recorded observations
+Cells: 903,558
+Reference surface area: 5,161,308.748 km²
+Minimum: -8149 m
+Maximum: 21048 m
+Area-weighted mean: -399.502 m
+Area-weighted P01: -6364.00 m
+Area-weighted P25: -2876.00 m
+Area-weighted median: -84.00 m
+Area-weighted P75: 1614.00 m
+Area-weighted P99: 6862.00 m
+
+
+SCIENTIFIC LIMITATIONS
+------------------------------------------------------------
+1. Surface areas use a spherical reference radius of 3396 km.
+2. These are reference-sphere areas, not exact terrain-surface areas.
+3. Elevations are relative to the MOLA areoid.
+4. Zero-count cells are classified as having no recorded
+   MOLA observations. Their supplied elevations are retained.
+5. The PDS product description identifies interpolated values
+   in observation gaps.
+6. This analysis does not independently validate interpolation.
+7. Weighted elevation statistics include interpolated values
+   in the full-grid results.
+8. Observed-only statistics exclude zero-count cells.
+9. Area-weighted quantiles use weighted elevation histograms
+   because the elevation data are integer-valued metres.
+
+OUTPUT FILES
+------------------------------------------------------------
+mars_area_weighted_report.txt
+mars_area_weighted_latitude_bands.csv
+
+============================================================
+TERRAFORM | PLANETARY ANALOG INTELLIGENCE
+============================================================

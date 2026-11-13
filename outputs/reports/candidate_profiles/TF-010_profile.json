@@ -1,0 +1,191 @@
+{
+  "candidate_id": "TF-010",
+  "area_rank": 10,
+  "ranking_basis": "Connected-region area, descending",
+  "geography": {
+    "region": "Antofagasta",
+    "latitude": -22.188293,
+    "longitude": -68.259624,
+    "area_km2": 38.3721,
+    "pixel_count": 179
+  },
+  "terrain": {
+    "slope": {
+      "mean_deg": 2.2649,
+      "median_deg": 2.2311
+    },
+    "roughness": {
+      "mean_m": 15.1536,
+      "median_m": 15.0086
+    },
+    "local_relief": {
+      "mean_m": 48.412,
+      "median_m": 47.8828
+    }
+  },
+  "jezero_reference": {
+    "broad_p10_p90": {
+      "slope_deg": [
+        0.6519,
+        7.3131
+      ],
+      "roughness_m": [
+        5.1962,
+        48.8015
+      ],
+      "local_relief_m": [
+        16.461,
+        151.1901
+      ]
+    },
+    "moderate_p25_p75": {
+      "slope_deg": [
+        1.2336,
+        4.1812
+      ],
+      "roughness_m": [
+        8.9783,
+        28.1852
+      ],
+      "local_relief_m": [
+        28.1552,
+        88.0981
+      ]
+    },
+    "strict_p40_p60": {
+      "slope_deg": [
+        1.8181,
+        2.8404
+      ],
+      "roughness_m": [
+        12.6838,
+        19.5101
+      ],
+      "local_relief_m": [
+        39.8235,
+        60.871
+      ]
+    }
+  },
+  "strict_interval_membership": {
+    "slope_median_within_strict_interval": true,
+    "roughness_median_within_strict_interval": true,
+    "local_relief_median_within_strict_interval": true
+  },
+  "screening": {
+    "broad_overlap_percent": 100.0,
+    "moderate_overlap_percent": 100.0,
+    "interpretation": "Inherited screening overlap statistics. Not independent validation or probability."
+  },
+  "geology": {
+    "mapped_coverage": {
+      "mapped_area_km2": 38.3076,
+      "coverage_percent": 99.832,
+      "unmapped_area_km2": 0.0645
+    },
+    "number_of_intersecting_geological_records": 5,
+    "dominant_units": [
+      {
+        "code": "Qa",
+        "lithostratigraphy": "Depositos aluviales, subordinadamente coluviales o lacustres",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Holoceno",
+        "maximum_age": "Pleistoceno",
+        "lithology": "grava,arena,limo",
+        "intersection_area_km2": 18.9356,
+        "candidate_coverage_percent": 49.3473
+      },
+      {
+        "code": "Q3t",
+        "lithostratigraphy": "Depositos de flujo piroclastico",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Cuaternario",
+        "maximum_age": "Cuaternario",
+        "lithology": "volcanico piroclastico",
+        "intersection_area_km2": 9.844,
+        "candidate_coverage_percent": 25.654
+      },
+      {
+        "code": "Q3i",
+        "lithostratigraphy": "Estratovolcanes y complejos volcanicos",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Cuaternario",
+        "maximum_age": "Cuaternario",
+        "lithology": "volcanico piroclastico,andesita basaltica,dacita",
+        "intersection_area_km2": 5.7523,
+        "candidate_coverage_percent": 14.9908
+      }
+    ],
+    "all_intersecting_units": [
+      {
+        "code": "Qa",
+        "lithostratigraphy": "Depositos aluviales, subordinadamente coluviales o lacustres",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Holoceno",
+        "maximum_age": "Pleistoceno",
+        "lithology": "grava,arena,limo",
+        "intersection_area_km2": 18.9356,
+        "candidate_coverage_percent": 49.3473
+      },
+      {
+        "code": "Q3t",
+        "lithostratigraphy": "Depositos de flujo piroclastico",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Cuaternario",
+        "maximum_age": "Cuaternario",
+        "lithology": "volcanico piroclastico",
+        "intersection_area_km2": 9.844,
+        "candidate_coverage_percent": 25.654
+      },
+      {
+        "code": "Q3i",
+        "lithostratigraphy": "Estratovolcanes y complejos volcanicos",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Cuaternario",
+        "maximum_age": "Cuaternario",
+        "lithology": "volcanico piroclastico,andesita basaltica,dacita",
+        "intersection_area_km2": 5.7523,
+        "candidate_coverage_percent": 14.9908
+      },
+      {
+        "code": "MP1c",
+        "lithostratigraphy": "Secuencias sedimentarias clasticas de piedemonte, aluviales, coluviales o fluvia",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Plioceno",
+        "maximum_age": "Mioceno superior",
+        "lithology": "conglomerado,arenisca,limolita",
+        "intersection_area_km2": 3.4226,
+        "candidate_coverage_percent": 8.9195
+      },
+      {
+        "code": "Ms3t",
+        "lithostratigraphy": "Ignimbritas",
+        "rock_rank": "Informal unit",
+        "minimum_age": "Mioceno superior",
+        "maximum_age": "Mioceno superior",
+        "lithology": "dacita,riolita,volcanico piroclastico",
+        "intersection_area_km2": 0.7684,
+        "candidate_coverage_percent": 2.0026
+      }
+    ]
+  },
+  "data_quality": {
+    "geological_coverage_percent": 99.832,
+    "geological_unmapped_area_km2": 0.0645,
+    "profile_status": "Generated from verified candidate and geology outputs"
+  },
+  "scientific_limitations": [
+    "Candidate ranking is by connected-region area, not scientific suitability.",
+    "Terrain screening uses empirical Jezero percentile intervals, not validated analogue thresholds.",
+    "Terrain compatibility does not establish geological or mineralogical equivalence.",
+    "The Earth elevation source is Copernicus DEM GLO-30, a digital surface model.",
+    "Mars terrain reference is derived from MOLA gridded elevation data.",
+    "The common working resolution is approximately 463 metres.",
+    "Earth and Mars use separate local projected coordinate systems.",
+    "The SERNAGEOMIN geological map is regional-scale mapping at approximately 1:1,000,000.",
+    "Geological map coverage does not establish field-verified lithology or mineral composition.",
+    "Earth cannot reproduce Martian gravity, atmospheric pressure, radiation environment or atmospheric chemistry.",
+    "The broad and moderate overlap percentages describe the screening workflow, not independent validation."
+  ],
+  "map_reference": "outputs/maps/geological_characterization/verified_candidate_polygons.geojson"
+}

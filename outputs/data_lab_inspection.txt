@@ -1,0 +1,239 @@
+========== CSV STRUCTURES ==========
+
+FILE: outputs/maps/candidate_regions/atacama_candidate_inventory.csv
+ROWS: 873
+COLUMNS: candidate_id, rank_by_area, pixel_count, area_km2, centroid_latitude, centroid_longitude, centroid_easting_m, centroid_northing_m, broad_screening_overlap_percent, moderate_screening_overlap_percent, slope_mean_deg, slope_median_deg, roughness_mean_m, roughness_median_m, local_relief_mean_m, local_relief_median_m, minimum_row, maximum_row, minimum_column, maximum_column
+SAMPLE:
+candidate_id  rank_by_area  pixel_count   area_km2  centroid_latitude  centroid_longitude  centroid_easting_m  ...  roughness_median_m  local_relief_mean_m  local_relief_median_m  minimum_row  maximum_row  minimum_column  maximum_column
+      TF-001             1          559 119.832271           -22.0853          -68.534159       548056.079679  ...           15.169316            47.565230              46.801758            1           42              91             118
+      TF-002             2          375  80.388375           -22.9095          -68.809654       519519.942424  ...           15.121342            50.108521              49.946533          205          238              19              65
+
+FILE: outputs/maps/geological_characterization/candidate_geological_coverage.csv
+ROWS: 10
+COLUMNS: candidate_id, candidate_area_km2, mapped_geology_area_km2, mapped_coverage_percent, unmapped_area_km2
+SAMPLE:
+candidate_id  candidate_area_km2  mapped_geology_area_km2  mapped_coverage_percent  unmapped_area_km2
+      TF-001          119.832271               119.631677                99.832604           0.200594
+      TF-002           80.388375                80.077970                99.613868           0.310405
+
+FILE: outputs/maps/geological_characterization/candidate_geological_units.csv
+ROWS: 41
+COLUMNS: candidate_id, region, cod_geolog, lithostrat, rock_rank, age_min, age_max, lithology, intersection_area_km2, candidate_area_km2, candidate_coverage_percent
+SAMPLE:
+candidate_id      region cod_geolog                                                                       lithostrat     rock_rank  age_min          age_max                      lithology  intersection_area_km2  candidate_area_km2  candidate_coverage_percent
+      TF-001 Antofagasta       MP1c Secuencias sedimentarias clasticas de piedemonte, aluviales, coluviales o fluvia Informal unit Plioceno Mioceno superior conglomerado,arenisca,limolita              69.670995          119.832271                   58.140428
+      TF-001 Antofagasta         Qa                     Depositos aluviales, subordinadamente coluviales o lacustres Informal unit Holoceno      Pleistoceno               grava,arena,limo              50.128520          119.832271                   41.832237
+
+FILE: outputs/maps/sensitivity_analysis/sensitivity_summary.csv
+ROWS: 3
+COLUMNS: scenario, matching_pixels, matching_percentage, matching_area_km2, clusters_4_neighbour, largest_cluster_4_km2, clusters_8_neighbour, largest_cluster_8_km2
+SAMPLE:
+scenario  matching_pixels  matching_percentage  matching_area_km2  clusters_4_neighbour  largest_cluster_4_km2  clusters_8_neighbour  largest_cluster_8_km2
+   broad            38484              73.3043          8249.7766                   169              7917.5046                   100              7939.1559
+moderate            22063              42.0256          4729.6232                   415              1676.7943                   220              3178.0204
+
+FILE: outputs/dashboard/candidate_master_comparison.csv
+ROWS: 10
+COLUMNS: candidate_id, area_rank, latitude, longitude, area_km2, slope_mean_deg, slope_median_deg, roughness_mean_m, roughness_median_m, local_relief_mean_m, local_relief_median_m, geology_coverage_percent, geological_unit_count, dominant_geological_unit, broad_overlap_percent, moderate_overlap_percent
+SAMPLE:
+candidate_id  area_rank  latitude  longitude  area_km2  slope_mean_deg  slope_median_deg  ...  local_relief_mean_m  local_relief_median_m  geology_coverage_percent  geological_unit_count  dominant_geological_unit  broad_overlap_percent moderate_overlap_percent
+      TF-001          1  -22.0853 -68.534159  119.8323          2.2802            2.2611  ...              47.5652                46.8018                   99.8326                      2                      MP1c                  100.0                    100.0
+      TF-002          2  -22.9095 -68.809654   80.3884          2.2918            2.2659  ...              50.1085                49.9465                   99.6139                      4                      MP1c                  100.0                    100.0
+
+========== JSON STRUCTURES ==========
+
+FILE: outputs/dashboard/candidate_profiles.json
+OBJECT keys: ['project', 'title', 'profile_count', 'ranking_basis', 'reference_region', 'earth_study_region', 'reference_intervals', 'profiles', 'scientific_limitations']
+project: str
+title: str
+profile_count: int
+ranking_basis: str
+reference_region: str
+earth_study_region: str
+reference_intervals: dict
+  OBJECT keys: ['broad_p10_p90', 'moderate_p25_p75', 'strict_p40_p60']
+  broad_p10_p90: dict
+  moderate_p25_p75: dict
+  strict_p40_p60: dict
+profiles: list
+  ARRAY length: 10
+  FIRST ITEM:
+    OBJECT keys: ['candidate_id', 'area_rank', 'ranking_basis', 'geography', 'terrain', 'jezero_reference', 'strict_interval_membership', 'screening', 'geology', 'data_quality', 'scientific_limitations', 'map_reference']
+    candidate_id: str
+    area_rank: int
+    ranking_basis: str
+    geography: dict
+    terrain: dict
+    jezero_reference: dict
+    strict_interval_membership: dict
+    screening: dict
+    geology: dict
+    data_quality: dict
+    scientific_limitations: list
+    map_reference: str
+scientific_limitations: list
+  ARRAY length: 11
+  FIRST ITEM:
+    str: Candidate ranking is by connected-region area, not scientific suitability.
+
+FILE: outputs/maps/terrain_comparison/terrain_visualisation_statistics.json
+OBJECT keys: ['project', 'comparison', 'working_resolution_m', 'metrics', 'limitations']
+project: str
+comparison: str
+working_resolution_m: int
+metrics: dict
+  OBJECT keys: ['slope', 'roughness', 'local_relief']
+  slope: dict
+  roughness: dict
+  local_relief: dict
+limitations: list
+  ARRAY length: 4
+  FIRST ITEM:
+    str: Distribution comparison does not establish spatial correspondence.
+
+FILE: outputs/reports/earth_mars_terrain_comparison.json
+OBJECT keys: ['project', 'comparison', 'processing_methods', 'elevation_note', 'elevation_context', 'terrain_metrics', 'histograms', 'scientific_limitations']
+project: str
+comparison: dict
+  OBJECT keys: ['earth_study_area', 'mars_study_area', 'target_resolution_metres', 'neighbourhood', 'neighbourhood_approximate_width_metres']
+  earth_study_area: str
+  mars_study_area: str
+  target_resolution_metres: float
+  neighbourhood: str
+  neighbourhood_approximate_width_metres: float
+processing_methods: dict
+  OBJECT keys: ['earth_resampling', 'mars_resampling', 'slope', 'roughness', 'local_relief', 'edge_handling']
+  earth_resampling: str
+  mars_resampling: str
+  slope: str
+  roughness: str
+  local_relief: str
+  edge_handling: str
+elevation_note: str
+elevation_context: dict
+  OBJECT keys: ['earth', 'mars']
+  earth: dict
+  mars: dict
+terrain_metrics: dict
+  OBJECT keys: ['slope_degrees', 'roughness_m', 'local_relief_m']
+  slope_degrees: dict
+  roughness_m: dict
+  local_relief_m: dict
+histograms: dict
+  OBJECT keys: ['slope_degrees', 'roughness_m', 'local_relief_m']
+  slope_degrees: dict
+  roughness_m: dict
+  local_relief_m: dict
+scientific_limitations: list
+  ARRAY length: 6
+  FIRST ITEM:
+    str: The Earth Copernicus DEM is a digital surface model.
+
+FILE: outputs/reports/earth_terrain_analysis.json
+OBJECT keys: ['project', 'study_region', 'source_dataset', 'source_type', 'target_crs', 'target_resolution_m', 'processing_window', 'products']
+project: str
+study_region: str
+source_dataset: str
+source_type: str
+target_crs: str
+target_resolution_m: float
+processing_window: str
+products: dict
+  OBJECT keys: ['elevation', 'slope', 'roughness', 'local_relief']
+  elevation: dict
+  slope: dict
+  roughness: dict
+  local_relief: dict
+
+FILE: outputs/reports/jezero_terrain_analysis.json
+OBJECT keys: ['project', 'planet', 'study_area', 'source', 'source_file', 'reference_center', 'study_bounds_degrees', 'processing', 'terrain_statistics', 'scientific_limitations']
+project: str
+planet: str
+study_area: str
+source: str
+source_file: str
+reference_center: dict
+  OBJECT keys: ['latitude_planetocentric', 'longitude_east']
+  latitude_planetocentric: float
+  longitude_east: float
+study_bounds_degrees: dict
+  OBJECT keys: ['minimum_latitude', 'maximum_latitude', 'minimum_longitude', 'maximum_longitude']
+  minimum_latitude: float
+  maximum_latitude: float
+  minimum_longitude: float
+  maximum_longitude: float
+processing: dict
+  OBJECT keys: ['projection', 'mars_radius_metres', 'target_resolution_metres', 'resampling', 'neighbourhood', 'neighbourhood_approximate_width_metres', 'slope_method', 'roughness_method', 'local_relief_method', 'edge_handling']
+  projection: str
+  mars_radius_metres: int
+  target_resolution_metres: float
+  resampling: str
+  neighbourhood: str
+  neighbourhood_approximate_width_metres: float
+  slope_method: str
+  roughness_method: str
+  local_relief_method: str
+  edge_handling: str
+terrain_statistics: dict
+  OBJECT keys: ['elevation_m', 'slope_degrees', 'roughness_m', 'local_relief_m']
+  elevation_m: dict
+  slope_degrees: dict
+  roughness_m: dict
+  local_relief_m: dict
+scientific_limitations: list
+  ARRAY length: 6
+  FIRST ITEM:
+    str: MOLA MEGDR represents median observed topography.
+
+FILE: outputs/reports/earth_validation_report.json
+OBJECT keys: ['dataset_type', 'status', 'original_rows', 'valid_rows', 'rejected_rows', 'errors', 'warnings', 'missing_values', 'duplicate_rows', 'invalid_coordinates', 'numeric_conversion_failures', 'columns']
+dataset_type: str
+status: str
+original_rows: int
+valid_rows: int
+rejected_rows: int
+errors: list
+  ARRAY length: 0
+warnings: list
+  ARRAY length: 0
+missing_values: dict
+  OBJECT keys: []
+duplicate_rows: int
+invalid_coordinates: int
+numeric_conversion_failures: dict
+  OBJECT keys: []
+columns: list
+  ARRAY length: 5
+  FIRST ITEM:
+    str: location
+
+FILE: outputs/reports/sensitivity_analysis_report.json
+OBJECT keys: ['project', 'analysis', 'earth_study_region', 'mars_reference_region', 'working_resolution_m', 'earth_valid_pixels', 'pixel_area_km2', 'scenarios', 'methodological_limitations']
+project: str
+analysis: str
+earth_study_region: str
+mars_reference_region: str
+working_resolution_m: int
+earth_valid_pixels: int
+pixel_area_km2: float
+scenarios: dict
+  OBJECT keys: ['broad', 'moderate', 'strict']
+  broad: dict
+  moderate: dict
+  strict: dict
+methodological_limitations: list
+  ARRAY length: 7
+  FIRST ITEM:
+    str: Percentile intervals are derived independently for each terrain metric.
+
+========== RASTER METADATA ==========
+outputs\maps\candidate_regions\atacama_candidate_region_ids.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=int32, nodata=-1.0
+outputs\maps\sensitivity_analysis\broad_three_metric_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\sensitivity_analysis\moderate_three_metric_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\sensitivity_analysis\strict_three_metric_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\spatial_clusters\atacama_clusters_4_connectivity.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=int32, nodata=-1.0
+outputs\maps\spatial_clusters\atacama_clusters_8_connectivity.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=int32, nodata=-1.0
+outputs\maps\terrain_range_screening\atacama_local_relief_range_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\terrain_range_screening\atacama_roughness_range_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\terrain_range_screening\atacama_slope_range_mask.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0
+outputs\maps\terrain_range_screening\atacama_three_metric_intersection.tif: size=223x240, bands=1, CRS=EPSG:32719, dtype=uint8, nodata=255.0

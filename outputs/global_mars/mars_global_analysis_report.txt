@@ -1,0 +1,84 @@
+TERRAFORM - GLOBAL MARS MOLA ANALYSIS
+============================================================
+
+DATA SOURCES
+------------------------------------------------------------
+Elevation: MEGT90N000EB.IMG
+Observation counts: MEGC90N000EB.IMG
+Instrument: Mars Orbiter Laser Altimeter (MOLA)
+Spacecraft: Mars Global Surveyor
+Dataset: MGS-M-MOLA-5-MEGDR-L3-V1.0
+
+GRID CHARACTERISTICS
+------------------------------------------------------------
+Raster dimensions: (2880, 5760)
+Total cells: 16,588,800
+Angular pixel spacing: 0.0625 degrees
+Latitude coverage: 90S to 90N
+Longitude coverage: 0E to 360E
+Projection: Simple Cylindrical
+Coordinate latitude: Planetocentric
+Longitude direction: East
+Equatorial approximate pixel spacing: 3.705 km
+
+ELEVATION STATISTICS
+------------------------------------------------------------
+Minimum: -8177 m
+Maximum: 21171 m
+Mean: -721.11 m
+Median: -257.00 m
+
+OBSERVATION COVERAGE
+------------------------------------------------------------
+Observed cells: 15,685,242
+Observed coverage: 94.5532%
+Zero-observation cells: 903,558
+Zero-observation fraction: 5.4468%
+Maximum observations in one cell: 326
+Mean count across all cells: 34.86
+Mean count among observed cells: 36.87
+
+OBSERVATION-GROUP ELEVATION STATISTICS
+------------------------------------------------------------
+Observed-cell mean elevation: -767.73 m
+Observed-cell median elevation: -267.00 m
+Zero-observation-cell mean elevation: 88.27 m
+Zero-observation-cell median elevation: -6.50 m
+
+SCIENTIFIC INTERPRETATION
+------------------------------------------------------------
+The elevation product contains median topography where MOLA
+observations are available and interpolated values in gaps,
+according to its PDS product description.
+
+The observation-count raster identifies cells with recorded
+MOLA observations.
+
+A zero observation count does not imply zero elevation.
+The two rasters must therefore be interpreted together.
+
+The global elevation map includes both observed and
+interpolated terrain values.
+
+The classification map identifies observation status,
+not independent validation of interpolation accuracy.
+
+The angular grid has approximately 3.705 km spacing at
+the equator. East-west ground spacing decreases with
+latitude. The global map is not a uniform metric grid.
+
+These products are not sufficient by themselves to establish
+terrain suitability for a planetary analog site.
+
+OUTPUTS
+------------------------------------------------------------
+mars_global_elevation.png
+mars_global_observation_density.png
+mars_global_observation_classification.png
+mars_global_elevation_distribution.png
+mars_latitude_band_coverage.csv
+mars_global_analysis_report.txt
+
+============================================================
+TERRAFORM | PLANETARY ANALOG INTELLIGENCE
+GLOBAL MARS DATA PROCESSING

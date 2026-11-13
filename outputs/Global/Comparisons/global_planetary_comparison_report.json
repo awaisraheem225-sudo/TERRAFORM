@@ -1,0 +1,250 @@
+{
+    "project": "TERRAFORM — Planetary Analog Intelligence",
+    "analysis": "Global Planetary Terrain Distribution Comparison",
+    "version": "1.1",
+    "generated_utc": "2026-11-12T05:24:48.324778+00:00",
+    "processing_started_utc": "2026-11-12T05:24:26.408276+00:00",
+    "processing_duration_seconds": 21.91649920000009,
+    "method": {
+        "comparison_type": "Global weighted distribution comparison",
+        "pixel_to_pixel_matching": false,
+        "area_weighting": "Approximate spherical latitude weighting using cos(latitude).",
+        "histogram_configuration": {
+            "minimum_m_inclusive": -11000.0,
+            "maximum_m_exclusive": 22000.0,
+            "bin_width_m": 10.0
+        },
+        "histogram_coverage": "Finite observations with positive latitude weights are classified as accepted, below range or above range.",
+        "earth_resolution_protocol": "Aggregate 2 x 2 native cells from 1 arc-minute to 2 arc-minutes.",
+        "mars_resolution_protocol": "Retain native 0.0625-degree grid.",
+        "moon_resolution_protocol": "Aggregate 2 x 2 native cells from 0.0625 to 0.125 degrees.",
+        "resolution_note": "Selected grids have approximately comparable north-south equatorial spacing of 3.7–3.8 km. East-west spacing varies with latitude.",
+        "normalization": "Within-body z-scores based on each dataset's own weighted mean and standard deviation. Explicit tail bins retain values outside +/-6 standard deviations.",
+        "statistics_precision": "Moments use histogram bin centres. Percentiles are interpolated within 10 m bins under a uniform within-bin assumption.",
+        "weighted_total_interpretation": "Weighted histogram totals are sums of relative cos(latitude) cell weights, not pixel counts or physical areas in square kilometres."
+    },
+    "planetary_results": {
+        "Earth": {
+            "planet": "Earth",
+            "dataset": "NOAA ETOPO 2022, 60 arc-second",
+            "input_file": "data\\Global\\Earth\\earth_etopo_2022_60s.tif",
+            "native_resolution_degrees": 0.016666666666666666,
+            "comparison_resolution_degrees": 0.03333333333333333,
+            "approximate_equatorial_spacing_km": 3.7,
+            "surface_scope": "Elevation-positive land proxy",
+            "land_proxy_rule": "At least 2 of 4 native cells must have valid elevation > 0 m. Mean uses positive cells only.",
+            "accepted_land_proxy_cells": 19910807,
+            "total_coarse_grid_cells": 58320000,
+            "land_proxy_cell_fraction": 0.34140615569272975,
+            "positive_valid_native_source_cells": 79429596,
+            "source_raster_diagnostics": {
+                "valid_source_cells": 233280000,
+                "minimum": -10752.08203125,
+                "maximum": 8157.3564453125,
+                "zero_cells": 13885
+            },
+            "histogram_diagnostics": {
+                "input_cells": 19910807,
+                "nonfinite_values": 0,
+                "nonfinite_weights": 0,
+                "nonpositive_weights": 0,
+                "below_range_cells": 0,
+                "above_range_cells": 0,
+                "accepted_cells": 19910807,
+                "accepted_weight": 10827539.744371817,
+                "below_range_weight": 0.0,
+                "above_range_weight": 0.0,
+                "eligible_cells": 19910807,
+                "eligible_weight": 10827539.744371817,
+                "excluded_histogram_weight": 0.0,
+                "cell_coverage_percent": 100.0,
+                "weighted_coverage_percent": 100.0
+            },
+            "vertical_reference": "WGS84 + EGM2008 geoid",
+            "statistics": {
+                "weighted_mean_m": 791.7542392172163,
+                "weighted_standard_deviation_m": 967.6892990367552,
+                "weighted_percentiles_m": {
+                    "P05": 29.3645666378184,
+                    "P10": 61.80482281350119,
+                    "P25": 169.4283540845788,
+                    "P50": 416.7467469651655,
+                    "P75": 1026.5017430477494,
+                    "P90": 2113.107747009802,
+                    "P95": 3008.9032260959007
+                },
+                "weighted_histogram_total": 10827539.744371727,
+                "histogram_bin_width_m": 10.0,
+                "percentile_method": "Linear interpolation within 10 m histogram bins, assuming uniform within-bin weight distribution.",
+                "statistics_scope": "Finite positive-weight observations inside histogram bounds."
+            },
+            "limitations": [
+                "Elevation > 0 m is not an authoritative land mask.",
+                "Below-sea-level terrestrial regions may be excluded.",
+                "Earth represents an elevation-positive land proxy, not the full surface.",
+                "Histogram coverage and exclusions are reported separately.",
+                "Latitude weighting uses cos(latitude)."
+            ]
+        },
+        "Mars": {
+            "planet": "Mars",
+            "dataset": "MOLA MEGDR MEGT90N000EB",
+            "input_file": "data\\Global\\Mars\\megt90n000eb.img",
+            "native_resolution_degrees": 0.0625,
+            "comparison_resolution_degrees": 0.0625,
+            "approximate_equatorial_spacing_km": 3.704,
+            "surface_scope": "Full gridded planetary surface",
+            "aggregation": "Native grid retained",
+            "grid_dimensions": {
+                "rows": 2880,
+                "columns": 5760
+            },
+            "source_raster_diagnostics": {
+                "valid_source_cells": 16588800,
+                "minimum": -8177.0,
+                "maximum": 21171.0,
+                "zero_cells": 2128,
+                "raw_integer_minimum": -8177,
+                "raw_integer_maximum": 21171,
+                "pds_label_minimum": -8177,
+                "pds_label_maximum": 21171,
+                "raw_extrema_match_pds_label": true
+            },
+            "histogram_diagnostics": {
+                "input_cells": 16588800,
+                "nonfinite_values": 0,
+                "nonfinite_weights": 0,
+                "nonpositive_weights": 0,
+                "below_range_cells": 0,
+                "above_range_cells": 0,
+                "accepted_cells": 16588800,
+                "accepted_weight": 10560758.603450129,
+                "below_range_weight": 0.0,
+                "above_range_weight": 0.0,
+                "eligible_cells": 16588800,
+                "eligible_weight": 10560758.603450129,
+                "excluded_histogram_weight": 0.0,
+                "cell_coverage_percent": 100.0,
+                "weighted_coverage_percent": 100.0
+            },
+            "vertical_reference": "MOLA areoid",
+            "data_interpretation": "Median observed topography where measurements exist; interpolated values are also present.",
+            "zero_value_handling": "Zero values retained pending reconciliation between PDS interpolation documentation and ENVI ignore metadata.",
+            "statistics": {
+                "weighted_mean_m": -550.1907296918737,
+                "weighted_standard_deviation_m": 2902.005962621754,
+                "weighted_percentiles_m": {
+                    "P05": -4689.960662793478,
+                    "P10": -4276.269774960876,
+                    "P25": -3240.9601842654097,
+                    "P50": -153.9906365132182,
+                    "P75": 1559.7620496164373,
+                    "P90": 2564.130979878748,
+                    "P95": 3666.2422443961345
+                },
+                "weighted_histogram_total": 10560758.60345023,
+                "histogram_bin_width_m": 10.0,
+                "percentile_method": "Linear interpolation within 10 m histogram bins, assuming uniform within-bin weight distribution.",
+                "statistics_scope": "Finite positive-weight observations inside histogram bounds."
+            },
+            "limitations": [
+                "MOLA measurement coverage is spatially uneven.",
+                "Interpolated cells are included.",
+                "Zero-value metadata requires further reconciliation.",
+                "Histogram exclusions are reported in diagnostics.",
+                "Latitude weighting uses cos(latitude)."
+            ]
+        },
+        "Moon": {
+            "planet": "Moon",
+            "dataset": "NASA LOLA LDEM_16",
+            "input_file": "data\\Global\\Moon\\ldem_16.img",
+            "native_resolution_degrees": 0.0625,
+            "comparison_resolution_degrees": 0.125,
+            "approximate_equatorial_spacing_km": 3.79,
+            "surface_scope": "Full gridded lunar surface",
+            "aggregation": "2 x 2 native cells averaged",
+            "grid_dimensions": {
+                "rows": 1440,
+                "columns": 2880
+            },
+            "source_raster_diagnostics": {
+                "valid_source_cells": 16588800,
+                "minimum": -17963.0,
+                "maximum": 21371.0,
+                "zero_cells": 2869,
+                "raw_integer_minimum": -17963,
+                "raw_integer_maximum": 21371,
+                "physical_minimum_m": -8981.5,
+                "physical_maximum_m": 10685.5,
+                "pds_label_minimum": -18150,
+                "pds_label_maximum": 21580,
+                "raw_extrema_match_pds_label": false,
+                "raw_extrema_within_pds_label_range": true
+            },
+            "histogram_diagnostics": {
+                "input_cells": 4147200,
+                "nonfinite_values": 0,
+                "nonfinite_weights": 0,
+                "nonpositive_weights": 0,
+                "below_range_cells": 0,
+                "above_range_cells": 0,
+                "accepted_cells": 4147200,
+                "accepted_weight": 2640190.043561681,
+                "below_range_weight": 0.0,
+                "above_range_weight": 0.0,
+                "eligible_cells": 4147200,
+                "eligible_weight": 2640190.043561681,
+                "excluded_histogram_weight": 0.0,
+                "cell_coverage_percent": 100.0,
+                "weighted_coverage_percent": 100.0
+            },
+            "vertical_reference": "Reference sphere, radius 1,737.4 km",
+            "height_conversion": "Elevation metres = DN * 0.5",
+            "zero_value_handling": "Zero values retained.",
+            "statistics": {
+                "weighted_mean_m": -248.3250621475429,
+                "weighted_standard_deviation_m": 2325.0765521185026,
+                "weighted_percentiles_m": {
+                    "P05": -3532.427329943487,
+                    "P10": -2671.9694963476936,
+                    "P25": -1809.7562039498466,
+                    "P50": -646.7839229180256,
+                    "P75": 1079.7044029507724,
+                    "P90": 3001.9505681112223,
+                    "P95": 4135.597151963295
+                },
+                "weighted_histogram_total": 2640190.043561724,
+                "histogram_bin_width_m": 10.0,
+                "percentile_method": "Linear interpolation within 10 m histogram bins, assuming uniform within-bin weight distribution.",
+                "statistics_scope": "Finite positive-weight observations inside histogram bounds."
+            },
+            "limitations": [
+                "LOLA interpolation compensates for incomplete altimetry coverage.",
+                "Documented edge artefacts occur near some 45-degree latitude bands.",
+                "Vertical reference is a reference sphere, not a geoid.",
+                "Observed raw extrema differ from label extrema but remain within the declared range.",
+                "Distribution represents aggregated 2 x 2 cells, not native-resolution cells.",
+                "Histogram exclusions are reported in diagnostics.",
+                "Latitude weighting uses cos(latitude)."
+            ]
+        }
+    },
+    "visualisations": {
+        "elevation_distributions": "outputs\\Visualisations\\Global\\global_elevation_distribution_comparison.png",
+        "normalized_distributions": "outputs\\Visualisations\\Global\\global_normalized_terrain_comparison.png"
+    },
+    "scientific_interpretation": [
+        "The comparison describes global elevation-distribution patterns.",
+        "Earth is represented by a preliminary elevation-positive land proxy.",
+        "Mars and Moon represent their full gridded surfaces.",
+        "Histogram coverage diagnostics identify excluded observations.",
+        "Planetary vertical references are different and not directly interchangeable.",
+        "Standardized distributions compare statistical shape, not geological equivalence.",
+        "Moon statistics represent aggregated 2 x 2 LOLA cells.",
+        "Mars interpolated cells are included.",
+        "Mars zero-value metadata requires further reconciliation.",
+        "The analysis does not establish habitability, resource potential or mission-site suitability.",
+        "Global screening does not replace higher-resolution regional analysis."
+    ]
+}

@@ -1,0 +1,130 @@
+﻿
+  app.py:82:
+  app.py:83:RESEARCH_JSON_FILES = {
+> app.py:84:    "Candidate profiles": "dashboard/candidate_profiles.json",
+  app.py:85:    "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+  app.py:86:    "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+  app.py:87:    "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+  app.py:720:SENSITIVITY_SUMMARY = RESEARCH_CSV.get("Sensitivity summary")
+  app.py:721:
+> app.py:722:CANDIDATE_PROFILES = RESEARCH_JSON.get("Candidate profiles")
+  app.py:723:TERRAIN_COMPARISON_STATS = RESEARCH_JSON.get("Terrain comparison statistics")
+  app.py:724:EARTH_MARS_REPORT = RESEARCH_JSON.get("Earth-Mars comparison report")
+  app.py:725:EARTH_TERRAIN_REPORT = RESEARCH_JSON.get("Earth terrain analysis")
+  app.py:1389:    )
+  app.py:1390:    c2.metric(
+> app.py:1391:        "Profiled candidates",
+  app.py:1392:        REPOSITORY_STATS["profiles"]
+  app.py:1393:    )
+  app.py:1394:    c3.metric(
+  app.py:1734:
+  app.py:1735:    a, b, c = st.columns(3)
+> app.py:1736:    a.metric("Extracted inventory", len(df))
+  app.py:1737:    b.metric("Filtered candidates", len(filtered_df))
+> app.py:1738:    c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+  app.py:1739:    st.divider()
+  app.py:1740:
+  app.py:1741:    map_col, profile_col = st.columns([1.45, 1])
+  app.py:1755:
+  app.py:1756:    with profile_col:
+> app.py:1757:        st.markdown("### Candidate profile")
+  app.py:1758:        if not filtered_df.empty:
+  app.py:1759:            selected_id = st.selectbox(
+  app.py:1760:                "Select candidate region",
+  app.py:2386:
+  app.py:2387:                if isinstance(metric_data, dict):
+> app.py:2388:                    with st.expander("Advanced technical details — JSON"):
+  app.py:2389:                                            st.json(metric_data)
+  app.py:2390:                else:
+  app.py:2391:                    st.write(metric_data)
+  app.py:2418:
+  app.py:2419:                    if data is not None:
+> app.py:2420:                        with st.expander("Advanced technical details — JSON"):
+  app.py:2421:                                                    st.json(data)
+  app.py:2422:                    else:
+  app.py:2423:                        st.info(
+  app.py:2425:                        )
+  app.py:2426:        else:
+> app.py:2427:            with st.expander("Advanced technical details — JSON"):
+  app.py:2428:                            st.json(TERRAIN_COMPARISON_STATS)
+  app.py:2429:
+  app.py:2430:    else:
+  app.py:2442:
+  app.py:2443:    if methods:
+> app.py:2444:        with st.expander("Advanced technical details — JSON"):
+  app.py:2445:                    st.json(methods)
+  app.py:2446:    else:
+  app.py:2447:        st.info(
+  app.py:2881:        with cols[index % 3]:
+  app.py:2882:            st.markdown(
+> app.py:2883:                f'<div class="panel"><div class="mono">STAGE {number}</div>'
+  app.py:2884:                f'<div style="font-size:17px;color:white;font-weight:700;margin-top:8px;">{title}</div>'
+  app.py:2885:                f'<div style="font-size:12px;color:#8FA3B5;margin-top:7px;">{description}</div></div>',
+  app.py:2886:                unsafe_allow_html=True
+  app.py:2941:
+  app.py:2942:        st.markdown("#### Processing configuration")
+> app.py:2943:        with st.expander("Advanced technical details — JSON"):
+  app.py:2944:                    st.json(processing)
+  app.py:2945:
+  app.py:2946:        st.markdown("#### Interpretation of observation support")
+  app.py:3203:
+  app.py:3204:    if raster_path.is_file():
+> app.py:3205:        st.success(f"{selected_planet} raster file detected.")
+  app.py:3206:    else:
+  app.py:3207:        st.error(f"{selected_planet} raster file not found.")
+  app.py:3208:
+  app.py:3422:
+  app.py:3423:    with reports_tab:
+> app.py:3424:        st.markdown("### Planetary research report")
+  app.py:3425:
+  app.py:3426:        if report_path.is_file():
+  app.py:3427:            try:
+  app.py:3429:                    planetary_report = json.load(file)
+  app.py:3430:
+> app.py:3431:                st.success("Planetary research report detected.")
+  app.py:3432:
+> app.py:3433:                with st.expander("Advanced technical details — JSON"):
+  app.py:3434:                                    st.json(planetary_report)
+  app.py:3435:
+  app.py:3436:                st.download_button(
+> app.py:3437:                    "Download planetary research report",
+  app.py:3438:                    data=json.dumps(
+  app.py:3439:                        planetary_report,
+  app.py:3440:                        indent=2,
+  app.py:3451:
+  app.py:3452:        else:
+> app.py:3453:            st.info("The planetary research report is not available.")
+  app.py:3454:
+  app.py:3455:        st.divider()
+  app.py:3456:
+> app.py:3457:        st.markdown("### CSV processing report")
+  app.py:3458:
+  app.py:3459:        if processing_report is None:
+  app.py:3460:            st.info(
+> app.py:3461:                "No CSV processing report is available for this planet."
+  app.py:3462:            )
+  app.py:3463:
+  app.py:3464:        elif isinstance(processing_report, (dict, list)):
+> app.py:3465:            with st.expander("Advanced technical details — JSON"):
+  app.py:3466:                            st.json(processing_report)
+  app.py:3467:
+  app.py:3468:            st.download_button(
+> app.py:3469:                "Download CSV processing report",
+  app.py:3470:                data=json.dumps(
+  app.py:3471:                    processing_report,
+  app.py:3472:                    indent=2,
+  app.py:3486:
+  app.py:3487:            st.download_button(
+> app.py:3488:                "Download CSV processing report",
+  app.py:3489:                data=processing_report.to_csv(index=False).encode("utf-8"),
+  app.py:3490:                file_name=f"terraform_{selected_planet.lower()}_processing_report.csv",
+  app.py:3491:                mime="text/csv",
+  app.py:3497:
+  app.py:3498:            st.download_button(
+> app.py:3499:                "Download CSV processing report",
+  app.py:3500:                data=str(processing_report).encode("utf-8"),
+  app.py:3501:                file_name=f"terraform_{selected_planet.lower()}_processing_report.txt",
+  app.py:3502:                mime="text/plain",
+
+
+

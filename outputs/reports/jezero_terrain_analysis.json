@@ -1,0 +1,71 @@
+{
+    "project": "TERRAFORM - Planetary Analog Intelligence",
+    "planet": "Mars",
+    "study_area": "Jezero Crater",
+    "source": "NASA MOLA MEGDR 128 pixels per degree",
+    "source_file": "mars_mola_128ppd_megt44n000hb.tif",
+    "reference_center": {
+        "latitude_planetocentric": 18.4,
+        "longitude_east": 77.7
+    },
+    "study_bounds_degrees": {
+        "minimum_latitude": 17.5,
+        "maximum_latitude": 19.3,
+        "minimum_longitude": 76.8,
+        "maximum_longitude": 78.6
+    },
+    "processing": {
+        "projection": "Azimuthal Equidistant",
+        "mars_radius_metres": 3396000,
+        "target_resolution_metres": 463.0,
+        "resampling": "Bilinear",
+        "neighbourhood": "3 x 3 pixels",
+        "neighbourhood_approximate_width_metres": 1389.0,
+        "slope_method": "Central difference gradient",
+        "roughness_method": "Local elevation standard deviation",
+        "local_relief_method": "Local maximum minus minimum",
+        "edge_handling": "Only complete 3x3 valid neighbourhoods retained"
+    },
+    "terrain_statistics": {
+        "elevation_m": {
+            "valid_pixels": 50192,
+            "minimum": -3457.184814453125,
+            "maximum": -535.8075561523438,
+            "mean": -2288.214466970515,
+            "median": -2275.91357421875,
+            "standard_deviation": 424.0737504970227
+        },
+        "slope_degrees": {
+            "valid_pixels": 49298,
+            "minimum": 0.010014155566754493,
+            "maximum": 31.074971693103475,
+            "mean": 3.278078784249956,
+            "median": 2.2646007230510516,
+            "standard_deviation": 3.125867291960389
+        },
+        "roughness_m": {
+            "valid_pixels": 49298,
+            "minimum": 0.3839096518095285,
+            "maximum": 206.00818752284755,
+            "mean": 22.32104980462893,
+            "median": 15.625005349689284,
+            "standard_deviation": 20.5544801396723
+        },
+        "local_relief_m": {
+            "valid_pixels": 49298,
+            "minimum": 1.269287109375,
+            "maximum": 661.08447265625,
+            "mean": 69.84383245280337,
+            "median": 49.04669189453125,
+            "standard_deviation": 64.18235762385511
+        }
+    },
+    "scientific_limitations": [
+        "MOLA MEGDR represents median observed topography.",
+        "Interpolated values are supplied where observations are absent.",
+        "MOLA resolution is substantially coarser than Earth GLO-30.",
+        "Reprojection does not create additional source detail.",
+        "Terrain metrics describe approximately 1.39 km neighbourhoods.",
+        "Terrain metrics are regional descriptors, not a complete geological analogue assessment."
+    ]
+}

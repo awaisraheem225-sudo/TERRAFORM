@@ -1,0 +1,39 @@
+{
+    "project": "TERRAFORM",
+    "study_region": "Atacama Desert, Chile",
+    "source_dataset": "Copernicus DEM GLO-30",
+    "source_type": "Digital Surface Model",
+    "target_crs": "EPSG:32719",
+    "target_resolution_m": 30.0,
+    "processing_window": "3x3 pixels",
+    "products": {
+        "elevation": {
+            "valid_pixels": 12651472,
+            "minimum": 2068.6978,
+            "maximum": 5952.6533,
+            "mean": 3106.7637,
+            "standard_deviation": 580.0698
+        },
+        "slope": {
+            "valid_pixels": 12637192,
+            "minimum": 0.0,
+            "maximum": 65.8082,
+            "mean": 6.4533,
+            "standard_deviation": 7.4968
+        },
+        "roughness": {
+            "valid_pixels": 12637192,
+            "minimum": 0.0,
+            "maximum": 51.8652,
+            "mean": 2.8654,
+            "standard_deviation": 3.5128
+        },
+        "local_relief": {
+            "valid_pixels": 12637192,
+            "minimum": 0.0,
+            "maximum": 158.4167,
+            "mean": 9.078,
+            "standard_deviation": 10.8087
+        }
+    }
+}

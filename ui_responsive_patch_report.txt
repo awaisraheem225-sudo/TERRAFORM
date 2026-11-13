@@ -1,0 +1,12 @@
+TERRAFORM ? RESPONSIVE UI PATCH
+Date: 2026-11-12 11:06:37.057100
+
+RESULT: SUCCESS
+1. Created a timestamped backup of the original app.py.
+2. Removed the obsolete first visualisations_page() definition.
+3. Preserved the active v1.1 visualisations_page() definition.
+4. Added tablet and mobile responsive CSS.
+5. Python syntax compilation passed.
+
+Backup: app.py.backup_20261112_110637
+Updated file: app.py

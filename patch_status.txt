@@ -1,0 +1,9 @@
+Overview metric labels: FOUND
+Overview repository explanation: FOUND
+Overview regional scope: FOUND
+Analytical card height: FOUND
+Discovery heading: FOUND
+Discovery inventory metrics: FOUND
+Discovery profile heading: FOUND
+Discovery coverage distinction: NOT FOUND
+Technical Deep Dive card height: FOUND

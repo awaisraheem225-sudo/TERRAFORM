@@ -1,0 +1,87 @@
+{
+    "project": "TERRAFORM \u2014 Planetary Analog Intelligence",
+    "analysis": "Moon Global Elevation Analysis",
+    "version": "1.1",
+    "generated_utc": "2026-11-10T13:56:25.283309+00:00",
+    "dataset": {
+        "product": "LOLA Global Digital Elevation Model",
+        "product_id": "LDEM_16",
+        "data_set_id": "LRO-L-LOLA-4-GDR-V1.0",
+        "product_version": "V3.1",
+        "source": "NASA Planetary Data System \u2014 Lunar Reconnaissance Orbiter LOLA LDEM_16",
+        "filename": "ldem_16.img",
+        "dimensions": {
+            "columns": 5760,
+            "rows": 2880,
+            "bands": 1,
+            "total_cells": 16588800
+        },
+        "data_type": "Signed 16-bit integer",
+        "byte_order": "Little-endian",
+        "scaling_factor": 0.5,
+        "elevation_unit": "metres",
+        "reference_radius_m": 1737400.0,
+        "pixel_resolution_degrees": 0.0625,
+        "equatorial_pixel_scale_m": 1895.21,
+        "projection": "Simple cylindrical",
+        "central_meridian_degrees": 180,
+        "longitude_direction": "East-positive",
+        "coordinate_system": "Mean Earth / Polar Axis of DE421"
+    },
+    "raw_data_validation": {
+        "observed_raw_minimum": -17963,
+        "observed_raw_maximum": 21371,
+        "label_raw_minimum": -18150,
+        "label_raw_maximum": 21580,
+        "range_matches_label": false,
+        "range_discrepancy": {
+            "minimum_difference": 187,
+            "maximum_difference": -209,
+            "status": "UNRESOLVED_METADATA_DISCREPANCY"
+        },
+        "file_size_validation": "PASS",
+        "cell_count_validation": "PASS"
+    },
+    "elevation_statistics": {
+        "minimum_m": -8981.5,
+        "maximum_m": 10685.5,
+        "mean_m": -519.2022094726562,
+        "median_m": -794.0,
+        "standard_deviation_m": 2203.904296875,
+        "percentiles_m": {
+            "p05": -3825.5,
+            "p25": -1904.0,
+            "p75": 628.0,
+            "p95": 3586.0
+        },
+        "zero_height_cells": 2869
+    },
+    "processing": {
+        "conversion": "height_m = digital_number * 0.5",
+        "longitude_display_range": [
+            -180,
+            180
+        ],
+        "latitude_display_range": [
+            -90,
+            90
+        ],
+        "zero_height_cells_retained": true,
+        "nodata_mask_applied": false,
+        "display_downsampling": "Every third row and column",
+        "source_data_modified": false
+    },
+    "scientific_limitations": [
+        "Heights are relative to a 1,737.4 km reference sphere.",
+        "These heights are not automatically equivalent to elevation relative to a lunar geoid or equipotential surface.",
+        "The product description reports possible edge artifacts at 45-degree latitude-band boundaries.",
+        "The source describes interpolation to compensate for incomplete altimetry coverage.",
+        "Global statistics are unweighted grid-cell statistics and are not area-weighted.",
+        "The observed raw extrema differ from the supplied PDS label extrema and require further investigation.",
+        "Elevation alone does not establish geological, environmental or habitation suitability."
+    ],
+    "outputs": {
+        "map": "outputs\\Visualisations\\Global\\moon_global_elevation.png",
+        "report": "outputs\\Global\\Moon\\moon_global_report.json"
+    }
+}

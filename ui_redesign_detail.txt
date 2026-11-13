@@ -1,0 +1,871 @@
+﻿========== SIDEBAR + NAVIGATION ==========
+# ============================================================
+
+RESEARCH_CSV = {
+    name: load_research_csv(path)
+    for name, path in RESEARCH_CSV_FILES.items()
+}
+RESEARCH_JSON = {
+    name: load_research_json(path)
+    for name, path in RESEARCH_JSON_FILES.items()
+}
+
+CANDIDATE_INVENTORY = RESEARCH_CSV.get("Candidate inventory")
+MASTER_CANDIDATES = RESEARCH_CSV.get("Master candidate comparison")
+GEOLOGICAL_COVERAGE = RESEARCH_CSV.get("Geological coverage")
+GEOLOGICAL_UNITS = RESEARCH_CSV.get("Geological units")
+SENSITIVITY_SUMMARY = RESEARCH_CSV.get("Sensitivity summary")
+
+CANDIDATE_PROFILES = RESEARCH_JSON.get("Candidate profiles")
+TERRAIN_COMPARISON_STATS = RESEARCH_JSON.get("Terrain comparison statistics")
+EARTH_MARS_REPORT = RESEARCH_JSON.get("Earth-Mars comparison report")
+EARTH_TERRAIN_REPORT = RESEARCH_JSON.get("Earth terrain analysis")
+JEZERO_TERRAIN_REPORT = RESEARCH_JSON.get("Jezero terrain analysis")
+EARTH_VALIDATION_REPORT = RESEARCH_JSON.get("Earth validation report")
+SENSITIVITY_REPORT = RESEARCH_JSON.get("Sensitivity analysis report")
+
+MARS_TERRAIN_REPORT = load_research_json(
+    "global_mars/terrain_metrics/mars_global_terrain_report.json"
+)
+MARS_AREA_REPORT = load_text_report(MARS_AREA_REPORT_PATH)
+
+
+def repository_statistics():
+    csv_count = sum(frame is not None for frame in RESEARCH_CSV.values())
+    json_count = sum(report is not None for report in RESEARCH_JSON.values())
+    raster_count = sum(
+        (OUTPUTS / path).exists()
+        for path in RESEARCH_RASTER_FILES.values()
+    )
+    return {
+        "inventory": len(CANDIDATE_INVENTORY) if CANDIDATE_INVENTORY is not None else 0,
+        "profiles": len(MASTER_CANDIDATES) if MASTER_CANDIDATES is not None else 0,
+        "geology": len(GEOLOGICAL_UNITS) if GEOLOGICAL_UNITS is not None else 0,
+        "sensitivity": len(SENSITIVITY_SUMMARY) if SENSITIVITY_SUMMARY is not None else 0,
+        "csv": csv_count,
+        "json": json_count,
+        "rasters": raster_count,
+        "assets": csv_count + json_count + raster_count,
+    }
+
+
+REPOSITORY_STATS = repository_statistics()
+
+
+# ============================================================
+# SIDEBAR AND NAVIGATION
+# ============================================================
+
+PAGES = [
+    "Mission Overview",
+    "Discovery Explorer",
+    "Global Mars Explorer",
+    "Earth-Mars Comparison",
+    "Candidate Intelligence",
+    "Research Visualisations",
+    "Data Laboratory",
+    "Technical Deep Dive",
+]
+
+with st.sidebar:
+    st.markdown(
+        '<div class="terraform-brand">TERRAFORM<span style="color:#55D6A0">.</span></div>'
+        '<div class="terraform-subbrand">PLANETARY ANALOG INTELLIGENCE</div>',
+        unsafe_allow_html=True
+    )
+    st.write("")
+    st.markdown(
+        '<span class="status-dot"></span><span class="status-text">RESEARCH ENVIRONMENT</span>',
+        unsafe_allow_html=True
+    )
+    st.divider()
+    st.markdown("##### NAVIGATION")
+    page = st.radio("Main navigation", PAGES, label_visibility="collapsed")
+    st.divider()
+    st.markdown("##### DATA CONNECTIONS")
+    earth_upload = st.file_uploader(
+        "Additional Earth dataset", type=["csv"], key="earth_upload",
+        help="Optional custom Earth CSV containing location, latitude and longitude."
+    )
+    mars_upload = st.file_uploader(
+        "Additional Mars dataset", type=["csv"], key="mars_upload",
+        help="Optional custom Mars CSV containing documented measurements."
+    )
+    st.caption(
+        "Existing TERRAFORM research outputs load automatically. "
+        "Uploads are optional additional datasets."
+    )
+    st.divider()
+    st.markdown("##### RESEARCH TARGET")
+    st.markdown("**Planet:** Mars")
+    st.markdown("**Reference:** Jezero Crater")
+    st.markdown("**Mission context:** Perseverance")
+    st.divider()
+    st.caption("TERRAFORM V4.0 | PRODUCTION BUILD")
+    st.caption("Independent research platform")
+
+
+# ============================================================
+# BACKEND DATA INTEGRATION
+# ============================================================
+
+try:
+    earth_result = load_and_process(earth_upload, "earth")
+    mars_result = load_and_process(mars_upload, "mars")
+
+    earth_df = earth_result["cleaned"]
+    mars_df = mars_result["cleaned"]
+
+    earth_source = earth_result["source"]
+    mars_source = mars_result["source"]
+
+    earth_report = earth_result["report"]
+    mars_report = mars_result["report"]
+
+    earth_rejected = earth_result["rejected"]
+    mars_rejected = mars_result["rejected"]
+
+    earth_saved_paths = earth_result["saved_paths"]
+    mars_saved_paths = mars_result["saved_paths"]
+
+except Exception as error:
+    st.error(f"Backend data integration error: {error}")
+    st.exception(error)
+    st.stop()
+
+
+# ============================================================
+# PLOTLY THEME
+# ============================================================
+
+PLOT_LAYOUT = dict(
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="Inter", color=WHITE, size=11),
+    margin=dict(l=15, r=15, t=35, b=15),
+    xaxis=dict(gridcolor="#263746", zerolinecolor="#263746"),
+    yaxis=dict(gridcolor="#263746", zerolinecolor="#263746"),
+    legend=dict(bgcolor="rgba(0,0,0,0)")
+)
+
+
+# ============================================================
+# MAP GENERATORS
+# ============================================================
+
+def create_candidate_map(df):
+    if df is None or df.empty:
+        return None
+    required = ["latitude", "longitude", "location"]
+    if not all(column in df.columns for column in required):
+        return None
+
+    map_df = df.copy()
+    for col in ["latitude", "longitude"]:
+        map_df[col] = pd.to_numeric(map_df[col], errors="coerce")
+    map_df = map_df.dropna(subset=["latitude", "longitude"])
+    if map_df.empty:
+        return None
+
+    map_object = folium.Map(
+        location=[map_df["latitude"].mean(), map_df["longitude"].mean()],
+        zoom_start=2, tiles=None, control_scale=True
+    )
+    folium.TileLayer("OpenStreetMap", name="OpenStreetMap", show=True).add_to(map_object)
+    folium.TileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Tiles Â© Esri", name="Satellite Imagery", show=False
+    ).add_to(map_object)
+    folium.TileLayer(
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        attr="OpenTopoMap", name="Topographic Map", show=False
+    ).add_to(map_object)
+
+    cluster = MarkerCluster(name="Earth candidate locations").add_to(map_object)
+    for _, row in map_df.iterrows():
+        location_name = html.escape(str(row["location"]))
+        popup = (
+            f"<b>{location_name}</b><br>"
+            f"Latitude: {row['latitude']:.4f}<br>"
+            f"Longitude: {row['longitude']:.4f}"
+        )
+        folium.Marker(
+            [row["latitude"], row["longitude"]],
+            tooltip=location_name,
+            popup=folium.Popup(popup, max_width=250),
+            icon=folium.Icon(color="green", icon="globe")
+        ).add_to(cluster)
+    folium.LayerControl().add_to(map_object)
+    return map_object
+
+
+def create_research_candidate_map(df):
+    """Map extracted Atacama candidate centroids; not a suitability map."""
+    if df is None or df.empty:
+        return None
+    required = ["candidate_id", "centroid_latitude", "centroid_longitude"]
+    if not all(column in df.columns for column in required):
+        return None
+
+    map_df = df.copy()
+    for col in ["centroid_latitude", "centroid_longitude"]:
+        map_df[col] = pd.to_numeric(map_df[col], errors="coerce")
+    map_df = map_df.dropna(subset=["centroid_latitude", "centroid_longitude"])
+    if map_df.empty:
+        return None
+
+    map_object = folium.Map(
+        location=[
+            map_df["centroid_latitude"].mean(),
+            map_df["centroid_longitude"].mean()
+        ],
+        zoom_start=6, tiles=None, control_scale=True
+    )
+    folium.TileLayer("OpenStreetMap", name="OpenStreetMap", show=True).add_to(map_object)
+    folium.TileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Tiles Â© Esri", name="Satellite imagery", show=False
+    ).add_to(map_object)
+
+    cluster = MarkerCluster(name="Extracted candidate regions").add_to(map_object)
+    for _, row in map_df.iterrows():
+        candidate_id = html.escape(str(row["candidate_id"]))
+        area = row.get("area_km2", None)
+        area_text = f"{float(area):,.2f} kmÂ²" if pd.notna(area) else "Not available"
+        popup = (
+            f"<b>{candidate_id}</b><br>Extracted Atacama candidate region<br><br>"
+            f"Area: {area_text}<br>"
+            f"Latitude: {row['centroid_latitude']:.5f}<br>"
+            f"Longitude: {row['centroid_longitude']:.5f}"
+        )
+        folium.CircleMarker(
+            [row["centroid_latitude"], row["centroid_longitude"]],
+            radius=5, color="#55D6A0", fill=True,
+            fill_color="#55D6A0", fill_opacity=.75, weight=1,
+            tooltip=candidate_id,
+            popup=folium.Popup(popup, max_width=280)
+        ).add_to(cluster)
+    folium.LayerControl().add_to(map_object)
+    return map_object
+
+
+# ============================================================
+# PAGE 1 â€” MISSION OVERVIEW
+# ============================================================
+
+def overview_page():
+
+========== MISSION OVERVIEW ==========
+        ).add_to(cluster)
+    folium.LayerControl().add_to(map_object)
+    return map_object
+
+
+# ============================================================
+# PAGE 1 â€” MISSION OVERVIEW
+# ============================================================
+
+def overview_page():
+    st.markdown("""
+    <div class="hero">
+        <div class="hero-tag">PLANETARY RESEARCH SYSTEM / 001</div>
+        <div class="hero-title">Explore Earth.<br>Understand Mars.</div>
+        <div class="hero-description">
+            Discover terrestrial environments that share measurable geological,
+            topographical and environmental characteristics with selected regions of Mars.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="eyebrow">MISSION INTELLIGENCE</div>', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Extracted regions", REPOSITORY_STATS["inventory"])
+    c2.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+    c3.metric("Geological records", REPOSITORY_STATS["geology"])
+    c4.metric("Sensitivity scenarios", REPOSITORY_STATS["sensitivity"])
+    st.caption("Statistics are loaded from the existing TERRAFORM research repository.")
+
+    left, right = st.columns([1.55, 1])
+    with left:
+        st.markdown("### Atacama Candidate Distribution")
+        st.caption("Geographical distribution of extracted Atacama candidate-region centroids.")
+        if CANDIDATE_INVENTORY is not None and not CANDIDATE_INVENTORY.empty:
+            candidate_map = create_research_candidate_map(CANDIDATE_INVENTORY)
+            if candidate_map is not None:
+                st_folium(
+                    candidate_map, width=None, height=440,
+                    returned_objects=[], key="overview_research_map"
+                )
+            else:
+                empty_state("Candidate coordinates unavailable", "The inventory does not contain valid centroid coordinates.")
+        else:
+            empty_state("Research inventory unavailable", "The Atacama candidate inventory could not be loaded.")
+    with right:
+        st.markdown("### Research status")
+        repository_status = "Research outputs connected" if REPOSITORY_STATS["inventory"] > 0 else "Research inventory unavailable"
+        st.markdown(f"""
+        <div class="panel"><div class="mono">EARTH STUDY REGION</div>
+        <div style="font-size:19px;color:#55D6A0;font-weight:700;margin-top:8px;">Atacama Desert</div>
+        <div class="mono">Chile / Earth terrain study</div></div>
+        <div class="panel"><div class="mono">MARS REFERENCE REGION</div>
+        <div style="font-size:19px;color:#55D6A0;font-weight:700;margin-top:8px;">Jezero Crater</div>
+        <div class="mono">Mars / MOLA terrain reference</div></div>
+        <div class="panel"><div class="mono">RESEARCH REPOSITORY</div>
+        <div style="font-size:17px;color:white;font-weight:700;margin-top:8px;">{html.escape(repository_status)}</div>
+        <div class="mono">{REPOSITORY_STATS['assets']} research assets detected</div></div>
+        <div class="panel"><div class="mono">COMPARISON RESOLUTION</div>
+        <div style="font-size:19px;color:#55D6A0;font-weight:700;margin-top:8px;">~463 metres</div>
+        <div class="mono">Common working resolution</div></div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("### Research dimensions")
+    dimensions = [
+        ("01", "Terrain", "Surface shape and landforms"),
+        ("02", "Slope", "Surface inclination"),
+        ("03", "Roughness", "Terrain variability"),
+        ("04", "Local relief", "Elevation variation"),
+        ("05", "Geology", "Mapped geological units"),
+        ("06", "Data integrity", "Validation and scientific limitations"),
+    ]
+    cols = st.columns(3)
+    for index, (number, name, description) in enumerate(dimensions):
+        with cols[index % 3]:
+            st.markdown(
+                f'<div class="panel"><div class="mono">{number} / RESEARCH VARIABLE</div>'
+                f'<div style="font-size:17px;font-weight:700;color:white;margin-top:9px;">{name}</div>'
+                f'<div style="font-size:12px;color:#8FA3B5;margin-top:5px;">{description}</div></div>',
+                unsafe_allow_html=True
+            )
+
+    st.markdown("### Current research findings")
+    if SENSITIVITY_SUMMARY is not None:
+        scenario_cols = st.columns(3)
+        for index, (_, row) in enumerate(SENSITIVITY_SUMMARY.iterrows()):
+            scenario = str(row.get("scenario", "Scenario")).title()
+            percentage = safe_metric_value(row, "matching_percentage", "%")
+            area = safe_metric_value(row, "matching_area_km2", " kmÂ²")
+            with scenario_cols[index % 3]:
+                st.metric(f"{scenario} matching area", percentage)
+                st.caption(f"Matching area: {area}")
+    else:
+        st.info("Sensitivity summary is not available in the research repository.")
+
+    st.info(
+        "TERRAFORM distinguishes measured observations from hypotheses. Terrain-range overlap "
+        "is an empirical screening result, not a probability of finding a suitable Martian "
+        "analogue. No universal similarity score or scientific suitability ranking is assigned."
+    )
+
+
+# ============================================================
+# PAGE 2 â€” DISCOVERY EXPLORER
+# ============================================================
+
+def discovery_page():
+    section_header(
+        "MODULE 01 / EARTH EXPLORATION",
+        "Discovery Explorer",
+        "Explore extracted Atacama candidate regions, inspect their geography and examine their measured terrain characteristics."
+
+========== DISCOVERY EXPLORER ==========
+        "TERRAFORM distinguishes measured observations from hypotheses. Terrain-range overlap "
+        "is an empirical screening result, not a probability of finding a suitable Martian "
+        "analogue. No universal similarity score or scientific suitability ranking is assigned."
+    )
+
+
+# ============================================================
+# PAGE 2 â€” DISCOVERY EXPLORER
+# ============================================================
+
+def discovery_page():
+    section_header(
+        "MODULE 01 / EARTH EXPLORATION",
+        "Discovery Explorer",
+        "Explore extracted Atacama candidate regions, inspect their geography and examine their measured terrain characteristics."
+    )
+    if CANDIDATE_INVENTORY is None or CANDIDATE_INVENTORY.empty:
+        empty_state("Candidate inventory unavailable", "The Atacama candidate inventory could not be loaded.")
+        return
+
+    df = CANDIDATE_INVENTORY.copy()
+    if "candidate_id" not in df.columns:
+        st.error("The candidate inventory does not contain a candidate_id column.")
+        return
+
+    st.markdown("### Explore extracted regions")
+    f1, f2, f3 = st.columns([1.2, 1, 1])
+    with f1:
+        search = st.text_input("Search candidate ID", placeholder="Example: TF-001")
+    with f2:
+        area_range = None
+        if "area_km2" in df.columns:
+            areas = pd.to_numeric(df["area_km2"], errors="coerce").dropna()
+            if not areas.empty:
+                lo, hi = float(areas.min()), float(areas.max())
+                area_range = st.slider(
+                    "Area range (kmÂ²)", min_value=lo, max_value=hi,
+                    value=(lo, hi), key="discovery_area_range"
+                )
+    with f3:
+        sort_order = st.selectbox(
+            "Sort candidates",
+            ["Largest area first", "Smallest area first", "Candidate ID"]
+        )
+
+    filtered_df = df.copy()
+    if search:
+        filtered_df = filtered_df[
+            filtered_df["candidate_id"].astype(str).str.contains(search, case=False, na=False)
+        ]
+    if area_range is not None and "area_km2" in filtered_df.columns:
+        filtered_df = filtered_df[
+            pd.to_numeric(filtered_df["area_km2"], errors="coerce").between(*area_range)
+        ]
+    if sort_order == "Largest area first" and "area_km2" in filtered_df.columns:
+        filtered_df = filtered_df.sort_values("area_km2", ascending=False)
+    elif sort_order == "Smallest area first" and "area_km2" in filtered_df.columns:
+        filtered_df = filtered_df.sort_values("area_km2", ascending=True)
+    else:
+        filtered_df = filtered_df.sort_values("candidate_id")
+
+    a, b, c = st.columns(3)
+    a.metric("Extracted inventory", len(df))
+    b.metric("Filtered candidates", len(filtered_df))
+    c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+    st.divider()
+
+    map_col, profile_col = st.columns([1.45, 1])
+    with map_col:
+        st.markdown("### Candidate geography")
+        if not filtered_df.empty:
+            candidate_map = create_research_candidate_map(filtered_df)
+            if candidate_map is not None:
+                st_folium(
+                    candidate_map, width=None, height=490,
+                    returned_objects=[], key="discovery_research_map"
+                )
+            else:
+                empty_state("Candidate coordinates unavailable", "No valid centroid coordinates were found.")
+        else:
+            empty_state("No matching candidates", "Change your search or area filters.")
+
+    with profile_col:
+        st.markdown("### Candidate profile")
+        if not filtered_df.empty:
+            selected_id = st.selectbox(
+                "Select candidate region",
+                filtered_df["candidate_id"].astype(str).tolist(),
+                key="research_discovery_candidate"
+            )
+            selected = filtered_df[
+                filtered_df["candidate_id"].astype(str) == selected_id
+            ].iloc[0]
+            st.markdown(
+                f'<div class="panel"><div class="eyebrow">SELECTED REGION</div>'
+                f'<div style="font-size:25px;font-weight:800;color:white;">{html.escape(selected_id)}</div>'
+                f'<div class="mono">ATACAMA DESERT / CHILE</div></div>',
+                unsafe_allow_html=True
+            )
+            for label, column, suffix in [
+                ("Area", "area_km2", " kmÂ²"),
+                ("Mean slope", "slope_mean_deg", "Â°"),
+                ("Mean roughness", "roughness_mean_m", " m"),
+                ("Mean local relief", "local_relief_mean_m", " m"),
+            ]:
+                if column in selected.index:
+                    st.metric(label, safe_metric_value(selected, column, suffix))
+            lat, lon = selected.get("centroid_latitude", np.nan), selected.get("centroid_longitude", np.nan)
+            if pd.notna(lat) and pd.notna(lon):
+                st.caption(f"Latitude: {float(lat):.5f} | Longitude: {float(lon):.5f}")
+            detailed_profile = get_profile_data(selected_id)
+            if detailed_profile:
+                with st.expander("Detailed research profile"):
+                    st.json(detailed_profile)
+            with st.expander("Complete candidate record"):
+                st.dataframe(selected.to_frame("Value"), use_container_width=True)
+        else:
+            empty_state("No candidate selected", "There are no matching records.")
+
+    st.divider()
+    st.markdown("### Extracted candidate records")
+    display_columns = [
+        col for col in [
+            "candidate_id", "rank_by_area", "pixel_count", "area_km2",
+            "centroid_latitude", "centroid_longitude", "slope_mean_deg",
+            "roughness_mean_m", "local_relief_mean_m",
+            "broad_screening_overlap_percent", "moderate_screening_overlap_percent"
+        ] if col in filtered_df.columns
+    ]
+    st.dataframe(filtered_df[display_columns], use_container_width=True, hide_index=True)
+    st.download_button(
+        "Download filtered candidate inventory",
+        data=filtered_df.to_csv(index=False).encode("utf-8"),
+        file_name="terraform_filtered_candidate_inventory.csv",
+        mime="text/csv"
+    )
+    st.info(
+        "The inventory contains connected regions extracted from the strict three-metric "
+        "terrain intersection. Candidate identifiers and area ranks describe extracted "
+        "components, not scientific suitability or confirmed planetary analogy."
+    )
+
+
+# ============================================================
+# PAGE 3 â€” GLOBAL MARS EXPLORER
+# ============================================================
+
+def global_mars_page():
+    section_header(
+        "MODULE 02 / PLANETARY-SCALE ANALYSIS",
+
+========== GLOBAL MARS EXPLORER ==========
+    )
+
+
+# ============================================================
+# PAGE 3 â€” GLOBAL MARS EXPLORER
+# ============================================================
+
+def global_mars_page():
+    section_header(
+        "MODULE 02 / PLANETARY-SCALE ANALYSIS",
+        "Global Mars Explorer",
+        "A planet-wide terrain and observation-support assessment using the Mars Global Surveyor MOLA MEGDR elevation product."
+    )
+
+    if not isinstance(MARS_TERRAIN_REPORT, dict):
+        st.error("The global Mars terrain metrics JSON report could not be loaded.")
+        st.caption(f"Expected: `{MARS_JSON_PATH}`")
+        return
+
+    report = MARS_TERRAIN_REPORT
+    source = report.get("source", {})
+    grid = report.get("grid", {})
+    geometry = report.get("geometry", {})
+    stats = report.get("statistics", {})
+    processing = report.get("processing", {})
+
+    st.markdown("### Global dataset overview")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Grid dimensions", f"{grid.get('rows', 'â€”'):,} Ã— {grid.get('columns', 'â€”'):,}")
+    c2.metric("Angular spacing", f"{grid.get('angular_spacing_degrees', 'â€”')}Â°")
+    c3.metric("Reference radius", f"{geometry.get('reference_radius_km', 'â€”'):,} km")
+    c4.metric("Analysed area", f"{geometry.get('analysed_reference_area_km2', 0):,.0f} kmÂ²")
+
+    st.caption(
+        f"Dataset: {source.get('dataset_id', 'MOLA MEGDR')} Â· "
+        f"Elevation source: {source.get('elevation', 'Not specified')} Â· "
+        f"Observation source: {source.get('observation_count', 'Not specified')}"
+    )
+
+    st.divider()
+    st.markdown("### Global elevation and observation context")
+    image_tabs = st.tabs(["Elevation", "Elevation distribution", "Observation classification", "Observation density"])
+    image_items = list(MARS_IMAGES.items())
+    for tab, (label, relative_path) in zip(image_tabs, image_items):
+        with tab:
+            show_image(relative_path, label)
+    st.caption(
+        "Observation count represents recorded MOLA observations, not a direct measure "
+        "of elevation accuracy. Zero-observation cells may still contain interpolated elevations."
+    )
+
+    st.divider()
+    st.markdown("### Global terrain metric maps")
+    metric_tabs = st.tabs(["Slope", "Roughness", "Local relief", "Terrain overview"])
+    for tab, (label, relative_path) in zip(metric_tabs, MARS_METRIC_IMAGES.items()):
+        with tab:
+            show_image(relative_path, label)
+            if label == "Terrain overview":
+                st.caption(
+                    "The combined terrain-quality visualisation is a derived overview. "
+                    "It should not be interpreted as an independently validated accuracy map."
+                )
+
+    st.divider()
+    st.markdown("### Area-weighted terrain statistics")
+    st.caption(
+        "The following terrain metrics use the polar-excluded analysis domain "
+        "(absolute planetocentric latitude below 89.5Â°). They are not the same "
+        "denominator as the full-sphere observation-coverage report."
+    )
+
+    metric_definitions = [
+        ("slope_degrees", "Slope", "Â°"),
+        ("roughness_3x3_m", "3Ã—3 roughness", " m"),
+        ("local_relief_3x3_m", "3Ã—3 local relief", " m"),
+    ]
+
+    metric_tabs = st.tabs([item[1] for item in metric_definitions])
+    for tab, (key, label, unit) in zip(metric_tabs, metric_definitions):
+        with tab:
+            metric_data = stats.get(key, {})
+            all_data = metric_data.get("all_analysed", {})
+            observed_data = metric_data.get("observed_only", {})
+            x1, x2, x3 = st.columns(3)
+            x1.metric("Area-weighted mean", f"{all_data.get('area_weighted_mean', float('nan')):,.2f}{unit}")
+            x2.metric("Minimum", f"{all_data.get('minimum', float('nan')):,.2f}{unit}")
+            x3.metric("Maximum", f"{all_data.get('maximum', float('nan')):,.2f}{unit}")
+
+            pcts = all_data.get("area_weighted_percentiles_approx", {})
+            st.markdown("**All analysed cells â€” approximate area-weighted percentiles**")
+            pcols = st.columns(5)
+            for col, percentile in zip(pcols, ["P01", "P25", "P50", "P75", "P99"]):
+                col.metric(percentile, f"{pcts.get(percentile, float('nan')):,.2f}{unit}")
+
+            observed_mean = observed_data.get("area_weighted_mean")
+            all_mean = all_data.get("area_weighted_mean")
+            if observed_mean is not None:
+                st.markdown("**Observed-centre cells comparison**")
+                st.metric(
+                    "Observed-only area-weighted mean",
+                    f"{observed_mean:,.2f}{unit}",
+                    help="Centre cells with one or more recorded observations. Neighbouring cells used in 3Ã—3 metrics may still include interpolated elevations."
+                )
+                comparison_frame = pd.DataFrame([
+                    {
+                        "Statistic": "Area-weighted mean",
+                        "All analysed": all_mean,
+                        "Observed-only": observed_mean,
+                    },
+                    {
+                        "Statistic": "Cell count",
+                        "All analysed": all_data.get("cell_count"),
+                        "Observed-only": observed_data.get("cell_count"),
+                    },
+                    {
+                        "Statistic": "Reference area (kmÂ²)",
+                        "All analysed": all_data.get("reference_area_km2"),
+                        "Observed-only": observed_data.get("reference_area_km2"),
+                    },
+                ])
+                st.dataframe(comparison_frame, use_container_width=True, hide_index=True)
+            st.caption(
+                "Percentiles are histogram-based approximations. The reported maximum is an "
+                "extreme value, not a representative terrain condition."
+            )
+
+    st.divider()
+    st.markdown("### Full-sphere observation coverage")
+    st.caption(
+        "These coverage values come from the separate area-weighted elevation report. "
+        "They use the full spherical reference surface, not the polar-excluded terrain-metric domain."
+    )
+    if MARS_AREA_REPORT:
+        # Grounded report values from the associated area-weighted report.
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Area-weighted observed coverage", "96.43865%")
+        c2.metric("Area-weighted zero-observation", "3.56135%")
+        c3.metric("Observed cells", "15,685,242")
+        c4.metric("Zero-observation cells", "903,558")
+        with st.expander("Full area-weighted Mars elevation and coverage report"):
+            st.code(MARS_AREA_REPORT, language="text")
+            st.download_button(
+                "Download area-weighted report",
+                data=MARS_AREA_REPORT.encode("utf-8"),
+                file_name="mars_area_weighted_report.txt",
+                mime="text/plain"
+            )
+    else:
+        st.warning(f"Area-weighted report not found: `{MARS_AREA_REPORT_PATH}`")
+
+    st.divider()
+    st.markdown("### Processing and interpretation limitations")
+    for limitation in report.get("limitations", []):
+        st.markdown(f"- {limitation}")
+
+    with st.expander("Technical processing metadata"):
+        st.json(processing)
+    with st.expander("Complete Mars terrain metrics report"):
+        st.json(report)
+        st.download_button(
+            "Download Mars terrain metrics JSON",
+            data=json.dumps(report, indent=2, ensure_ascii=False).encode("utf-8"),
+            file_name="mars_global_terrain_report.json",
+            mime="application/json"
+        )
+
+
+# ============================================================
+# PAGE 4 â€” EARTH / MARS COMPARISON
+# ============================================================
+
+def comparison_page():
+    section_header(
+        "MODULE 03 / PLANETARY ANALYSIS",
+        "Earth-Mars Comparison",
+
+========== REPORT / CODE DISPLAY USAGE ==========
+
+app.py:139:st.markdown("""
+app.py:317:    st.markdown(
+app.py:326:    st.markdown(
+app.py:334:    st.markdown(
+app.py:405:def show_report_file(path, title):
+app.py:409:            st.code(content or "Report is empty.", language="text")
+app.py:489:with st.sidebar:
+app.py:490:    st.markdown(
+app.py:496:    st.markdown(
+app.py:501:    st.markdown("##### NAVIGATION")
+app.py:502:    page = st.radio("Main navigation", PAGES, label_visibility="collapsed")
+app.py:504:    st.markdown("##### DATA CONNECTIONS")
+app.py:518:    st.markdown("##### RESEARCH TARGET")
+app.py:519:    st.markdown("**Planet:** Mars")
+app.py:520:    st.markdown("**Reference:** Jezero Crater")
+app.py:521:    st.markdown("**Mission context:** Perseverance")
+app.py:676:    st.markdown("""
+app.py:687:    st.markdown('<div class="eyebrow">MISSION INTELLIGENCE</div>', unsafe_allow_html=True)
+app.py:697:        st.markdown("### Atacama Candidate Distribution")
+app.py:711:        st.markdown("### Research status")
+app.py:713:        st.markdown(f"""
+app.py:728:    st.markdown("### Research dimensions")
+app.py:740:            st.markdown(
+app.py:747:    st.markdown("### Current research findings")
+app.py:786:    st.markdown("### Explore extracted regions")
+app.py:830:        st.markdown("### Candidate geography")
+app.py:844:        st.markdown("### Candidate profile")
+app.py:854:            st.markdown(
+app.py:881:    st.markdown("### Extracted candidate records")
+app.py:927:    st.markdown("### Global dataset overview")
+app.py:941:    st.markdown("### Global elevation and observation context")
+app.py:953:    st.markdown("### Global terrain metric maps")
+app.py:965:    st.markdown("### Area-weighted terrain statistics")
+app.py:990:            st.markdown("**All analysed cells — approximate area-weighted percentiles**")
+app.py:998:                st.markdown("**Observed-centre cells comparison**")
+app.py:1028:    st.markdown("### Full-sphere observation coverage")
+app.py:1041:            st.code(MARS_AREA_REPORT, language="text")
+app.py:1052:    st.markdown("### Processing and interpretation limitations")
+app.py:1054:        st.markdown(f"- {limitation}")
+app.py:1089:    st.markdown("### Comparison context")
+app.py:1101:    st.markdown("### Terrain comparison measurements")
+app.py:1112:                st.markdown(f"#### {metric_descriptions[key][0]}")
+app.py:1120:    st.markdown("### Terrain visualisation statistics")
+app.py:1135:    st.markdown("### Processing methods")
+app.py:1229:    st.markdown("## Global Planetary Comparison")
+app.py:1274:                    st.markdown(f"### {planet}")
+app.py:1312:            st.markdown("### Comparison methodology")
+app.py:1323:            st.markdown(
+app.py:1328:            st.markdown(
+app.py:1333:            st.markdown(
+app.py:1343:                    st.markdown(f"- {limitation}")
+app.py:1374:    st.markdown("## Research Visualisation Archive")
+app.py:1401:        st.markdown(f"### {group_name}")
+app.py:1409:                st.markdown(f"**{title}**")
+app.py:1418:    st.markdown("### Visualisation Inventory")
+app.py:1465:    st.markdown("### Research architecture")
+app.py:1477:            st.markdown(
+app.py:1485:    st.markdown("### Global Mars terrain analysis")
+app.py:1493:        st.markdown("#### Source product and grid")
+app.py:1499:        st.markdown(
+app.py:1511:        st.markdown("#### Spherical reference-cell area")
+app.py:1518:        st.markdown("#### Terrain metric methods")
+app.py:1519:        st.markdown(
+app.py:1537:        st.markdown("#### Processing configuration")
+app.py:1540:        st.markdown("#### Interpretation of observation support")
+app.py:1541:        st.markdown(
+app.py:1552:        st.markdown("#### Mars terrain metric results")
+app.py:1566:                    st.markdown(f"**{title}**")
+app.py:1569:        st.markdown("#### Terrain analysis limitations")
+app.py:1571:            st.markdown(f"- {limitation}")
+app.py:1577:            st.code(MARS_AREA_REPORT, language="text")
+app.py:1580:    st.markdown("### Atacama–Jezero regional study")
+app.py:1582:    st.markdown(
+app.py:1601:    st.markdown("#### Reported regional screening results")
+app.py:1614:    st.markdown("#### Candidate extraction and geological context")
+app.py:1615:    st.markdown(
+app.py:1627:    st.markdown("### Coordinate systems and reference surfaces")
+app.py:1628:    st.markdown(
+app.py:1642:    st.markdown("### Research reports and audit records")
+app.py:1656:        show_report_file(path, title)
+app.py:1679:                    st.code(load_text_report(path), language="text")
+app.py:1682:    st.markdown("### Scientific limitations and interpretation")
+app.py:1701:        st.markdown(f"- {item}")
+app.py:1704:    st.markdown("### Research provenance")
+app.py:1754:st.markdown("""
+
+========== BOTTOM OF APP / ROUTER ==========
+    st.divider()
+    st.markdown("### Scientific limitations and interpretation")
+    st.warning(
+        "Earth analogues cannot reproduce the complete Martian environment. "
+        "Gravity, atmospheric pressure, radiation, atmospheric chemistry and "
+        "other planetary conditions remain fundamentally different."
+    )
+    limitations = [
+        "The spherical Mars reference geometry is not an exact model of the physical terrain surface.",
+        "The cylindrical grid becomes singular near the poles; terrain-metric cells at and beyond 89.5Â° absolute planetocentric latitude are excluded.",
+        "The maximum slope is an extreme, outlier-sensitive value and should not be treated as representative.",
+        "The 3Ã—3 roughness and relief windows are angular grid-cell neighbourhoods rather than fixed-distance windows.",
+        "Interpolated elevations remain in zero-observation cells in the source product.",
+        "Observed-only centre-cell selection does not guarantee that every neighbouring cell used in a metric was directly observed.",
+        "Area-weighted percentile values are approximate histogram-bin estimates.",
+        "Regional geological mapping is not field verification.",
+        "Percentile overlap is descriptive screening, not a probability of planetary analogy.",
+        "No universal similarity score or validated site-suitability ranking is produced.",
+    ]
+    for item in limitations:
+        st.markdown(f"- {item}")
+
+    st.divider()
+    st.markdown("### Research provenance")
+    provenance = pd.DataFrame([
+        ("Earth terrain", "Copernicus DEM GLO-30 DSM"),
+        ("Mars global elevation", "MOLA MEGDR / MGS-M-MOLA-5-MEGDR-L3-V1.0"),
+        ("Mars regional reference", "Jezero Crater terrain analysis"),
+        ("Mars global reference radius", "3,396 km spherical reference radius"),
+        ("Geological mapping", "SERNAGEOMIN regional geological map"),
+        ("Regional common working resolution", "Approximately 463 m"),
+    ], columns=["Component", "Documented source / context"])
+    st.dataframe(provenance, use_container_width=True, hide_index=True)
+
+    st.caption(
+        "TERRAFORM is an independent research platform. It is not an official NASA product, "
+        "a NASA mission instrument, or a validated planetary site-selection system."
+    )
+
+
+# ============================================================
+# MAIN PAGE ROUTER
+# ============================================================
+
+if page == "Mission Overview":
+    overview_page()
+
+elif page == "Discovery Explorer":
+    discovery_page()
+
+elif page == "Global Mars Explorer":
+    global_mars_page()
+
+elif page == "Earth-Mars Comparison":
+    comparison_page()
+
+elif page == "Candidate Intelligence":
+    candidate_page()
+
+elif page == "Research Visualisations":
+    visualisations_page()
+
+elif page == "Data Laboratory":
+    data_lab_page()
+
+elif page == "Technical Deep Dive":
+    technical_deep_dive_page()
+
+
+# ============================================================
+# GLOBAL FOOTER
+# ============================================================
+
+st.markdown("""
+<div class="footer">
+    TERRAFORM // PLANETARY ANALOG INTELLIGENCE
+    <br><br>
+    INDEPENDENT RESEARCH PROJECT Â· NASA SPACE APPS CHALLENGE 2026
+    <br>
+    SCIENTIFIC OBSERVATIONS ONLY Â· NO FABRICATED DISCOVERIES
+</div>
+""", unsafe_allow_html=True)
+
+

@@ -1,0 +1,480 @@
+========== GLOBAL COMPARISON JSON ==========
+{
+    "project": "TERRAFORM â€” Planetary Analog Intelligence",
+    "analysis": "Global Planetary Terrain Distribution Comparison",
+    "version": "1.0",
+    "generated_utc": "2026-11-10T14:52:20.453748+00:00",
+    "processing_started_utc": "2026-11-10T14:52:06.945088+00:00",
+    "method": {
+        "comparison_type": "Global weighted distribution comparison",
+        "pixel_to_pixel_matching": false,
+        "area_weighting": "Approximate spherical latitude weighting using cos(latitude).",
+        "elevation_histogram_bin_width_m": 10,
+        "earth_resolution_protocol": "Aggregate 2 x 2 native cells from 1 arc-minute to 2 arc-minutes.",
+        "mars_resolution_protocol": "Retain native 0.0625-degree grid.",
+        "moon_resolution_protocol": "Aggregate 2 x 2 native cells from 0.0625 to 0.125 degrees.",
+        "resolution_note": "The selected grids have approximately comparable north-south equatorial spacing of 3.7â€“3.8 km. East-west spacing varies with latitude.",
+        "normalization": "Within-body z-scores based on each dataset's own latitude-weighted mean and standard deviation."
+    },
+    "planetary_results": {
+        "Earth": {
+            "planet": "Earth",
+            "dataset": "NOAA ETOPO 2022, 60 arc-second",
+            "input_file": "data\\Global\\Earth\\earth_etopo_2022_60s.tif",
+            "native_resolution_degrees": 0.016666666666666666,
+            "comparison_resolution_degrees": 0.03333333333333333,
+            "approximate_equatorial_north_south_spacing_km": 3.7,
+            "surface_scope": "Elevation-positive land proxy",
+            "land_proxy_rule": "At least 2 of 4 original 1-arc-minute cells must have valid elevation > 0 m. Mean uses positive cells only.",
+            "accepted_coarse_cells": 19910807,
+            "total_coarse_grid_cells": 58320000,
+            "accepted_grid_cell_fraction": 0.34140615569272975,
+            "vertical_reference": "WGS84 + EGM2008 geoid",
+            "statistics": {
+                "weighted_mean_m": 791.7542392172163,
+                "weighted_standard_deviation_m": 967.6892990367552,
+                "weighted_percentiles_m": {
+                    "P05": 29.3645666378184,
+                    "P10": 61.80482281350119,
+                    "P25": 169.4283540845788,
+                    "P50": 416.7467469651655,
+                    "P75": 1026.5017430477494,
+                    "P90": 2113.107747009802,
+                    "P95": 3008.9032260959007
+                },
+                "weighted_histogram_total": 10827539.744371727,
+                "histogram_bin_width_m": 10
+            },
+            "limitations": [
+                "Elevation > 0 m is a preliminary land proxy, not an authoritative land mask.",
+                "Below-sea-level terrestrial regions may be excluded.",
+                "Coastal blocks are handled using a 2-of-4 positive-cell threshold.",
+                "Earth is represented by a land proxy, not its full land-and-ocean surface.",
+                "Latitude weighting uses a spherical cos(latitude) approximation."
+            ]
+        },
+        "Mars": {
+            "planet": "Mars",
+            "dataset": "MOLA MEGDR MEGT90N000EB",
+            "input_file": "data\\Global\\Mars\\megt90n000eb.img",
+            "native_resolution_degrees": 0.0625,
+            "comparison_resolution_degrees": 0.0625,
+            "approximate_equatorial_north_south_spacing_km": 3.704,
+            "surface_scope": "Full gridded planetary surface",
+            "aggregation": "Native grid retained",
+            "grid_dimensions": {
+                "rows": 2880,
+                "columns": 5760
+            },
+            "vertical_reference": "MOLA areoid",
+            "data_interpretation": "Median observed topography where measurements exist; interpolated values are also present.",
+            "zero_values": "Retained as valid elevation values",
+            "statistics": {
+                "weighted_mean_m": -550.1907296918737,
+                "weighted_standard_deviation_m": 2902.005962621754,
+                "weighted_percentiles_m": {
+                    "P05": -4689.960662793478,
+                    "P10": -4276.269774960876,
+                    "P25": -3240.9601842654097,
+                    "P50": -153.9906365132182,
+                    "P75": 1559.7620496164373,
+                    "P90": 2564.130979878748,
+                    "P95": 3666.2422443961345
+                },
+                "weighted_histogram_total": 10560758.60345023,
+                "histogram_bin_width_m": 10
+            },
+            "limitations": [
+                "MOLA measurement coverage is spatially uneven.",
+                "Interpolated cells are included in the global distribution.",
+                "Grid-cell statistics are weighted using cos(latitude).",
+                "The spherical area-weighting approximation is not a full geodesic calculation."
+            ]
+        },
+        "Moon": {
+            "planet": "Moon",
+            "dataset": "NASA LOLA LDEM_16",
+            "input_file": "data\\Global\\Moon\\ldem_16.img",
+            "native_resolution_degrees": 0.0625,
+            "comparison_resolution_degrees": 0.125,
+            "approximate_equatorial_north_south_spacing_km": 3.79,
+            "surface_scope": "Full gridded lunar surface",
+            "aggregation": "2 x 2 native cells averaged",
+            "grid_dimensions": {
+                "rows": 1440,
+                "columns": 2880
+            },
+            "vertical_reference": "Reference sphere with radius 1,737.4 km",
+            "height_conversion": "Elevation metres = DN * 0.5",
+            "zero_values": "Retained as valid elevation values",
+            "statistics": {
+                "weighted_mean_m": -248.3250621475429,
+                "weighted_standard_deviation_m": 2325.0765521185026,
+                "weighted_percentiles_m": {
+                    "P05": -3532.427329943487,
+                    "P10": -2671.9694963476936,
+                    "P25": -1809.7562039498466,
+                    "P50": -646.7839229180256,
+                    "P75": 1079.7044029507724,
+                    "P90": 3001.9505681112223,
+                    "P95": 4135.597151963295
+                },
+                "weighted_histogram_total": 2640190.043561724,
+                "histogram_bin_width_m": 10
+            },
+            "limitations": [
+                "LOLA grid interpolation is used to compensate for incomplete altimetry coverage.",
+                "The product has documented edge artefacts near some 45-degree latitude bands.",
+                "The vertical reference is a reference sphere, not a geoid or equipotential surface.",
+                "The known raw-extrema versus label-extrema discrepancy remains unresolved.",
+                "Latitude weighting uses a spherical cos(latitude) approximation."
+            ]
+        }
+    },
+    "visualisations": {
+        "elevation_distributions": "outputs\\Visualisations\\Global\\global_elevation_distribution_comparison.png",
+        "normalized_distributions": "outputs\\Visualisations\\Global\\global_normalized_terrain_comparison.png"
+    },
+    "scientific_interpretation": [
+        "The comparison describes global elevation-distribution patterns.",
+        "Earth is represented by a preliminary elevation-positive land proxy.",
+        "Mars and Moon represent their full gridded surfaces.",
+        "The planetary vertical references are different and are not directly interchangeable.",
+        "Standardized distributions compare statistical shape, not geological equivalence.",
+        "The analysis does not establish habitability, resource potential, or mission-site suitability.",
+        "This global screening does not replace higher-resolution regional analysis."
+    ]
+}
+
+========== outputs\Global\Comparisons\global_comparison_report_audit.txt ==========
+{
+  "project": "TERRAFORM GÇö Planetary Analog Intelligence",
+  "analysis": "Global Planetary Terrain Distribution Comparison",
+  "version": "1.0",
+  "generated_utc": "2026-11-10T14:52:20.453748+00:00",
+  "processing_started_utc": "2026-11-10T14:52:06.945088+00:00",
+  "method": {
+    "comparison_type": "Global weighted distribution comparison",
+    "pixel_to_pixel_matching": false,
+    "area_weighting": "Approximate spherical latitude weighting using cos(latitude).",
+    "elevation_histogram_bin_width_m": 10,
+    "earth_resolution_protocol": "Aggregate 2 x 2 native cells from 1 arc-minute to 2 arc-minutes.",
+    "mars_resolution_protocol": "Retain native 0.0625-degree grid.",
+    "moon_resolution_protocol": "Aggregate 2 x 2 native cells from 0.0625 to 0.125 degrees.",
+    "resolution_note": "The selected grids have approximately comparable north-south equatorial spacing of 3.7GÇô3.8 km. East-west spacing varies with latitude.",
+    "normalization": "Within-body z-scores based on each dataset's own latitude-weighted mean and standard deviation."
+  },
+  "planetary_results": {
+    "Earth": {
+      "planet": "Earth",
+      "dataset": "NOAA ETOPO 2022, 60 arc-second",
+      "input_file": "data\\Global\\Earth\\earth_etopo_2022_60s.tif",
+      "native_resolution_degrees": 0.016666666666666666,
+      "comparison_resolution_degrees": 0.03333333333333333,
+      "approximate_equatorial_north_south_spacing_km": 3.7,
+      "surface_scope": "Elevation-positive land proxy",
+      "land_proxy_rule": "At least 2 of 4 original 1-arc-minute cells must have valid elevation > 0 m. Mean uses positive cells only.",
+      "accepted_coarse_cells": 19910807,
+      "total_coarse_grid_cells": 58320000,
+      "accepted_grid_cell_fraction": 0.34140615569272975,
+      "vertical_reference": "WGS84 + EGM2008 geoid",
+      "statistics": {
+        "weighted_mean_m": 791.7542392172163,
+        "weighted_standard_deviation_m": 967.6892990367552,
+        "weighted_percentiles_m": {
+          "P05": 29.3645666378184,
+          "P10": 61.80482281350119,
+          "P25": 169.4283540845788,
+          "P50": 416.7467469651655,
+          "P75": 1026.5017430477494,
+          "P90": 2113.107747009802,
+          "P95": 3008.9032260959007
+        },
+        "weighted_histogram_total": 10827539.744371727,
+        "histogram_bin_width_m": 10
+      },
+      "limitations": [
+        "Elevation > 0 m is a preliminary land proxy, not an authoritative land mask.",
+        "Below-sea-level terrestrial regions may be excluded.",
+        "Coastal blocks are handled using a 2-of-4 positive-cell threshold.",
+        "Earth is represented by a land proxy, not its full land-and-ocean surface.",
+        "Latitude weighting uses a spherical cos(latitude) approximation."
+      ]
+    },
+    "Mars": {
+      "planet": "Mars",
+      "dataset": "MOLA MEGDR MEGT90N000EB",
+      "input_file": "data\\Global\\Mars\\megt90n000eb.img",
+      "native_resolution_degrees": 0.0625,
+      "comparison_resolution_degrees": 0.0625,
+      "approximate_equatorial_north_south_spacing_km": 3.704,
+      "surface_scope": "Full gridded planetary surface",
+      "aggregation": "Native grid retained",
+      "grid_dimensions": {
+        "rows": 2880,
+        "columns": 5760
+      },
+      "vertical_reference": "MOLA areoid",
+      "data_interpretation": "Median observed topography where measurements exist; interpolated values are also present.",
+      "zero_values": "Retained as valid elevation values",
+      "statistics": {
+        "weighted_mean_m": -550.1907296918737,
+        "weighted_standard_deviation_m": 2902.005962621754,
+        "weighted_percentiles_m": {
+          "P05": -4689.960662793478,
+          "P10": -4276.269774960876,
+          "P25": -3240.9601842654097,
+          "P50": -153.9906365132182,
+          "P75": 1559.7620496164373,
+          "P90": 2564.130979878748,
+          "P95": 3666.2422443961345
+        },
+        "weighted_histogram_total": 10560758.60345023,
+        "histogram_bin_width_m": 10
+      },
+      "limitations": [
+        "MOLA measurement coverage is spatially uneven.",
+        "Interpolated cells are included in the global distribution.",
+        "Grid-cell statistics are weighted using cos(latitude).",
+        "The spherical area-weighting approximation is not a full geodesic calculation."
+      ]
+    },
+    "Moon": {
+      "planet": "Moon",
+      "dataset": "NASA LOLA LDEM_16",
+      "input_file": "data\\Global\\Moon\\ldem_16.img",
+      "native_resolution_degrees": 0.0625,
+      "comparison_resolution_degrees": 0.125,
+      "approximate_equatorial_north_south_spacing_km": 3.79,
+      "surface_scope": "Full gridded lunar surface",
+      "aggregation": "2 x 2 native cells averaged",
+      "grid_dimensions": {
+        "rows": 1440,
+        "columns": 2880
+      },
+      "vertical_reference": "Reference sphere with radius 1,737.4 km",
+      "height_conversion": "Elevation metres = DN * 0.5",
+      "zero_values": "Retained as valid elevation values",
+      "statistics": {
+        "weighted_mean_m": -248.3250621475429,
+        "weighted_standard_deviation_m": 2325.0765521185026,
+        "weighted_percentiles_m": {
+          "P05": -3532.427329943487,
+          "P10": -2671.9694963476936,
+          "P25": -1809.7562039498466,
+          "P50": -646.7839229180256,
+          "P75": 1079.7044029507724,
+          "P90": 3001.9505681112223,
+          "P95": 4135.597151963295
+        },
+        "weighted_histogram_total": 2640190.043561724,
+        "histogram_bin_width_m": 10
+      },
+      "limitations": [
+        "LOLA grid interpolation is used to compensate for incomplete altimetry coverage.",
+        "The product has documented edge artefacts near some 45-degree latitude bands.",
+        "The vertical reference is a reference sphere, not a geoid or equipotential surface.",
+        "The known raw-extrema versus label-extrema discrepancy remains unresolved.",
+        "Latitude weighting uses a spherical cos(latitude) approximation."
+      ]
+    }
+  },
+  "visualisations": {
+    "elevation_distributions": "outputs\\Visualisations\\Global\\global_elevation_distribution_comparison.png",
+    "normalized_distributions": "outputs\\Visualisations\\Global\\global_normalized_terrain_comparison.png"
+  },
+  "scientific_interpretation": [
+    "The comparison describes global elevation-distribution patterns.",
+    "Earth is represented by a preliminary elevation-positive land proxy.",
+    "Mars and Moon represent their full gridded surfaces.",
+    "The planetary vertical references are different and are not directly interchangeable.",
+    "Standardized distributions compare statistical shape, not geological equivalence.",
+    "The analysis does not establish habitability, resource potential, or mission-site suitability.",
+    "This global screening does not replace higher-resolution regional analysis."
+  ]
+}
+
+
+========== outputs\Global\Comparisons\mars_metadata_audit.txt ==========
+========== MARS HDR ==========
+ENVI
+description = {
+  PDS File Imported into ENVI [Wed Aug 09 13:20:25 2017]"Each}
+samples = 5760
+lines   = 2880
+bands   = 1
+header offset = 0
+file type = PDS Image
+data type = 2
+interleave = bsq
+sensor type = Unknown
+byte order = 1
+map info = {Mars Equirectangular 3396km C180, 2881.0000, 1441.0000, 0.0000, 0.0000, 3.7044613374e+003, 3.7044613374e+003, MARS Sphere3396kmD, units=Meters}
+projection info = {17, 3396000.0, 0.000000, 180.000000, 0.0, 0.0, MARS Sphere3396kmD, Mars Equirectangular 3396km C180, units=Meters}
+coordinate system string = {PROJCS["Mars Equirectangular 3396km C180",GEOGCS["GCS_Unknown",DATUM["D_Unknown",SPHEROID["S_Unknown",3396000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Equidistant_Cylindrical"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",180.0],PARAMETER["Standard_Parallel_1",0.0],UNIT["Meter",1.0]]}
+acquisition time = 1997-09-15T19:10:00.000Z
+sun azimuth = 0.00000000
+wavelength units = Unknown
+data ignore value = 0
+========== MARS LABEL ==========
+PDS_VERSION_ID                = PDS3
+RECORD_TYPE                   = FIXED_LENGTH
+FILE_RECORDS                  = 2880
+RECORD_BYTES                  = 11520
+^IMAGE                        = "MEGT90N000EB.IMG"
+DATA_SET_ID                   = "MGS-M-MOLA-5-MEGDR-L3-V1.0"
+PRODUCT_ID                    = "MEGT90N000EB.IMG"
+SPACECRAFT_NAME               = "MARS GLOBAL SURVEYOR"
+INSTRUMENT_ID                 = MOLA
+INSTRUMENT_NAME               = "MARS ORBITER LASER ALTIMETER"
+TARGET_NAME                   = MARS
+START_TIME                    = 1997-09-15T19:10:00.000
+STOP_TIME                     = 2001-06-30T11:10:40.000
+START_ORBIT_NUMBER            = 3
+STOP_ORBIT_NUMBER             = 20333
+PRODUCT_CREATION_TIME         = 2003-04-03T01:00:00
+PRODUCT_VERSION_ID            = "2.0"
+PRODUCER_ID                   = MGS_MOLA_TEAM
+PRODUCER_FULL_NAME            = "DAVID E. SMITH"
+PRODUCER_INSTITUTION_NAME     = "GODDARD SPACE FLIGHT CENTER"
+DESCRIPTION                   = "This data product is a topographic
+ map of Mars at a resolution of 0.0625 (1/16) by 0.0625 degrees, based
+ on altimetry data acquired by the Mars Global Surveyor MOLA instrument
+ and accumulated over the course of the primary and extended
+ mission. The MOLA Precision Experiment Data Records (PEDRs) are the
+ source for this data set. The map is in the form of a binary table
+ with one row for each 0.0625-degree latitude. Map coordinates use the
+ IAU2000 reference system, and areoid defined by the Goddard Mars
+ potential model GMM3 (mgm1025) evaluated to degree and order 50. The
+ binned data include all MOLA nadir observations from the Mapping Phase
+ through the Primary and Extended missions, from the end of aerobraking
+ in February 1999 through June 2001. Additionally, off-nadir
+ observations of the north pole are included from 87 N latitude and
+ northward, taken during the spring of 1998, and of both poles taken
+ during Mapping from 87 N and S to the poles. Data are adjusted using a
+ first-order crossover solution for radial, along-track, and
+ across-track position. Parts of orbits are excluded where solutions
+ for these orbits are deemed to be poor. (Note: subtract 10000 from a
+ MOLA mapping phase orbit number to determine the equivalent MGS
+ Project orbit number.) Also excluded are shots more than 1.2 degree
+ off-nadir (except as noted above), channel 4 returns, and any returns
+ not classified as ground returns, e.g. clouds or noise, according to
+ the SHOT_CLASSIFICATION_CODE. A total of nearly 600,000,000
+ observations are represented."
+
+OBJECT                        = IMAGE
+ NAME                         = MEDIAN_TOPOGRAPHY
+ DESCRIPTION                  = "Each sample represents median
+  observed topography within a 0.0625 by 0.0625 degree area. Where no
+  observations lie within the area, an interpolated value is supplied.
+  Owing to the polar MGS orbit, density is lowest near the equator,
+  where about 55% of bins contain at least one MOLA shot.  There are
+  gaps, however, of up to 12 km between profiles.  The minimum and
+  maximum topography observations for the entire data set are -8177
+  and 21171 meters. Topography is the planetary radius minus the
+  areoid radius at a given longitude and latitude."
+ LINES                        = 2880
+ LINE_SAMPLES                 = 5760
+ SAMPLE_TYPE                  = MSB_INTEGER
+ SAMPLE_BITS                  = 16
+ UNIT                         = METER
+END_OBJECT                    = IMAGE
+
+OBJECT                        = IMAGE_MAP_PROJECTION
+ ^DATA_SET_MAP_PROJECTION     = "DSMAP.CAT"
+ MAP_PROJECTION_TYPE          = "SIMPLE CYLINDRICAL"
+ A_AXIS_RADIUS                = 3396.0 <KM>
+ B_AXIS_RADIUS                = 3396.0 <KM>
+ C_AXIS_RADIUS                = 3396.0 <KM>
+ FIRST_STANDARD_PARALLEL      = "N/A"
+ SECOND_STANDARD_PARALLEL     = "N/A"
+ POSITIVE_LONGITUDE_DIRECTION = "EAST"
+ CENTER_LATITUDE              = 0.0 <DEGREE>
+ CENTER_LONGITUDE             = 180.0 <DEGREE>
+ REFERENCE_LATITUDE           = "N/A"
+ REFERENCE_LONGITUDE          = "N/A"
+ LINE_FIRST_PIXEL             = 1
+ LINE_LAST_PIXEL              = 2880
+ SAMPLE_FIRST_PIXEL           = 1
+ SAMPLE_LAST_PIXEL            = 5760
+ MAP_PROJECTION_ROTATION      = 0.0
+ MAP_RESOLUTION               = 16.0 <PIXEL/DEGREE>
+ MAP_SCALE                    = 3.705 <KM/PIXEL>
+ MAXIMUM_LATITUDE             = 90.0 <DEGREE>
+ MINIMUM_LATITUDE             = -90.0 <DEGREE>
+ WESTERNMOST_LONGITUDE        = 0.0 <DEGREE>
+ EASTERNMOST_LONGITUDE        = 360.0 <DEGREE>
+ LINE_PROJECTION_OFFSET       = 1440.5
+ SAMPLE_PROJECTION_OFFSET     = 2880.5
+ COORDINATE_SYSTEM_TYPE       = "BODY-FIXED ROTATING"
+ COORDINATE_SYSTEM_NAME       = "PLANETOCENTRIC"
+END_OBJECT                    = IMAGE_MAP_PROJECTION
+END
+
+
+========== outputs\Global\Comparisons\global_comparison_terminal_log.txt ==========
+=================================================================
+TERRAFORM GÇö GLOBAL PLANETARY COMPARISON ENGINE
+Version 1.0
+=================================================================
+
+[1/3] Processing Earth...
+  Earth progress: 0/5,400 rows
+  Earth progress: 512/5,400 rows
+  Earth progress: 1,024/5,400 rows
+  Earth progress: 1,536/5,400 rows
+  Earth progress: 2,048/5,400 rows
+  Earth progress: 2,560/5,400 rows
+  Earth progress: 3,072/5,400 rows
+  Earth progress: 3,584/5,400 rows
+  Earth progress: 4,096/5,400 rows
+  Earth progress: 4,608/5,400 rows
+  Earth progress: 5,120/5,400 rows
+  Earth processing complete.
+
+[2/3] Processing Mars...
+  Mars progress: 0/2,880 rows
+  Mars progress: 512/2,880 rows
+  Mars progress: 1,024/2,880 rows
+  Mars progress: 1,536/2,880 rows
+  Mars progress: 2,048/2,880 rows
+  Mars progress: 2,560/2,880 rows
+  Mars processing complete.
+
+[3/3] Processing Moon...
+  Moon progress: 0/1,440 rows
+  Moon progress: 256/1,440 rows
+  Moon progress: 512/1,440 rows
+  Moon progress: 768/1,440 rows
+  Moon progress: 1,024/1,440 rows
+  Moon progress: 1,280/1,440 rows
+  Moon processing complete.
+
+Generating comparison visualisations...
+
+=================================================================
+GLOBAL COMPARISON COMPLETED
+=================================================================
+
+Earth
+  Weighted mean: 791.75 m
+  Weighted standard deviation: 967.69 m
+  Weighted median: 416.75 m
+
+Mars
+  Weighted mean: -550.19 m
+  Weighted standard deviation: 2,902.01 m
+  Weighted median: -153.99 m
+
+Moon
+  Weighted mean: -248.33 m
+  Weighted standard deviation: 2,325.08 m
+  Weighted median: -646.78 m
+
+Saved outputs:
+  Report: D:\TERRAFORM\outputs\Global\Comparisons\global_planetary_comparison_report.json
+  Elevation chart: D:\TERRAFORM\outputs\Visualisations\Global\global_elevation_distribution_comparison.png
+  Normalized chart: D:\TERRAFORM\outputs\Visualisations\Global\global_normalized_terrain_comparison.png
+
+Remember: distribution similarity is not site suitability.
+

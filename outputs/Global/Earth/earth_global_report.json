@@ -1,0 +1,105 @@
+{
+    "project": "TERRAFORM",
+    "analysis": "Global Earth Elevation Analysis",
+    "version": "1.3",
+    "dataset": {
+        "name": "NOAA ETOPO 2022",
+        "provider": "NOAA",
+        "source_file": "earth_etopo_2022_60s.tif",
+        "source_resolution": "60 arc-seconds",
+        "measurement": "Elevation and bathymetry",
+        "units": "Metres"
+    },
+    "coordinate_reference_system": {
+        "crs": "EPSG:9518",
+        "crs_name": "WGS 84 + EGM2008 height",
+        "crs_wkt": "COMPD_CS[\"WGS 84 + EGM2008 height\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]],VERT_CS[\"EGM2008 height\",VERT_DATUM[\"EGM2008 geoid\",2005,AUTHORITY[\"EPSG\",\"1027\"]],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Gravity-related height\",UP],AUTHORITY[\"EPSG\",\"3855\"]],AUTHORITY[\"EPSG\",\"9518\"]]",
+        "axis_information": [
+            {
+                "name": "Geodetic latitude",
+                "direction": "north",
+                "unit": "degree"
+            },
+            {
+                "name": "Geodetic longitude",
+                "direction": "east",
+                "unit": "degree"
+            },
+            {
+                "name": "Gravity-related height",
+                "direction": "up",
+                "unit": "metre"
+            }
+        ],
+        "sub_crs_information": [
+            {
+                "name": "WGS 84",
+                "type": "Geographic 2D CRS"
+            },
+            {
+                "name": "EGM2008 height",
+                "type": "Vertical CRS"
+            }
+        ]
+    },
+    "dimensions": {
+        "width": 21600,
+        "height": 10800,
+        "bands": 1
+    },
+    "raster_metadata": {
+        "driver": "GTiff",
+        "resolution": [
+            0.016666666666666666,
+            0.016666666666666666
+        ],
+        "bounds": {
+            "left": -180.0,
+            "bottom": -90.0,
+            "right": 180.0,
+            "top": 90.0
+        },
+        "data_types": [
+            "float32"
+        ],
+        "nodata_value": -99999.0
+    },
+    "statistics": {
+        "valid_cells": 233280000,
+        "land_cells": 79429596,
+        "ocean_cells": 153850404,
+        "land_percentage_of_valid_cells": 34.049,
+        "ocean_percentage_of_valid_cells": 65.951,
+        "global_elevation_min_m": -10752.08203125,
+        "global_elevation_max_m": 8157.3564453125,
+        "global_elevation_mean_m": -1897.137451958776,
+        "land_elevation_min_m": 5.329070518200751e-15,
+        "land_elevation_max_m": 8157.3564453125,
+        "land_elevation_mean_m": 1110.427070455364,
+        "ocean_elevation_min_m": -10752.08203125,
+        "ocean_elevation_max_m": 0.0,
+        "ocean_elevation_mean_m": -3449.8771832063335
+    },
+    "visualisation": {
+        "preview_width": 2160,
+        "preview_height": 1080,
+        "figure_path": "outputs\\Visualisations\\Global\\earth_global_elevation.png"
+    },
+    "methodology": {
+        "processing": "Block-wise raster analysis",
+        "land_definition": "Elevation greater than zero metres",
+        "ocean_definition": "Elevation less than or equal to zero metres",
+        "classification_type": "Preliminary elevation-based classification",
+        "nodata_handling": "Invalid and NoData cells excluded",
+        "original_raster_modified": false
+    },
+    "limitations": [
+        "ETOPO is a global overview dataset, not a regional high-resolution DEM.",
+        "The elevation-zero threshold is a preliminary classification, not an authoritative coastline mask.",
+        "Below-sea-level terrestrial regions may be classified as ocean.",
+        "Land and ocean percentages represent valid raster-cell counts, not physical surface-area percentages.",
+        "Geographic grid cells have latitude-dependent physical dimensions.",
+        "Vertical reference information must be interpreted using official dataset metadata.",
+        "Global terrain derivatives require geodesically appropriate processing."
+    ]
+}

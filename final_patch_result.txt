@@ -1,0 +1,7 @@
+﻿PASS: Atacama geographic scope
+PASS: Raster availability message
+PASS: Planetary report title and JSON indentation
+PASS: CSV report UI removed; shared disclaimer preserved
+PASS: Content verification
+PASS: Python syntax validation
+PATCH SUCCESSFUL: app.py updated.

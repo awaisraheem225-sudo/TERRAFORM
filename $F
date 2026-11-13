@@ -1,0 +1,45 @@
+TERRAFORM — CANDIDATE EXTRACTION ENGINE AUDIT
+=======================================================
+File: D:\TERRAFORM\src\analysis\candidate_extraction.py
+Lines: 630
+
+=== FUNCTIONS ===
+Line 55: read_raster()
+Line 75: read_screening_mask()
+Line 93: check_grids()
+Line 111: calculate_connectivity_counts()
+Line 134: save_candidate_raster()
+Line 168: create_candidate_map()
+Line 314: main()
+
+=== CONFIGURATION AND PATHS ===
+Line 20: ROOT = Path(__file__).resolve().parents[2]
+Line 22: MAP_DIR = ROOT / 'outputs' / 'maps'
+Line 24: SENSITIVITY_DIR = MAP_DIR / 'sensitivity_analysis'
+Line 25: OUTPUT_DIR = MAP_DIR / 'candidate_regions'
+Line 27: EARTH_DIR = ROOT / 'data' / 'processed' / 'earth' / 'comparison_scale'
+Line 31: REPORT_DIR = ROOT / 'outputs' / 'reports'
+Line 40: MASK_FILES = {'broad': SENSITIVITY_DIR / 'broad_three_metric_mask.tif', 'moderate': SENSITIVITY_DIR / 'moderate_three_metric_mask.tif', 'strict': SENSITIVITY_DIR / 'strict_three_metric_mask.tif'}
+Line 46: METRIC_FILES = {'slope': 'earth_slope_degrees.tif', 'roughness': 'earth_roughness_m.tif', 'local_relief': 'earth_local_relief_m.tif'}
+
+=== INPUTS, PROCESSING AND OUTPUTS ===
+Line 121: ndimage.label(mask, structure=structure_4)
+Line 126: ndimage.label(mask, structure=structure_8)
+Line 256: ax.set_xlabel('Easting (km)')
+Line 257: ax.set_ylabel('Northing (km)')
+Line 415: ndimage.label(strict_mask, structure=structure_4)
+Line 570: create_candidate_map(labels, common_valid, ordered_ids, transform)
+Line 630: main()
+Line 62: rasterio.open(path)
+Line 64: src.read(1)
+Line 101: ValueError(f'{label}: raster transforms do not match.')
+Line 157: rasterio.open(output_path, 'w', **output_profile)
+Line 163: dst.write(output, 1)
+Line 435: abs(transform.a * transform.e - transform.b * transform.d)
+Line 465: rasterio.transform.xy(transform, mean_row, mean_col, offset='center')
+Line 472: reproject_coordinates(reference['crs'], 'EPSG:4326', [center_x], [center_y])
+Line 607: json.dump(report, file, indent=4)
+
+=== MAIN EXECUTION BLOCK ===
+if __name__ == '__main__':
+    main()

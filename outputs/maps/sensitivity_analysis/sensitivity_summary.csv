@@ -1,0 +1,4 @@
+scenario,matching_pixels,matching_percentage,matching_area_km2,clusters_4_neighbour,largest_cluster_4_km2,clusters_8_neighbour,largest_cluster_8_km2
+broad,38484,73.3043,8249.7766,169,7917.5046,100,7939.1559
+moderate,22063,42.0256,4729.6232,415,1676.7943,220,3178.0204
+strict,6608,12.5869,1416.5504,873,119.8323,571,142.7698

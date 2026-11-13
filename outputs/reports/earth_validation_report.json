@@ -1,0 +1,20 @@
+{
+    "dataset_type": "earth",
+    "status": "PASSED",
+    "original_rows": 3,
+    "valid_rows": 1,
+    "rejected_rows": 2,
+    "errors": [],
+    "warnings": [],
+    "missing_values": {},
+    "duplicate_rows": 0,
+    "invalid_coordinates": 1,
+    "numeric_conversion_failures": {},
+    "columns": [
+        "location",
+        "latitude",
+        "longitude",
+        "slope_deg",
+        "source"
+    ]
+}

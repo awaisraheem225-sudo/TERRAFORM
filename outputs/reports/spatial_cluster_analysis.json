@@ -1,0 +1,555 @@
+{
+    "project": "TERRAFORM",
+    "analysis": "Spatial cluster analysis",
+    "input": "atacama_three_metric_intersection.tif",
+    "pixel_area_km2": 0.214369,
+    "matching_pixels": 38484,
+    "valid_pixels": 52499,
+    "connectivity_comparison": {
+        "4_neighbour": {
+            "cluster_count": 169,
+            "largest_cluster_pixels": 36934,
+            "largest_cluster_area_km2": 7917.504646,
+            "median_cluster_area_km2": 0.428738,
+            "mean_cluster_area_km2": 48.81524613017751,
+            "largest_10_share_percent": 98.81249350379379,
+            "clusters": [
+                {
+                    "rank": 1,
+                    "cluster_id": 1,
+                    "pixel_count": 36934,
+                    "area_km2": 7917.504646
+                },
+                {
+                    "rank": 2,
+                    "cluster_id": 7,
+                    "pixel_count": 807,
+                    "area_km2": 172.99578300000002
+                },
+                {
+                    "rank": 3,
+                    "cluster_id": 4,
+                    "pixel_count": 92,
+                    "area_km2": 19.721948
+                },
+                {
+                    "rank": 4,
+                    "cluster_id": 154,
+                    "pixel_count": 56,
+                    "area_km2": 12.004664
+                },
+                {
+                    "rank": 5,
+                    "cluster_id": 113,
+                    "pixel_count": 42,
+                    "area_km2": 9.003498
+                },
+                {
+                    "rank": 6,
+                    "cluster_id": 96,
+                    "pixel_count": 27,
+                    "area_km2": 5.787963
+                },
+                {
+                    "rank": 7,
+                    "cluster_id": 43,
+                    "pixel_count": 20,
+                    "area_km2": 4.28738
+                },
+                {
+                    "rank": 8,
+                    "cluster_id": 142,
+                    "pixel_count": 17,
+                    "area_km2": 3.644273
+                },
+                {
+                    "rank": 9,
+                    "cluster_id": 153,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 10,
+                    "cluster_id": 61,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 11,
+                    "cluster_id": 107,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 12,
+                    "cluster_id": 137,
+                    "pixel_count": 15,
+                    "area_km2": 3.215535
+                },
+                {
+                    "rank": 13,
+                    "cluster_id": 42,
+                    "pixel_count": 14,
+                    "area_km2": 3.001166
+                },
+                {
+                    "rank": 14,
+                    "cluster_id": 55,
+                    "pixel_count": 14,
+                    "area_km2": 3.001166
+                },
+                {
+                    "rank": 15,
+                    "cluster_id": 87,
+                    "pixel_count": 13,
+                    "area_km2": 2.786797
+                },
+                {
+                    "rank": 16,
+                    "cluster_id": 44,
+                    "pixel_count": 12,
+                    "area_km2": 2.572428
+                },
+                {
+                    "rank": 17,
+                    "cluster_id": 6,
+                    "pixel_count": 12,
+                    "area_km2": 2.572428
+                },
+                {
+                    "rank": 18,
+                    "cluster_id": 92,
+                    "pixel_count": 10,
+                    "area_km2": 2.14369
+                },
+                {
+                    "rank": 19,
+                    "cluster_id": 2,
+                    "pixel_count": 9,
+                    "area_km2": 1.929321
+                },
+                {
+                    "rank": 20,
+                    "cluster_id": 85,
+                    "pixel_count": 8,
+                    "area_km2": 1.714952
+                }
+            ]
+        },
+        "8_neighbour": {
+            "cluster_count": 100,
+            "largest_cluster_pixels": 37035,
+            "largest_cluster_area_km2": 7939.155915,
+            "median_cluster_area_km2": 0.643107,
+            "mean_cluster_area_km2": 82.49776595999997,
+            "largest_10_share_percent": 99.16328863943457,
+            "clusters": [
+                {
+                    "rank": 1,
+                    "cluster_id": 1,
+                    "pixel_count": 37035,
+                    "area_km2": 7939.155915
+                },
+                {
+                    "rank": 2,
+                    "cluster_id": 5,
+                    "pixel_count": 826,
+                    "area_km2": 177.068794
+                },
+                {
+                    "rank": 3,
+                    "cluster_id": 3,
+                    "pixel_count": 94,
+                    "area_km2": 20.150686
+                },
+                {
+                    "rank": 4,
+                    "cluster_id": 93,
+                    "pixel_count": 57,
+                    "area_km2": 12.219033
+                },
+                {
+                    "rank": 5,
+                    "cluster_id": 71,
+                    "pixel_count": 42,
+                    "area_km2": 9.003498
+                },
+                {
+                    "rank": 6,
+                    "cluster_id": 58,
+                    "pixel_count": 27,
+                    "area_km2": 5.787963
+                },
+                {
+                    "rank": 7,
+                    "cluster_id": 50,
+                    "pixel_count": 25,
+                    "area_km2": 5.359225
+                },
+                {
+                    "rank": 8,
+                    "cluster_id": 29,
+                    "pixel_count": 20,
+                    "area_km2": 4.28738
+                },
+                {
+                    "rank": 9,
+                    "cluster_id": 27,
+                    "pixel_count": 20,
+                    "area_km2": 4.28738
+                },
+                {
+                    "rank": 10,
+                    "cluster_id": 38,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 11,
+                    "cluster_id": 92,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 12,
+                    "cluster_id": 65,
+                    "pixel_count": 16,
+                    "area_km2": 3.429904
+                },
+                {
+                    "rank": 13,
+                    "cluster_id": 86,
+                    "pixel_count": 15,
+                    "area_km2": 3.215535
+                },
+                {
+                    "rank": 14,
+                    "cluster_id": 35,
+                    "pixel_count": 14,
+                    "area_km2": 3.001166
+                },
+                {
+                    "rank": 15,
+                    "cluster_id": 30,
+                    "pixel_count": 12,
+                    "area_km2": 2.572428
+                },
+                {
+                    "rank": 16,
+                    "cluster_id": 80,
+                    "pixel_count": 8,
+                    "area_km2": 1.714952
+                },
+                {
+                    "rank": 17,
+                    "cluster_id": 17,
+                    "pixel_count": 8,
+                    "area_km2": 1.714952
+                },
+                {
+                    "rank": 18,
+                    "cluster_id": 53,
+                    "pixel_count": 8,
+                    "area_km2": 1.714952
+                },
+                {
+                    "rank": 19,
+                    "cluster_id": 87,
+                    "pixel_count": 7,
+                    "area_km2": 1.500583
+                },
+                {
+                    "rank": 20,
+                    "cluster_id": 91,
+                    "pixel_count": 7,
+                    "area_km2": 1.500583
+                }
+            ]
+        }
+    },
+    "limitations": [
+        "Connected components are spatial groupings, not independent observations.",
+        "Eight-neighbour connectivity includes diagonal contact.",
+        "Cluster sizes depend on raster resolution and connectivity definition.",
+        "Spatial clustering does not establish geological or environmental equivalence.",
+        "The analysis is limited to the selected Atacama study area."
+    ]
+}
+===== outputs\reports\spatial_cluster_analysis.json =====
+{
+    "project":  "TERRAFORM",
+    "analysis":  "Spatial cluster analysis",
+    "input":  "atacama_three_metric_intersection.tif",
+    "pixel_area_km2":  0.214369,
+    "matching_pixels":  38484,
+    "valid_pixels":  52499,
+    "connectivity_comparison":  {
+                                    "4_neighbour":  {
+                                                        "cluster_count":  169,
+                                                        "largest_cluster_pixels":  36934,
+                                                        "largest_cluster_area_km2":  7917.504646,
+                                                        "median_cluster_area_km2":  0.428738,
+                                                        "mean_cluster_area_km2":  48.81524613017751,
+                                                        "largest_10_share_percent":  98.81249350379379,
+                                                        "clusters":  [
+                                                                         {
+                                                                             "rank":  1,
+                                                                             "cluster_id":  1,
+                                                                             "pixel_count":  36934,
+                                                                             "area_km2":  7917.504646
+                                                                         },
+                                                                         {
+                                                                             "rank":  2,
+                                                                             "cluster_id":  7,
+                                                                             "pixel_count":  807,
+                                                                             "area_km2":  172.99578300000002
+                                                                         },
+                                                                         {
+                                                                             "rank":  3,
+                                                                             "cluster_id":  4,
+                                                                             "pixel_count":  92,
+                                                                             "area_km2":  19.721948
+                                                                         },
+                                                                         {
+                                                                             "rank":  4,
+                                                                             "cluster_id":  154,
+                                                                             "pixel_count":  56,
+                                                                             "area_km2":  12.004664
+                                                                         },
+                                                                         {
+                                                                             "rank":  5,
+                                                                             "cluster_id":  113,
+                                                                             "pixel_count":  42,
+                                                                             "area_km2":  9.003498
+                                                                         },
+                                                                         {
+                                                                             "rank":  6,
+                                                                             "cluster_id":  96,
+                                                                             "pixel_count":  27,
+                                                                             "area_km2":  5.787963
+                                                                         },
+                                                                         {
+                                                                             "rank":  7,
+                                                                             "cluster_id":  43,
+                                                                             "pixel_count":  20,
+                                                                             "area_km2":  4.28738
+                                                                         },
+                                                                         {
+                                                                             "rank":  8,
+                                                                             "cluster_id":  142,
+                                                                             "pixel_count":  17,
+                                                                             "area_km2":  3.644273
+                                                                         },
+                                                                         {
+                                                                             "rank":  9,
+                                                                             "cluster_id":  153,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  10,
+                                                                             "cluster_id":  61,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  11,
+                                                                             "cluster_id":  107,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  12,
+                                                                             "cluster_id":  137,
+                                                                             "pixel_count":  15,
+                                                                             "area_km2":  3.215535
+                                                                         },
+                                                                         {
+                                                                             "rank":  13,
+                                                                             "cluster_id":  42,
+                                                                             "pixel_count":  14,
+                                                                             "area_km2":  3.001166
+                                                                         },
+                                                                         {
+                                                                             "rank":  14,
+                                                                             "cluster_id":  55,
+                                                                             "pixel_count":  14,
+                                                                             "area_km2":  3.001166
+                                                                         },
+                                                                         {
+                                                                             "rank":  15,
+                                                                             "cluster_id":  87,
+                                                                             "pixel_count":  13,
+                                                                             "area_km2":  2.786797
+                                                                         },
+                                                                         {
+                                                                             "rank":  16,
+                                                                             "cluster_id":  44,
+                                                                             "pixel_count":  12,
+                                                                             "area_km2":  2.572428
+                                                                         },
+                                                                         {
+                                                                             "rank":  17,
+                                                                             "cluster_id":  6,
+                                                                             "pixel_count":  12,
+                                                                             "area_km2":  2.572428
+                                                                         },
+                                                                         {
+                                                                             "rank":  18,
+                                                                             "cluster_id":  92,
+                                                                             "pixel_count":  10,
+                                                                             "area_km2":  2.14369
+                                                                         },
+                                                                         {
+                                                                             "rank":  19,
+                                                                             "cluster_id":  2,
+                                                                             "pixel_count":  9,
+                                                                             "area_km2":  1.929321
+                                                                         },
+                                                                         {
+                                                                             "rank":  20,
+                                                                             "cluster_id":  85,
+                                                                             "pixel_count":  8,
+                                                                             "area_km2":  1.714952
+                                                                         }
+                                                                     ]
+                                                    },
+                                    "8_neighbour":  {
+                                                        "cluster_count":  100,
+                                                        "largest_cluster_pixels":  37035,
+                                                        "largest_cluster_area_km2":  7939.155915,
+                                                        "median_cluster_area_km2":  0.643107,
+                                                        "mean_cluster_area_km2":  82.49776595999997,
+                                                        "largest_10_share_percent":  99.16328863943457,
+                                                        "clusters":  [
+                                                                         {
+                                                                             "rank":  1,
+                                                                             "cluster_id":  1,
+                                                                             "pixel_count":  37035,
+                                                                             "area_km2":  7939.155915
+                                                                         },
+                                                                         {
+                                                                             "rank":  2,
+                                                                             "cluster_id":  5,
+                                                                             "pixel_count":  826,
+                                                                             "area_km2":  177.068794
+                                                                         },
+                                                                         {
+                                                                             "rank":  3,
+                                                                             "cluster_id":  3,
+                                                                             "pixel_count":  94,
+                                                                             "area_km2":  20.150686
+                                                                         },
+                                                                         {
+                                                                             "rank":  4,
+                                                                             "cluster_id":  93,
+                                                                             "pixel_count":  57,
+                                                                             "area_km2":  12.219033
+                                                                         },
+                                                                         {
+                                                                             "rank":  5,
+                                                                             "cluster_id":  71,
+                                                                             "pixel_count":  42,
+                                                                             "area_km2":  9.003498
+                                                                         },
+                                                                         {
+                                                                             "rank":  6,
+                                                                             "cluster_id":  58,
+                                                                             "pixel_count":  27,
+                                                                             "area_km2":  5.787963
+                                                                         },
+                                                                         {
+                                                                             "rank":  7,
+                                                                             "cluster_id":  50,
+                                                                             "pixel_count":  25,
+                                                                             "area_km2":  5.359225
+                                                                         },
+                                                                         {
+                                                                             "rank":  8,
+                                                                             "cluster_id":  29,
+                                                                             "pixel_count":  20,
+                                                                             "area_km2":  4.28738
+                                                                         },
+                                                                         {
+                                                                             "rank":  9,
+                                                                             "cluster_id":  27,
+                                                                             "pixel_count":  20,
+                                                                             "area_km2":  4.28738
+                                                                         },
+                                                                         {
+                                                                             "rank":  10,
+                                                                             "cluster_id":  38,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  11,
+                                                                             "cluster_id":  92,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  12,
+                                                                             "cluster_id":  65,
+                                                                             "pixel_count":  16,
+                                                                             "area_km2":  3.429904
+                                                                         },
+                                                                         {
+                                                                             "rank":  13,
+                                                                             "cluster_id":  86,
+                                                                             "pixel_count":  15,
+                                                                             "area_km2":  3.215535
+                                                                         },
+                                                                         {
+                                                                             "rank":  14,
+                                                                             "cluster_id":  35,
+                                                                             "pixel_count":  14,
+                                                                             "area_km2":  3.001166
+                                                                         },
+                                                                         {
+                                                                             "rank":  15,
+                                                                             "cluster_id":  30,
+                                                                             "pixel_count":  12,
+                                                                             "area_km2":  2.572428
+                                                                         },
+                                                                         {
+                                                                             "rank":  16,
+                                                                             "cluster_id":  80,
+                                                                             "pixel_count":  8,
+                                                                             "area_km2":  1.714952
+                                                                         },
+                                                                         {
+                                                                             "rank":  17,
+                                                                             "cluster_id":  17,
+                                                                             "pixel_count":  8,
+                                                                             "area_km2":  1.714952
+                                                                         },
+                                                                         {
+                                                                             "rank":  18,
+                                                                             "cluster_id":  53,
+                                                                             "pixel_count":  8,
+                                                                             "area_km2":  1.714952
+                                                                         },
+                                                                         {
+                                                                             "rank":  19,
+                                                                             "cluster_id":  87,
+                                                                             "pixel_count":  7,
+                                                                             "area_km2":  1.500583
+                                                                         },
+                                                                         {
+                                                                             "rank":  20,
+                                                                             "cluster_id":  91,
+                                                                             "pixel_count":  7,
+                                                                             "area_km2":  1.500583
+                                                                         }
+                                                                     ]
+                                                    }
+                                },
+    "limitations":  [
+                        "Connected components are spatial groupings, not independent observations.",
+                        "Eight-neighbour connectivity includes diagonal contact.",
+                        "Cluster sizes depend on raster resolution and connectivity definition.",
+                        "Spatial clustering does not establish geological or environmental equivalence.",
+                        "The analysis is limited to the selected Atacama study area."
+                    ]
+}

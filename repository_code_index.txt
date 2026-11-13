@@ -1,0 +1,261 @@
+﻿app.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+app.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+app.py : LINE 1089 : "Moon Explorer",
+app.py : LINE 1104 : ("PLANETARY EXPLORATION", ["Planetary Environments", "Moon Explorer", "Discovery Explorer", "Global Mars Explorer"]),
+app.py : LINE 1163 : '<div class="tf-target-row"><span class="b">EARTH</span><span class="r">Atacama Desert<br>Death Valley</span><span class="k">ANALOGUE</span></div>'
+app.py : LINE 1724 : # RESEARCH REPOSITORY
+app.py : LINE 1728 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+app.py : LINE 1735 : "Extracted regions",
+app.py : LINE 1739 : "Profiled candidates",
+app.py : LINE 1743 : "Geological records",
+app.py : LINE 1747 : "Sensitivity scenarios",
+app.py : LINE 1826 : Atacama Desert · Death Valley
+app.py : LINE 1850 : <div class="mono">RESEARCH REPOSITORY</div>
+app.py : LINE 1957 : "Existing sensitivity scenarios from the regional research "
+app.py : LINE 1994 : "Sensitivity summary is not available in the research repository."
+app.py : LINE 2056 : st.markdown("### Explore extracted regions")
+app.py : LINE 2095 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+app.py : LINE 2725 : / "moon_global_terrain_analysis.json"
+app.py : LINE 2761 : "Death Valley, USA": {
+app.py : LINE 2764 : "earth_label": "Death Valley, Earth",
+app.py : LINE 2765 : "region_key": "Death Valley",
+app.py : LINE 2793 : "Global Moon — LOLA",
+app.py : LINE 2808 : planetary_reference == "Global Moon — LOLA"
+app.py : LINE 2932 : # GLOBAL MOON REPORTS
+app.py : LINE 3586 : # GLOBAL MOON — LOLA
+app.py : LINE 3632 : "Global Moon",
+app.py : LINE 3970 : / "moon_global_elevation.png"
+app.py : LINE 4185 : "Global Moon and Earth–Moon methodologies and limitations "
+app.py : LINE 4501 : "Moon Explorer",
+app.py : LINE 4505 : report_path = OUTPUTS / "Global" / "Moon" / "moon_global_report.json"
+app.py : LINE 4506 : image_path = OUTPUTS / "Visualisations" / "Global" / "moon_global_elevation.png"
+app.py : LINE 4541 : st.warning("Global Moon elevation image not found.")
+app.py : LINE 4684 : file_name="moon_global_report.json",
+app.py : LINE 5513 : args=("Moon Explorer" if key == "Moon" else "Planetary Environments",),
+app.py : LINE 5613 : elif page == "Moon Explorer":
+app_before_moon_explorer.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+app_before_moon_explorer.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+app_before_moon_explorer.py : LINE 1376 : # RESEARCH REPOSITORY
+app_before_moon_explorer.py : LINE 1380 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+app_before_moon_explorer.py : LINE 1387 : "Extracted regions",
+app_before_moon_explorer.py : LINE 1391 : "Profiled candidates",
+app_before_moon_explorer.py : LINE 1395 : "Geological records",
+app_before_moon_explorer.py : LINE 1399 : "Sensitivity scenarios",
+app_before_moon_explorer.py : LINE 1493 : <div class="mono">RESEARCH REPOSITORY</div>
+app_before_moon_explorer.py : LINE 1600 : "Existing sensitivity scenarios from the regional research "
+app_before_moon_explorer.py : LINE 1637 : "Sensitivity summary is not available in the research repository."
+app_before_moon_explorer.py : LINE 1699 : st.markdown("### Explore extracted regions")
+app_before_moon_explorer.py : LINE 1738 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+app_before_moon_explorer_20261112_224913.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+app_before_moon_explorer_20261112_224913.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+app_before_moon_explorer_20261112_224913.py : LINE 1376 : # RESEARCH REPOSITORY
+app_before_moon_explorer_20261112_224913.py : LINE 1380 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+app_before_moon_explorer_20261112_224913.py : LINE 1387 : "Extracted regions",
+app_before_moon_explorer_20261112_224913.py : LINE 1391 : "Profiled candidates",
+app_before_moon_explorer_20261112_224913.py : LINE 1395 : "Geological records",
+app_before_moon_explorer_20261112_224913.py : LINE 1399 : "Sensitivity scenarios",
+app_before_moon_explorer_20261112_224913.py : LINE 1493 : <div class="mono">RESEARCH REPOSITORY</div>
+app_before_moon_explorer_20261112_224913.py : LINE 1600 : "Existing sensitivity scenarios from the regional research "
+app_before_moon_explorer_20261112_224913.py : LINE 1637 : "Sensitivity summary is not available in the research repository."
+app_before_moon_explorer_20261112_224913.py : LINE 1699 : st.markdown("### Explore extracted regions")
+app_before_moon_explorer_20261112_224913.py : LINE 1738 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+app_before_moon_stats_fix_20261112_225150.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+app_before_moon_stats_fix_20261112_225150.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+app_before_moon_stats_fix_20261112_225150.py : LINE 777 : "Moon Explorer",
+app_before_moon_stats_fix_20261112_225150.py : LINE 1377 : # RESEARCH REPOSITORY
+app_before_moon_stats_fix_20261112_225150.py : LINE 1381 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+app_before_moon_stats_fix_20261112_225150.py : LINE 1388 : "Extracted regions",
+app_before_moon_stats_fix_20261112_225150.py : LINE 1392 : "Profiled candidates",
+app_before_moon_stats_fix_20261112_225150.py : LINE 1396 : "Geological records",
+app_before_moon_stats_fix_20261112_225150.py : LINE 1400 : "Sensitivity scenarios",
+app_before_moon_stats_fix_20261112_225150.py : LINE 1494 : <div class="mono">RESEARCH REPOSITORY</div>
+app_before_moon_stats_fix_20261112_225150.py : LINE 1601 : "Existing sensitivity scenarios from the regional research "
+app_before_moon_stats_fix_20261112_225150.py : LINE 1638 : "Sensitivity summary is not available in the research repository."
+app_before_moon_stats_fix_20261112_225150.py : LINE 1700 : st.markdown("### Explore extracted regions")
+app_before_moon_stats_fix_20261112_225150.py : LINE 1739 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+app_before_moon_stats_fix_20261112_225150.py : LINE 2816 : "Moon Explorer",
+app_before_moon_stats_fix_20261112_225150.py : LINE 2820 : report_path = OUTPUTS / "Global" / "Moon" / "moon_global_report.json"
+app_before_moon_stats_fix_20261112_225150.py : LINE 2821 : image_path = OUTPUTS / "Visualisations" / "Global" / "moon_global_elevation.png"
+app_before_moon_stats_fix_20261112_225150.py : LINE 2855 : st.warning("Global Moon elevation image not found.")
+app_before_moon_stats_fix_20261112_225150.py : LINE 2954 : file_name="moon_global_report.json",
+app_before_moon_stats_fix_20261112_225150.py : LINE 3688 : elif page == "Moon Explorer":
+app_pre_expansion_backup.py : LINE 56 : # RESEARCH REPOSITORY PATHS
+app_pre_expansion_backup.py : LINE 621 : # RESEARCH REPOSITORY STATISTICS
+app_pre_expansion_backup.py : LINE 933 : The map represents geographic locations of extracted regions.
+app_pre_expansion_backup.py : LINE 1076 : "Extracted regions",
+app_pre_expansion_backup.py : LINE 1083 : "Profiled candidates",
+app_pre_expansion_backup.py : LINE 1090 : "Geological records",
+app_pre_expansion_backup.py : LINE 1097 : "Sensitivity scenarios",
+app_pre_expansion_backup.py : LINE 1103 : "Statistics are loaded from the existing TERRAFORM research repository."
+app_pre_expansion_backup.py : LINE 1184 : <div class="mono">RESEARCH REPOSITORY</div>
+app_pre_expansion_backup.py : LINE 1282 : "Sensitivity summary is not available in the research repository."
+app_pre_expansion_backup.py : LINE 1312 : "The Atacama candidate inventory could not be loaded from the research repository."
+app_pre_expansion_backup.py : LINE 1331 : st.markdown("### Explore extracted regions")
+app_pre_expansion_backup.py : LINE 1442 : "Profiled candidates",
+app_pre_expansion_backup.py : LINE 2013 : "Explore the actual TERRAFORM research repository, inspect datasets, "
+app_pre_expansion_backup.py : LINE 2075 : st.markdown("### Research repository")
+app_pre_expansion_backup.py : LINE 2079 : c1.metric("Profiled candidates", total_candidates)
+app_pre_expansion_backup.py : LINE 2080 : c2.metric("Extracted regions", total_inventory)
+app_pre_expansion_backup.py : LINE 2081 : c3.metric("Geological records", total_geology)
+app_pre_expansion_backup.py : LINE 2098 : "Geological Records",
+app_pre_expansion_backup.py : LINE 2234 : "Top 10 profiled candidates",
+app_pre_expansion_backup.py : LINE 2243 : if selected_source == "Top 10 profiled candidates"
+app_pre_expansion_backup.py : LINE 2349 : if selected_source == "Top 10 profiled candidates":
+app_pre_expansion_backup.py : LINE 2397 : st.markdown("### Largest extracted regions")
+app_pre_expansion_backup.py : LINE 2426 : # TAB 3 — GEOLOGICAL RECORDS
+app_pre_expansion_backup.py : LINE 2444 : "Geological records",
+app_pre_expansion_backup.py : LINE 2460 : st.markdown("### Filter geological records")
+app_pre_expansion_backup.py : LINE 2491 : "Download geological records",
+app_pre_expansion_backup.py : LINE 2537 : "Geological records originate from a regional-scale "
+app_updated.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+app_updated.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+app_updated.py : LINE 1379 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+app_updated.py : LINE 1386 : "Extracted regions",
+app_updated.py : LINE 1390 : "Profiled candidates",
+app_updated.py : LINE 1394 : "Geological records",
+app_updated.py : LINE 1398 : "Sensitivity scenarios",
+app_updated.py : LINE 1488 : <div class="mono">RESEARCH REPOSITORY</div>
+app_updated.py : LINE 1587 : "Existing sensitivity scenarios from the regional research "
+app_updated.py : LINE 1624 : "Sensitivity summary is not available in the research repository."
+app_updated.py : LINE 1682 : st.markdown("### Explore extracted regions")
+app_updated.py : LINE 1721 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+src\analysis\death_valley_analog_comparison.py : LINE 19 : # TERRAFORM — DEATH VALLEY / JEZERO COMPARISON
+src\analysis\death_valley_analog_comparison.py : LINE 88 : print("\n[2/6] AGGREGATING DEATH VALLEY TO 463 METRES")
+src\analysis\death_valley_analog_comparison.py : LINE 92 : f"Death Valley DEM not found: {EARTH_SOURCE}"
+src\analysis\death_valley_analog_comparison.py : LINE 135 : raise ValueError("Death Valley aggregation produced no valid pixels.")
+src\analysis\death_valley_analog_comparison.py : LINE 291 : STUDY_AREA="Death Valley, California, USA",
+src\analysis\death_valley_analog_comparison.py : LINE 298 : print("\n[4/6] SAVING DEATH VALLEY TERRAIN PRODUCTS")
+src\analysis\death_valley_analog_comparison.py : LINE 351 : print("\n[5/6] BUILDING DEATH VALLEY–JEZERO REPORT")
+src\analysis\death_valley_analog_comparison.py : LINE 356 : "earth_study_area": "Death Valley, California, USA",
+src\analysis\death_valley_analog_comparison.py : LINE 425 : print("DEATH VALLEY, EARTH  |  JEZERO CRATER, MARS")
+src\analysis\death_valley_analog_comparison.py : LINE 445 : print("TERRAFORM — DEATH VALLEY / JEZERO COMPARISON ENGINE")
+src\analysis\death_valley_terrain_analysis.py : LINE 19 : # TERRAFORM - DEATH VALLEY TERRAIN ANALYSIS
+src\analysis\death_valley_terrain_analysis.py : LINE 21 : # Region: Death Valley, California, USA
+src\analysis\death_valley_terrain_analysis.py : LINE 98 : study_region="Death Valley, California, USA",
+src\analysis\death_valley_terrain_analysis.py : LINE 112 : print("\n[1/5] MOSAICKING DEATH VALLEY DEM TILES")
+src\analysis\death_valley_terrain_analysis.py : LINE 175 : study_region="Death Valley, California, USA",
+src\analysis\death_valley_terrain_analysis.py : LINE 242 : study_region="Death Valley, California, USA",
+src\analysis\death_valley_terrain_analysis.py : LINE 263 : "study_region": "Death Valley, California, USA",
+src\analysis\death_valley_terrain_analysis.py : LINE 458 : print(" TERRAFORM - DEATH VALLEY TERRAIN ANALYSIS")
+src\analysis\death_valley_terrain_analysis.py : LINE 471 : print(" DEATH VALLEY ANALYSIS SUCCESSFUL")
+src\analysis\earth_moon_comparison.py : LINE 41 : "Death Valley": {
+src\analysis\earth_moon_comparison.py : LINE 49 : "slope_degrees": MOON_DIR / "moon_global_slope_degrees.tif",
+src\analysis\earth_moon_comparison.py : LINE 50 : "roughness_m": MOON_DIR / "moon_global_roughness_3x3_m.tif",
+src\analysis\earth_moon_comparison.py : LINE 51 : "local_relief_m": MOON_DIR / "moon_global_local_relief_3x3_m.tif",
+src\analysis\generate_candidate_profiles.py : LINE 475 : print("Geological records processed:", len(geology))
+src\analysis\moon_terrain_analysis.py : LINE 409 : "moon_global_dem.tif": (
+src\analysis\moon_terrain_analysis.py : LINE 415 : "moon_global_slope_degrees.tif": (
+src\analysis\moon_terrain_analysis.py : LINE 421 : "moon_global_roughness_3x3_m.tif": (
+src\analysis\moon_terrain_analysis.py : LINE 427 : "moon_global_local_relief_3x3_m.tif": (
+src\analysis\moon_terrain_analysis.py : LINE 540 : "elevation": "data/processed/moon/moon_global_dem.tif",
+src\analysis\moon_terrain_analysis.py : LINE 541 : "slope": "data/processed/moon/moon_global_slope_degrees.tif",
+src\analysis\moon_terrain_analysis.py : LINE 542 : "roughness": "data/processed/moon/moon_global_roughness_3x3_m.tif",
+src\analysis\moon_terrain_analysis.py : LINE 543 : "local_relief": "data/processed/moon/moon_global_local_relief_3x3_m.tif",
+src\analysis\moon_terrain_analysis.py : LINE 548 : REPORT_DIR / "moon_global_terrain_analysis.json"
+src\planetary\moon_global.py : LINE 32 : REPORT_FILE = OUTPUT_DIR / "moon_global_report.json"
+src\planetary\moon_global.py : LINE 33 : MAP_FILE = VISUAL_DIR / "moon_global_elevation.png"
+src\visualization\candidate_intelligence_page.py : LINE 232 : "Geological records",
+src\visualization\candidate_intelligence_page.py : LINE 391 : "Mapped geological records intersecting the candidate region."
+terminal_outputs\app_backup_20261112_194959.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+terminal_outputs\app_backup_20261112_194959.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+terminal_outputs\app_backup_20261112_194959.py : LINE 1362 : # RESEARCH REPOSITORY
+terminal_outputs\app_backup_20261112_194959.py : LINE 1366 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+terminal_outputs\app_backup_20261112_194959.py : LINE 1373 : "Extracted regions",
+terminal_outputs\app_backup_20261112_194959.py : LINE 1377 : "Profiled candidates",
+terminal_outputs\app_backup_20261112_194959.py : LINE 1381 : "Geological records",
+terminal_outputs\app_backup_20261112_194959.py : LINE 1385 : "Sensitivity scenarios",
+terminal_outputs\app_backup_20261112_194959.py : LINE 1479 : <div class="mono">RESEARCH REPOSITORY</div>
+terminal_outputs\app_backup_20261112_194959.py : LINE 1586 : "Existing sensitivity scenarios from the regional research "
+terminal_outputs\app_backup_20261112_194959.py : LINE 1623 : "Sensitivity summary is not available in the research repository."
+terminal_outputs\app_backup_20261112_194959.py : LINE 1685 : st.markdown("### Explore extracted regions")
+terminal_outputs\app_backup_20261112_194959.py : LINE 1724 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1362 : # RESEARCH REPOSITORY
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1366 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1373 : "Extracted regions",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1377 : "Profiled candidates",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1381 : "Geological records",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1385 : "Sensitivity scenarios",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1479 : <div class="mono">RESEARCH REPOSITORY</div>
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1586 : "Existing sensitivity scenarios from the regional research "
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1623 : "Sensitivity summary is not available in the research repository."
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1685 : st.markdown("### Explore extracted regions")
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 1724 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 3499 : "report": "Global/Moon/moon_global_report.json",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 3606 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4828 : # RESEARCH REPOSITORY
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4832 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4839 : "Extracted regions",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4843 : "Profiled candidates",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4847 : "Geological records",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4851 : "Sensitivity scenarios",
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 4945 : <div class="mono">RESEARCH REPOSITORY</div>
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 5052 : "Existing sensitivity scenarios from the regional research "
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 5089 : "Sensitivity summary is not available in the research repository."
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 5151 : st.markdown("### Explore extracted regions")
+terminal_outputs\app_before_duplicate_repair_20261112_200246.py : LINE 5190 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 47 : "report": "Global/Moon/moon_global_report.json",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 154 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 777 : "Moon Explorer",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1377 : # RESEARCH REPOSITORY
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1381 : '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1388 : "Extracted regions",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1392 : "Profiled candidates",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1396 : "Geological records",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1400 : "Sensitivity scenarios",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1494 : <div class="mono">RESEARCH REPOSITORY</div>
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1601 : "Existing sensitivity scenarios from the regional research "
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1638 : "Sensitivity summary is not available in the research repository."
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1700 : st.markdown("### Explore extracted regions")
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1739 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1877 : / "moon_global_terrain_analysis.json"
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1913 : "Death Valley, USA": {
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1916 : "earth_label": "Death Valley, Earth",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1917 : "region_key": "Death Valley",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1945 : "Global Moon — LOLA",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 1960 : planetary_reference == "Global Moon — LOLA"
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 2084 : # GLOBAL MOON REPORTS
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 2738 : # GLOBAL MOON — LOLA
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 2784 : "Global Moon",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3122 : / "moon_global_elevation.png"
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3337 : "Global Moon and Earth–Moon methodologies and limitations "
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3653 : "Moon Explorer",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3657 : report_path = OUTPUTS / "Global" / "Moon" / "moon_global_report.json"
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3658 : image_path = OUTPUTS / "Visualisations" / "Global" / "moon_global_elevation.png"
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3693 : st.warning("Global Moon elevation image not found.")
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 3836 : file_name="moon_global_report.json",
+terminal_outputs\app_before_mars_restore_20261113_010443.py : LINE 4570 : elif page == "Moon Explorer":
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 48 : "report": "Global/Moon/moon_global_report.json",
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 155 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1085 : c1.metric("Extracted regions", REPOSITORY_STATS["inventory"])
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1086 : c2.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1087 : c3.metric("Geological records", REPOSITORY_STATS["geology"])
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1088 : c4.metric("Sensitivity scenarios", REPOSITORY_STATS["sensitivity"])
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1089 : st.caption("Statistics are loaded from the existing TERRAFORM research repository.")
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1116 : <div class="panel"><div class="mono">RESEARCH REPOSITORY</div>
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1154 : st.info("Sensitivity summary is not available in the research repository.")
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1182 : st.markdown("### Explore extracted regions")
+ui_audit\backups\app_pre_global_comparison_page_20261112_123740.py : LINE 1221 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 48 : "report": "Global/Moon/moon_global_report.json",
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 155 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1085 : c1.metric("Extracted regions", REPOSITORY_STATS["inventory"])
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1086 : c2.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1087 : c3.metric("Geological records", REPOSITORY_STATS["geology"])
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1088 : c4.metric("Sensitivity scenarios", REPOSITORY_STATS["sensitivity"])
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1089 : st.caption("Statistics are loaded from the existing TERRAFORM research repository.")
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1116 : <div class="panel"><div class="mono">RESEARCH REPOSITORY</div>
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1154 : st.info("Sensitivity summary is not available in the research repository.")
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1182 : st.markdown("### Explore extracted regions")
+ui_audit\backups\app_pre_mars_zero_note_20261112_122111.py : LINE 1221 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 48 : "report": "Global/Moon/moon_global_report.json",
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 155 : ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 764 : c1.metric("Extracted regions", REPOSITORY_STATS["inventory"])
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 765 : c2.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 766 : c3.metric("Geological records", REPOSITORY_STATS["geology"])
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 767 : c4.metric("Sensitivity scenarios", REPOSITORY_STATS["sensitivity"])
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 768 : st.caption("Statistics are loaded from the existing TERRAFORM research repository.")
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 795 : <div class="panel"><div class="mono">RESEARCH REPOSITORY</div>
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 833 : st.info("Sensitivity summary is not available in the research repository.")
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 861 : st.markdown("### Explore extracted regions")
+ui_audit\backups\app_pre_planetary_page_20261112_121319.py : LINE 900 : c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])

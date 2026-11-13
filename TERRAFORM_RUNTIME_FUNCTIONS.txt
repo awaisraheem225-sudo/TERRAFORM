@@ -1,0 +1,723 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261113195828
+Username: AWAIS\h
+RunAs User: AWAIS\h
+Configuration Name: 
+Machine: AWAIS (Microsoft Windows NT 10.0.19044.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "d:\cdrive\Microsoft VS Code\69047191fc\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 12908
+PSVersion: 5.1.19041.1682
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.1682
+BuildVersion: 10.0.19041.1682
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\TERRAFORM\TERRAFORM_RUNTIME_FUNCTIONS.txt
+
+========== APP DATA LOADING FUNCTIONS (920-1150) ==========
+  920:         unsafe_allow_html=True
+  921:     )
+  922:
+  923:
+  924: def empty_state(title, message):
+  925:     st.markdown(
+  926:         f'<div class="empty-state"><h3>{html.escape(title)}</h3>'
+  927:         f'<p>{html.escape(message)}</p></div>',
+  928:         unsafe_allow_html=True
+  929:     )
+  930:
+  931:
+  932: def metric_card(label, value, help_text=""):
+  933:     st.markdown(
+  934:         f'<div class="panel"><div class="mono">{html.escape(label.upper())}</div>'
+  935:         f'<div style="font-size:26px;font-weight:800;color:#FFFFFF;margin-top:9px;">'
+  936:         f'{html.escape(str(value))}</div><div style="font-size:11px;color:#8FA3B5;margin-top:5px;">'
+  937:         f'{html.escape(help_text)}</div></div>',
+  938:         unsafe_allow_html=True
+  939:     )
+  940:
+  941:
+  942: def load_research_csv(relative_path):
+  943:     path = OUTPUTS / relative_path
+  944:     if not path.exists():
+  945:         return None
+  946:     try:
+  947:         return pd.read_csv(path)
+  948:     except Exception as error:
+  949:         print(f"Could not load research CSV {path}: {error}")
+  950:         return None
+  951:
+  952:
+  953: def load_research_json(relative_path):
+  954:     path = OUTPUTS / relative_path
+  955:     if not path.exists():
+  956:         return None
+  957:     try:
+  958:         with open(path, "r", encoding="utf-8") as file:
+  959:             return json.load(file)
+  960:     except Exception as error:
+  961:         print(f"Could not load research JSON {path}: {error}")
+  962:         return None
+  963:
+  964:
+  965: def safe_metric_value(row, column, suffix="", digits=2):
+  966:     if row is None or column not in row.index:
+  967:         return "â€”"
+  968:     value = row[column]
+  969:     if pd.isna(value):
+  970:         return "â€”"
+  971:     try:
+  972:         return f"{float(value):,.{digits}f}{suffix}"
+  973:     except (TypeError, ValueError):
+  974:         return str(value)
+  975:
+  976:
+  977: def get_profile_data(candidate_id):
+  978:     if not isinstance(CANDIDATE_PROFILES, dict):
+  979:         return None
+  980:     for profile in CANDIDATE_PROFILES.get("profiles", []):
+  981:         if str(profile.get("candidate_id")) == str(candidate_id):
+  982:             return profile
+  983:     return None
+  984:
+  985:
+  986: def load_text_report(path):
+  987:     if not path.exists():
+  988:         return None
+  989:     try:
+  990:         return path.read_text(encoding="utf-8", errors="replace")
+  991:     except Exception as error:
+  992:         return f"Could not read report: {error}"
+  993:
+  994:
+  995: def inspect_raster(path):
+  996:     """Read raster metadata only; never load the raster band into memory."""
+  997:     path = Path(path)
+  998:     if not path.exists():
+  999:         return {"status": "Missing", "path": str(path)}
+ 1000:     if rasterio is None:
+ 1001:         return {"status": "Rasterio unavailable", "path": str(path)}
+ 1002:
+ 1003:     try:
+ 1004:         with rasterio.open(path) as dataset:
+ 1005:             return {
+ 1006:                 "status": "Available",
+ 1007:                 "filename": path.name,
+ 1008:                 "size_mb": path.stat().st_size / (1024 * 1024),
+ 1009:                 "width": dataset.width,
+ 1010:                 "height": dataset.height,
+ 1011:                 "bands": dataset.count,
+ 1012:                 "crs": str(dataset.crs) if dataset.crs else "Not declared",
+ 1013:                 "resolution": tuple(dataset.res),
+ 1014:                 "bounds": tuple(dataset.bounds),
+ 1015:                 "dtype": ", ".join(dataset.dtypes),
+ 1016:                 "nodata": dataset.nodata,
+ 1017:                 "scales": tuple(dataset.scales),
+ 1018:                 "offsets": tuple(dataset.offsets),
+ 1019:                 "driver": dataset.driver,
+ 1020:             }
+ 1021:     except Exception as error:
+ 1022:         return {"status": "Read error", "path": str(path), "error": str(error)}
+ 1023:
+ 1024:
+ 1025: def show_image(relative_path, caption=None, width="stretch"):
+ 1026:     path = OUTPUTS / relative_path
+ 1027:     if path.exists():
+ 1028:         st.image(str(path), caption=caption, use_container_width=(width == "stretch"))
+ 1029:         return True
+ 1030:     st.warning("This visualisation is currently unavailable.")
+ 1031:     return False
+ 1032:
+ 1033:
+ 1034: def kv_table(rows):
+ 1035:     """Clean label / value list. Values are shown in full (wrapping allowed)."""
+ 1036:     cells = "".join(
+ 1037:         f'<div class="k">{html.escape(str(label).rstrip(":"))}</div>'
+ 1038:         f'<div class="v">{html.escape(str(value))}</div>'
+ 1039:         for label, value in rows
+ 1040:     )
+ 1041:     st.markdown(f'<div class="tf-kv">{cells}</div>', unsafe_allow_html=True)
+ 1042:
+ 1043:
+ 1044: def show_stat_values(values):
+ 1045:     """Scalars as a tidy table; nested structures as collapsed JSON."""
+ 1046:     if not isinstance(values, dict) or not values:
+ 1047:         st.caption("No values available.")
+ 1048:         return
+ 1049:     scalars = [(k, v) for k, v in values.items() if not isinstance(v, (dict, list))]
+ 1050:     nested = {k: v for k, v in values.items() if isinstance(v, (dict, list))}
+ 1051:     if scalars:
+ 1052:         kv_table([(str(k).replace("_", " "), v) for k, v in scalars])
+ 1053:     if nested:
+ 1054:         st.json(nested, expanded=False)
+ 1055:
+ 1056:
+ 1057: def viz_tile(title, relative_path):
+ 1058:     """Uniform gallery tile: fixed title band + fixed-ratio image frame."""
+ 1059:     path = OUTPUTS / relative_path
+ 1060:     st.markdown(
+ 1061:         f'<div class="tf-viz-title">{html.escape(title)}</div>',
+ 1062:         unsafe_allow_html=True
+ 1063:     )
+ 1064:     if path.exists():
+ 1065:         st.image(str(path), use_container_width=True)
+ 1066:     else:
+ 1067:         st.markdown(
+ 1068:             '<div class="tf-viz-missing">This visualisation is currently unavailable.</div>',
+ 1069:             unsafe_allow_html=True
+ 1070:         )
+ 1071:
+ 1072:
+ 1073: def show_report_file(path, title):
+ 1074:     if path.exists():
+ 1075:         with st.expander(title):
+ 1076:             content = load_text_report(path)
+ 1077:             st.code(content or "Report is empty.", language="text")
+ 1078:             st.download_button(
+ 1079:                 f"Download {title}",
+ 1080:                 data=path.read_bytes(),
+ 1081:                 file_name=path.name,
+ 1082:                 mime="text/plain",
+ 1083:                 key=f"download_{path.name}"
+ 1084:             )
+ 1085:
+ 1086:
+ 1087: # ============================================================
+ 1088: # LOAD RESEARCH OUTPUTS
+ 1089: # ============================================================
+ 1090:
+ 1091: RESEARCH_CSV = {
+ 1092:     name: load_research_csv(path)
+ 1093:     for name, path in RESEARCH_CSV_FILES.items()
+ 1094: }
+ 1095: RESEARCH_JSON = {
+ 1096:     name: load_research_json(path)
+ 1097:     for name, path in RESEARCH_JSON_FILES.items()
+ 1098: }
+ 1099:
+ 1100: CANDIDATE_INVENTORY = RESEARCH_CSV.get("Candidate inventory")
+ 1101: MASTER_CANDIDATES = RESEARCH_CSV.get("Master candidate comparison")
+ 1102: GEOLOGICAL_COVERAGE = RESEARCH_CSV.get("Geological coverage")
+ 1103: GEOLOGICAL_UNITS = RESEARCH_CSV.get("Geological units")
+ 1104: SENSITIVITY_SUMMARY = RESEARCH_CSV.get("Sensitivity summary")
+ 1105:
+ 1106: CANDIDATE_PROFILES = RESEARCH_JSON.get("Candidate profiles")
+ 1107: TERRAIN_COMPARISON_STATS = RESEARCH_JSON.get("Terrain comparison statistics")
+ 1108: EARTH_MARS_REPORT = RESEARCH_JSON.get("Earth-Mars comparison report")
+ 1109: EARTH_TERRAIN_REPORT = RESEARCH_JSON.get("Earth terrain analysis")
+ 1110: JEZERO_TERRAIN_REPORT = RESEARCH_JSON.get("Jezero terrain analysis")
+ 1111: EARTH_VALIDATION_REPORT = RESEARCH_JSON.get("Earth validation report")
+ 1112: SENSITIVITY_REPORT = RESEARCH_JSON.get("Sensitivity analysis report")
+ 1113:
+ 1114: MARS_TERRAIN_REPORT = load_research_json(
+ 1115:     "global_mars/terrain_metrics/mars_global_terrain_report.json"
+ 1116: )
+ 1117: MARS_AREA_REPORT = load_text_report(MARS_AREA_REPORT_PATH)
+ 1118:
+ 1119: PLANETARY_REPORTS = {
+ 1120:     name: load_research_json(spec["report"])
+ 1121:     for name, spec in PLANETARY_DATASETS.items()
+ 1122: }
+ 1123: GLOBAL_PLANETARY_REPORT = load_research_json(
+ 1124:     "Global/Comparisons/global_planetary_comparison_report.json"
+ 1125: )
+ 1126: PLANETARY_RASTER_METADATA = {
+ 1127:     name: inspect_raster(ROOT / spec["raster"])
+ 1128:     for name, spec in PLANETARY_DATASETS.items()
+ 1129: }
+ 1130:
+ 1131:
+ 1132: def repository_statistics():
+ 1133:     csv_count = sum(frame is not None for frame in RESEARCH_CSV.values())
+ 1134:     json_count = sum(report is not None for report in RESEARCH_JSON.values())
+ 1135:     raster_count = sum(
+ 1136:         (OUTPUTS / path).exists()
+ 1137:         for path in RESEARCH_RASTER_FILES.values()
+ 1138:     )
+ 1139:     return {
+ 1140:         "inventory": len(CANDIDATE_INVENTORY) if CANDIDATE_INVENTORY is not None else 0,
+ 1141:         "profiles": len(MASTER_CANDIDATES) if MASTER_CANDIDATES is not None else 0,
+ 1142:         "geology": len(GEOLOGICAL_UNITS) if GEOLOGICAL_UNITS is not None else 0,
+ 1143:         "sensitivity": len(SENSITIVITY_SUMMARY) if SENSITIVITY_SUMMARY is not None else 0,
+ 1144:         "csv": csv_count,
+ 1145:         "json": json_count,
+ 1146:         "rasters": raster_count,
+ 1147:         "assets": csv_count + json_count + raster_count,
+ 1148:     }
+ 1149:
+ 1150:
+
+========== PLANETARY DATASET SECTION (1380-1445) ==========
+ 1380:             radius=5, color="#55D6A0", fill=True,
+ 1381:             fill_color="#55D6A0", fill_opacity=.75, weight=1,
+ 1382:             tooltip=candidate_id,
+ 1383:             popup=folium.Popup(popup, max_width=280)
+ 1384:         ).add_to(cluster)
+ 1385:     folium.LayerControl().add_to(map_object)
+ 1386:     return map_object
+ 1387:
+ 1388:
+ 1389:
+ 1390: # ============================================================
+ 1391: # PAGE 1 â€” PLANETARY ENVIRONMENTS
+ 1392: # ============================================================
+ 1393:
+ 1394: def planetary_environments_page():
+ 1395:
+ 1396:     section_header(
+ 1397:         "PLANETARY DATA",
+ 1398:         "Planetary Environments",
+ 1399:         "Explore global elevation datasets, measured terrain statistics "
+ 1400:         "and the scientific reference systems of Earth, Mars and the Moon."
+ 1401:     )
+ 1402:
+ 1403:     reports = globals().get("PLANETARY_REPORTS", {})
+ 1404:     raster_metadata = globals().get("PLANETARY_RASTER_METADATA", {})
+ 1405:
+ 1406:     if not isinstance(reports, dict):
+ 1407:         reports = {}
+ 1408:
+ 1409:     if not isinstance(raster_metadata, dict):
+ 1410:         raster_metadata = {}
+ 1411:
+ 1412:     planet = st.selectbox(
+ 1413:         "SELECT PLANETARY BODY",
+ 1414:         ["Earth", "Mars", "Moon"],
+ 1415:         key="planetary_environment_selector"
+ 1416:     )
+ 1417:
+ 1418:     config = PLANETARY_DATASETS[planet]
+ 1419:     report = reports.get(planet)
+ 1420:
+ 1421:     if not isinstance(report, dict):
+ 1422:         empty_state(
+ 1423:             f"{planet} report unavailable",
+ 1424:             "The expected planetary JSON report could not be loaded."
+ 1425:         )
+ 1426:         return
+ 1427:
+ 1428:     dataset = report.get("dataset", {})
+ 1429:     statistics = (
+ 1430:         report.get("statistics")
+ 1431:         if planet == "Earth"
+ 1432:         else report.get("elevation_statistics")
+ 1433:     )
+ 1434:
+ 1435:     if not isinstance(dataset, dict):
+ 1436:         dataset = {}
+ 1437:
+ 1438:     if not isinstance(statistics, dict):
+ 1439:         statistics = {}
+ 1440:
+ 1441:     raster = raster_metadata.get(planet, {})
+ 1442:
+ 1443:     if not isinstance(raster, dict) or not raster:
+ 1444:         raster = inspect_raster(ROOT / config["raster"])
+ 1445:
+
+========== RASTER ACCESS FUNCTION (5140-5200) ==========
+ 5140:         f'</div></div>',
+ 5141:         unsafe_allow_html=True
+ 5142:     )
+ 5143:
+ 5144:     st.divider()
+ 5145:
+ 5146:     raster_tab, processing_tab, reports_tab = st.tabs(
+ 5147:         [
+ 5148:             "Raster Inspection",
+ 5149:             "CSV Processing",
+ 5150:             "Research Reports"
+ 5151:         ]
+ 5152:     )
+ 5153:
+ 5154:     with raster_tab:
+ 5155:         st.markdown("### Raster metadata")
+ 5156:
+ 5157:         if not raster_path.is_file():
+ 5158:             st.warning(
+ 5159:                 "The registered planetary raster file is unavailable. "
+ 5160:                 "Check the dataset path before attempting inspection."
+ 5161:             )
+ 5162:
+ 5163:         elif rasterio is None:
+ 5164:             st.error(
+ 5165:                 "Rasterio is not installed or available. "
+ 5166:                 "Raster metadata cannot be inspected."
+ 5167:             )
+ 5168:
+ 5169:         else:
+ 5170:             try:
+ 5171:                 with rasterio.open(raster_path) as dataset:
+ 5172:                     width = dataset.width
+ 5173:                     height = dataset.height
+ 5174:                     band_count = dataset.count
+ 5175:                     driver = dataset.driver
+ 5176:                     data_types = ", ".join(dataset.dtypes)
+ 5177:                     crs = str(dataset.crs) if dataset.crs else "Not declared"
+ 5178:                     nodata = dataset.nodata
+ 5179:                     bounds = dataset.bounds
+ 5180:                     resolution = dataset.res
+ 5181:                     transform = dataset.transform
+ 5182:
+ 5183:                     file_size = raster_path.stat().st_size
+ 5184:
+ 5185:                     col1, col2, col3, col4 = st.columns(4)
+ 5186:
+ 5187:                     col1.metric("Raster width", f"{width:,} px")
+ 5188:                     col2.metric("Raster height", f"{height:,} px")
+ 5189:                     col3.metric("Bands", f"{band_count:,}")
+ 5190:                     col4.metric(
+ 5191:                         "File size",
+ 5192:                         f"{file_size / (1024 ** 2):,.2f} MB"
+ 5193:                     )
+ 5194:
+ 5195:                     st.divider()
+ 5196:
+ 5197:                     metadata = pd.DataFrame([
+ 5198:                         ["Dataset", selected_planet],
+ 5199:                         ["Product", config["source"]],
+ 5200:                         ["File", raster_path.name],
+
+========== CANDIDATE PAGE IMPORTS AND HELPERS (1-45) ==========
+    1:
+    2: from pathlib import Path
+    3: import json
+    4: import html
+    5:
+    6: import streamlit as st
+    7: import pandas as pd
+    8: import plotly.express as px
+    9: import folium
+   10: import geopandas as gpd
+   11:
+   12: from streamlit_folium import st_folium
+   13:
+   14:
+   15: # ============================================================
+   16: # DATA ACCESS
+   17: # ============================================================
+   18:
+   19: @st.cache_data(show_spinner=False)
+   20: def load_profiles(path):
+   21:     with open(path, "r", encoding="utf-8") as file:
+   22:         return json.load(file)
+   23:
+   24:
+   25: @st.cache_data(show_spinner=False)
+   26: def load_candidate_boundaries(path):
+   27:     gdf = gpd.read_file(path)
+   28:
+   29:     if gdf.crs is None:
+   30:         raise ValueError(
+   31:             "Candidate boundary GeoJSON has no declared CRS. "
+   32:             "Cannot safely display its coordinates."
+   33:         )
+   34:
+   35:     gdf = gdf.to_crs("EPSG:4326")
+   36:
+   37:     return gdf.__geo_interface__
+   38:
+   39:
+   40: # ============================================================
+   41: # PRESENTATION HELPERS
+   42: # ============================================================
+   43:
+   44: def candidate_section(label, title, description=None):
+   45:     if label:
+
+========== CANDIDATE PAGE RUNTIME (560-820) ==========
+  560:
+  561:     st.markdown("#### Scientific limitations")
+  562:
+  563:     for limitation in profile["scientific_limitations"]:
+  564:         st.markdown(f"- {limitation}")
+  565:
+  566:     st.divider()
+  567:
+  568:     # --------------------------------------------------------
+  569:     # PROFILE EXPORTS
+  570:     # --------------------------------------------------------
+  571:
+  572:     candidate_section(
+  573:         None,
+  574:         "Export candidate profile",
+  575:         "Download the selected candidate's underlying profile or its prepared research report."
+  576:     )
+  577:
+  578:     json_bytes = json.dumps(
+  579:         profile,
+  580:         indent=2,
+  581:         ensure_ascii=False
+  582:     ).encode("utf-8")
+  583:
+  584:     markdown_path = (
+  585:         root
+  586:         / "outputs"
+  587:         / "reports"
+  588:         / "candidate_profiles"
+  589:         / f"{candidate_id}_profile.md"
+  590:     )
+  591:
+  592:     export_col1, export_col2 = st.columns(2)
+  593:
+  594:     with export_col1:
+  595:
+  596:         st.download_button(
+  597:             "Download JSON profile",
+  598:             data=json_bytes,
+  599:             file_name=f"{candidate_id}_profile.json",
+  600:             mime="application/json",
+  601:             use_container_width=True,
+  602:             key=f"json_download_{candidate_id}"
+  603:         )
+  604:
+  605:     with export_col2:
+  606:
+  607:         if (
+  608:             markdown_path.exists()
+  609:             and markdown_path.is_file()
+  610:             and markdown_path.stat().st_size > 0
+  611:         ):
+  612:
+  613:             st.download_button(
+  614:                 "Download research report",
+  615:                 data=markdown_path.read_bytes(),
+  616:                 file_name=f"{candidate_id}_profile.md",
+  617:                 mime="text/markdown",
+  618:                 use_container_width=True,
+  619:                 key=f"md_download_{candidate_id}"
+  620:             )
+  621:
+  622:
+  623: # ============================================================
+  624: # MAIN CANDIDATE INTELLIGENCE PAGE
+  625: # ============================================================
+  626:
+  627: def candidate_intelligence_page(root):
+  628:
+  629:     profiles_path = (
+  630:         root
+  631:         / "outputs"
+  632:         / "dashboard"
+  633:         / "candidate_profiles.json"
+  634:     )
+  635:
+  636:     boundaries_path = (
+  637:         root
+  638:         / "outputs"
+  639:         / "maps"
+  640:         / "geological_characterization"
+  641:         / "verified_candidate_polygons.geojson"
+  642:     )
+  643:
+  644:     comparison_path = (
+  645:         root
+  646:         / "outputs"
+  647:         / "dashboard"
+  648:         / "candidate_master_comparison.csv"
+  649:     )
+  650:
+  651:     # --------------------------------------------------------
+  652:     # PAGE HEADER
+  653:     # --------------------------------------------------------
+  654:
+  655:     st.markdown(
+  656:         '<div class="page-title">Candidate Intelligence</div>',
+  657:         unsafe_allow_html=True
+  658:     )
+  659:
+  660:     st.markdown(
+  661:         '<div class="page-description">'
+  662:         'Explore terrestrial candidate regions through spatial '
+  663:         'boundaries, terrain measurements, geological characterization '
+  664:         'and transparent Jezero reference comparisons.'
+  665:         '</div>',
+  666:         unsafe_allow_html=True
+  667:     )
+  668:
+  669:     st.caption(
+  670:         "EARTH STUDY REGION: ATACAMA DESERT, CHILE "
+  671:         "Â· MARS REFERENCE: JEZERO CRATER"
+  672:     )
+  673:
+  674:     # --------------------------------------------------------
+  675:     # DATA AVAILABILITY
+  676:     # --------------------------------------------------------
+  677:
+  678:     if not profiles_path.exists():
+  679:
+  680:         st.error(
+  681:             "Candidate profile dataset not found. "
+  682:             "Run generate_candidate_profiles.py first."
+  683:         )
+  684:         return
+  685:
+  686:     if not boundaries_path.exists():
+  687:
+  688:         st.error(
+  689:             "Verified candidate boundary GeoJSON not found. "
+  690:             "Run geological_characterization.py first."
+  691:         )
+  692:         return
+  693:
+  694:     try:
+  695:
+  696:         data = load_profiles(str(profiles_path))
+  697:
+  698:         geojson = load_candidate_boundaries(
+  699:             str(boundaries_path)
+  700:         )
+  701:
+  702:     except Exception as error:
+  703:
+  704:         st.error(
+  705:             f"Could not load candidate intelligence data: {error}"
+  706:         )
+  707:         return
+  708:
+  709:     profiles = data.get("profiles", [])
+  710:
+  711:     if not profiles:
+  712:
+  713:         st.warning(
+  714:             "No candidate profiles are available."
+  715:         )
+  716:         return
+  717:
+  718:     # --------------------------------------------------------
+  719:     # RESEARCH SUMMARY
+  720:     # --------------------------------------------------------
+  721:
+  722:     st.markdown("### Research inventory")
+  723:
+  724:     c1, c2, c3 = st.columns(3)
+  725:
+  726:     c1.metric(
+  727:         "Available candidate profiles",
+  728:         len(profiles)
+  729:     )
+  730:
+  731:     c2.metric(
+  732:         "Planetary reference",
+  733:         "Mars"
+  734:     )
+  735:
+  736:     c3.metric(
+  737:         "Reference region",
+  738:         "Jezero Crater"
+  739:     )
+  740:
+  741:     st.caption(
+  742:         "Candidate ordering reflects connected-region area only. "
+  743:         "It does not represent scientific suitability or a validated "
+  744:         "ranking of planetary analogues."
+  745:     )
+  746:
+  747:     st.divider()
+  748:
+  749:     # --------------------------------------------------------
+  750:     # CANDIDATE SELECTION
+  751:     # --------------------------------------------------------
+  752:
+  753:     candidate_section(
+  754:         None,
+  755:         "Explore a terrestrial region",
+  756:         "Select a candidate to inspect its individual spatial, terrain and geological evidence."
+  757:     )
+  758:
+  759:     candidate_lookup = {
+  760:         profile["candidate_id"]: profile
+  761:         for profile in profiles
+  762:     }
+  763:
+  764:     selected_id = st.selectbox(
+  765:         "Candidate region",
+  766:         options=list(candidate_lookup.keys()),
+  767:         format_func=lambda candidate_id: (
+  768:             f"{candidate_id} â€” "
+  769:             f"{candidate_lookup[candidate_id]['geography']['area_km2']:.2f} kmÂ²"
+  770:         ),
+  771:         key="terraform_candidate_selector"
+  772:     )
+  773:
+  774:     selected_profile = candidate_lookup[selected_id]
+  775:
+  776:     render_profile(
+  777:         selected_profile,
+  778:         geojson,
+  779:         root
+  780:     )
+  781:
+  782:     # --------------------------------------------------------
+  783:     # MASTER COMPARISON TABLE
+  784:     # --------------------------------------------------------
+  785:
+  786:     st.divider()
+  787:
+  788:     candidate_section(
+  789:         None,
+  790:         "All candidate regions",
+  791:         "Review the generated master comparison dataset across the available candidate regions."
+  792:     )
+  793:
+  794:     if comparison_path.exists():
+  795:
+  796:         comparison_df = pd.read_csv(comparison_path)
+  797:
+  798:         st.dataframe(
+  799:             comparison_df,
+  800:             use_container_width=True,
+  801:             hide_index=True
+  802:         )
+  803:
+  804:         st.download_button(
+  805:             "Download all candidate comparisons",
+  806:             data=comparison_df.to_csv(
+  807:                 index=False
+  808:             ).encode("utf-8"),
+  809:             file_name="terraform_candidate_comparison.csv",
+  810:             mime="text/csv",
+  811:             key="download_all_candidate_comparisons",
+  812:             use_container_width=True
+  813:         )
+  814:
+  815:     else:
+  816:
+  817:         st.warning(
+  818:             "Master comparison CSV is missing. "
+  819:             "Regenerate the candidate profiles."
+  820:         )
+
+========== APP IMPORTS AND FUNCTION CALLS ==========
+   20: from src.data.dashboard_pipeline import load_and_process
+   21: from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+   31: PLANETARY_DATASETS = {
+ 1121: for name, spec in PLANETARY_DATASETS.items()
+ 1128: for name, spec in PLANETARY_DATASETS.items()
+ 1250: earth_result = load_and_process(earth_upload, "earth")
+ 1251: mars_result = load_and_process(mars_upload, "mars")
+ 1418: config = PLANETARY_DATASETS[planet]
+ 4326: candidate_intelligence_page(ROOT)
+ 5087: datasets = PLANETARY_DATASETS
+
+========== CURRENT PYTHON AND PACKAGE VERSIONS ==========
+
+
+
+========== REQUIREMENTS ==========
+streamlit
+pandas
+numpy
+plotly
+folium
+streamlit-folium
+Pillow
+rasterio
+**********************
+Windows PowerShell transcript end
+End time: 20261113195831
+**********************

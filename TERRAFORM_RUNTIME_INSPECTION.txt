@@ -1,0 +1,619 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261113195639
+Username: AWAIS\h
+RunAs User: AWAIS\h
+Configuration Name: 
+Machine: AWAIS (Microsoft Windows NT 10.0.19044.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "d:\cdrive\Microsoft VS Code\69047191fc\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 12908
+PSVersion: 5.1.19041.1682
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.1682
+BuildVersion: 10.0.19041.1682
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\TERRAFORM\TERRAFORM_RUNTIME_INSPECTION.txt
+
+========== TERRAFORM RUNTIME INSPECTION ==========
+
+[1] APP.PY — FIRST 180 LINES
+   1: from pathlib import Path
+   2: import base64
+   3: import html
+   4: import json
+   5: import mimetypes
+   6: import streamlit as st
+   7: import pandas as pd
+   8: import numpy as np
+   9:
+  10: try:
+  11:     import rasterio
+  12: except ImportError:
+  13:     rasterio = None
+  14: import plotly.express as px
+  15: import folium
+  16:
+  17: from folium.plugins import MarkerCluster
+  18: from streamlit_folium import st_folium
+  19:
+  20: from src.data.dashboard_pipeline import load_and_process
+  21: from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+  22:
+  23:
+  24: # ============================================================
+  25: # TERRAFORM | PLANETARY ANALOG INTELLIGENCE
+  26: # ============================================================
+  27:
+  28: ROOT = Path(__file__).resolve().parent
+  29: OUTPUTS = ROOT / "outputs"
+  30:
+  31: PLANETARY_DATASETS = {
+  32:     "Earth": {
+  33:         "source": "NOAA ETOPO 2022",
+  34:         "raster": "data/Global/Earth/earth_etopo_2022_60s.tif",
+  35:         "report": "Global/Earth/earth_global_report.json",
+  36:         "reference": "WGS84 + EGM2008 height",
+  37:         "description": "Global topography and bathymetry",
+  38:     },
+  39:     "Mars": {
+  40:         "source": "NASA PDS MOLA MEGDR",
+  41:         "raster": "data/Global/Mars/megt90n000eb.img",
+  42:         "report": "Global/Mars/mars_global_report.json",
+  43:         "reference": "MOLA areoid",
+  44:         "description": "Global median planetary topography",
+  45:     },
+  46:     "Moon": {
+  47:         "source": "NASA PDS LRO LOLA LDEM_16",
+  48:         "raster": "data/Global/Moon/LDEM_16.LBL",
+  49:         "report": "Global/Moon/moon_global_report.json",
+  50:         "reference": "Lunar reference sphere, radius 1,737,400 m",
+  51:         "description": "Global lunar digital elevation model",
+  52:     },
+  53: }
+  54:
+  55: GLOBAL_COMPARISON_REPORT_PATH = (
+  56:     OUTPUTS / "Global/Comparisons/global_planetary_comparison_report.json"
+  57: )
+  58:
+  59: ACCENT = "#55D6A0"
+  60: BACKGROUND = "#0A1018"
+  61: PANEL = "#111C27"
+  62: BORDER = "#263746"
+  63: MUTED = "#8FA3B5"
+  64: WHITE = "#EDF4F8"
+  65:
+  66: NUMERIC_COLUMNS = [
+  67:     "latitude", "longitude", "elevation_m", "slope_deg",
+  68:     "roughness_m", "local_relief_m", "surface_temp_c",
+  69:     "precipitation_mm", "similarity_score"
+  70: ]
+  71:
+  72: COMPARISON_METRICS = [
+  73:     "slope_deg", "roughness_m", "local_relief_m",
+  74:     "precipitation_mm"
+  75: ]
+  76:
+  77: RESEARCH_CSV_FILES = {
+  78:     "Candidate inventory": "maps/candidate_regions/atacama_candidate_inventory.csv",
+  79:     "Master candidate comparison": "dashboard/candidate_master_comparison.csv",
+  80:     "Geological coverage": "maps/geological_characterization/candidate_geological_coverage.csv",
+  81:     "Geological units": "maps/geological_characterization/candidate_geological_units.csv",
+  82:     "Sensitivity summary": "maps/sensitivity_analysis/sensitivity_summary.csv",
+  83: }
+  84:
+  85: RESEARCH_JSON_FILES = {
+  86:     "Candidate profiles": "dashboard/candidate_profiles.json",
+  87:     "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+  88:     "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+  89:     "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+  90:     "Jezero terrain analysis": "reports/jezero_terrain_analysis.json",
+  91:     "Earth validation report": "reports/earth_validation_report.json",
+  92:     "Sensitivity analysis report": "reports/sensitivity_analysis_report.json",
+  93: }
+  94:
+  95: RESEARCH_RASTER_FILES = {
+  96:     "Candidate region IDs": "maps/candidate_regions/atacama_candidate_region_ids.tif",
+  97:     "Broad screening mask": "maps/sensitivity_analysis/broad_three_metric_mask.tif",
+  98:     "Moderate screening mask": "maps/sensitivity_analysis/moderate_three_metric_mask.tif",
+  99:     "Strict screening mask": "maps/sensitivity_analysis/strict_three_metric_mask.tif",
+ 100:     "4-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_4_connectivity.tif",
+ 101:     "8-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_8_connectivity.tif",
+ 102:     "Slope screening mask": "maps/terrain_range_screening/atacama_slope_range_mask.tif",
+ 103:     "Roughness screening mask": "maps/terrain_range_screening/atacama_roughness_range_mask.tif",
+ 104:     "Local relief screening mask": "maps/terrain_range_screening/atacama_local_relief_range_mask.tif",
+ 105:     "Three-metric intersection": "maps/terrain_range_screening/atacama_three_metric_intersection.tif",
+ 106: }
+ 107:
+ 108: MARS_JSON_PATH = OUTPUTS / "global_mars/terrain_metrics/mars_global_terrain_report.json"
+ 109: MARS_AREA_REPORT_PATH = OUTPUTS / "global_mars/mars_area_weighted_report.txt"
+ 110:
+ 111: MARS_IMAGES = {
+ 112:     "Global elevation": "global_mars/mars_global_elevation.png",
+ 113:     "Elevation distribution": "global_mars/mars_global_elevation_distribution.png",
+ 114:     "Observation classification": "global_mars/mars_global_observation_classification.png",
+ 115:     "Observation density": "global_mars/mars_global_observation_density.png",
+ 116: }
+ 117:
+ 118: MARS_METRIC_IMAGES = {
+ 119:     "Slope": "global_mars/terrain_metrics/mars_global_slope_degrees.png",
+ 120:     "Roughness": "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png",
+ 121:     "Local relief": "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png",
+ 122:     "Terrain quality overview": "global_mars/terrain_metrics/mars_global_terrain_quality.png",
+ 123: }
+ 124:
+ 125: VISUALISATION_GROUPS = {
+ 126:     "Global Mars terrain": [
+ 127:         ("Global Mars elevation", "global_mars/mars_global_elevation.png"),
+ 128:         ("Mars elevation distribution", "global_mars/mars_global_elevation_distribution.png"),
+ 129:         ("Mars observation classification", "global_mars/mars_global_observation_classification.png"),
+ 130:         ("Mars observation density", "global_mars/mars_global_observation_density.png"),
+ 131:     ],
+ 132:     "Global Mars terrain metrics": [
+ 133:         ("Global Mars slope", "global_mars/terrain_metrics/mars_global_slope_degrees.png"),
+ 134:         ("Global Mars roughness", "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png"),
+ 135:         ("Global Mars local relief", "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png"),
+ 136:         ("Global Mars terrain quality overview", "global_mars/terrain_metrics/mars_global_terrain_quality.png"),
+ 137:     ],
+ 138:     "Atacamaâ€“Jezero regional study": [
+ 139:         ("Atacama candidate regions", "maps/candidate_regions/atacama_candidate_regions_map.png"),
+ 140:         ("Broad screening map", "maps/sensitivity_analysis/broad_screening_map.png"),
+ 141:         ("Moderate screening map", "maps/sensitivity_analysis/moderate_screening_map.png"),
+ 142:         ("Strict screening map", "maps/sensitivity_analysis/strict_screening_map.png"),
+ 143:         ("Screening sensitivity comparison", "maps/sensitivity_analysis/sensitivity_comparison.png"),
+ 144:         ("Largest spatial clusters", "maps/spatial_clusters/atacama_largest_matching_clusters.png"),
+ 145:         ("Earthâ€“Mars terrain overview", "maps/terrain_comparison/earth_mars_terrain_overview.png"),
+ 146:         ("Local relief distributions", "maps/terrain_comparison/local_relief_distribution.png"),
+ 147:         ("Roughness distributions", "maps/terrain_comparison/roughness_distribution.png"),
+ 148:         ("Slope distributions", "maps/terrain_comparison/slope_distribution.png"),
+ 149:         ("Atacama terrain screening", "maps/terrain_range_screening/atacama_terrain_screening_overview.png"),
+ 150:     ],
+ 151:     "Global planetary visualisations": [
+ 152:         ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+ 153:         ("Global elevation distribution comparison", "Visualisations/Global/global_elevation_distribution_comparison.png"),
+ 154:         ("Global normalised terrain comparison", "Visualisations/Global/global_normalized_terrain_comparison.png"),
+ 155:         ("Global Mars elevation", "Visualisations/Global/mars_global_elevation.png"),
+ 156:         ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+ 157:     ],
+ 158: }
+ 159:
+ 160:
+ 161: st.set_page_config(
+ 162:     page_title="TERRAFORM | Planetary Analog Intelligence",
+ 163:     page_icon="ðŸŒ",
+ 164:     layout="wide",
+ 165:     initial_sidebar_state="expanded"
+ 166: )
+ 167:
+ 168:
+ 169: # ============================================================
+ 170: # GLOBAL STYLING
+ 171: # ============================================================
+ 172:
+ 173:
+ 174: st.markdown("""
+ 175: <style>
+ 176: @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+ 177:
+ 178: :root {
+ 179:     --background: #070B11;
+ 180:     --navy: #0B1420;
+
+[2] PYTHON IMPORTS
+D:\TERRAFORM\src\crosscheck_mola_global.py:1: import numpy as np
+D:\TERRAFORM\src\crosscheck_mola_global.py:2: from pathlib import Path
+D:\TERRAFORM\src\inspect_mars_outliers.py:2: from pathlib import Path
+D:\TERRAFORM\src\inspect_mars_outliers.py:3: import numpy as np
+D:\TERRAFORM\src\mars_area_weighted_analysis.py:1: import csv
+D:\TERRAFORM\src\mars_area_weighted_analysis.py:2: import numpy as np
+D:\TERRAFORM\src\mars_area_weighted_analysis.py:3: from pathlib import Path
+D:\TERRAFORM\src\mars_global_terrain.py:2: from pathlib import Path
+D:\TERRAFORM\src\mars_global_terrain.py:3: import json
+D:\TERRAFORM\src\mars_global_terrain.py:5: import numpy as np
+D:\TERRAFORM\src\mars_global_terrain.py:6: import matplotlib
+D:\TERRAFORM\src\mars_global_terrain.py:10: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\mars_global_terrain.py:12: from matplotlib.colors import ListedColormap, BoundaryNorm
+D:\TERRAFORM\src\mars_global_terrain.py:14: from scipy.ndimage import (
+D:\TERRAFORM\src\mars_observation_threshold_audit.py:2: from pathlib import Path
+D:\TERRAFORM\src\mars_observation_threshold_audit.py:3: import numpy as np
+D:\TERRAFORM\src\mars_outlier_validation.py:2: from pathlib import Path
+D:\TERRAFORM\src\mars_outlier_validation.py:3: import numpy as np
+D:\TERRAFORM\src\mars_strict_maxima_audit.py:2: from pathlib import Path
+D:\TERRAFORM\src\mars_strict_maxima_audit.py:3: import numpy as np
+D:\TERRAFORM\src\mars_strict_observation_validation.py:2: from pathlib import Path
+D:\TERRAFORM\src\mars_strict_observation_validation.py:3: import numpy as np
+D:\TERRAFORM\src\process_global_mars.py:1: import csv
+D:\TERRAFORM\src\process_global_mars.py:2: import numpy as np
+D:\TERRAFORM\src\process_global_mars.py:3: from pathlib import Path
+D:\TERRAFORM\src\process_global_mars.py:6: import matplotlib
+D:\TERRAFORM\src\process_global_mars.py:8: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\process_global_mars.py:9: from matplotlib.colors import LogNorm, ListedColormap
+D:\TERRAFORM\src\process_global_mars.py:10: from matplotlib.patches import Patch
+D:\TERRAFORM\src\verify_mola_global.py:1: import numpy as np
+D:\TERRAFORM\src\verify_mola_global.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\analog_comparison.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\analog_comparison.py:3: import json
+D:\TERRAFORM\src\analysis\analog_comparison.py:4: import math
+D:\TERRAFORM\src\analysis\analog_comparison.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\analog_comparison.py:7: import rasterio
+D:\TERRAFORM\src\analysis\analog_comparison.py:9: from rasterio.transform import from_origin
+D:\TERRAFORM\src\analysis\analog_comparison.py:10: from rasterio.warp import reproject, Resampling
+D:\TERRAFORM\src\analysis\analog_comparison.py:12: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\candidate_extraction.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\candidate_extraction.py:3: import csv
+D:\TERRAFORM\src\analysis\candidate_extraction.py:4: import json
+D:\TERRAFORM\src\analysis\candidate_extraction.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\candidate_extraction.py:7: import rasterio
+D:\TERRAFORM\src\analysis\candidate_extraction.py:8: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\analysis\candidate_extraction.py:10: from scipy import ndimage
+D:\TERRAFORM\src\analysis\candidate_extraction.py:11: from matplotlib.colors import ListedColormap
+D:\TERRAFORM\src\analysis\candidate_extraction.py:12: from matplotlib.patches import Patch
+D:\TERRAFORM\src\analysis\candidate_extraction.py:13: from rasterio.warp import transform as reproject_coordinates
+D:\TERRAFORM\src\analysis\comparison.py:10: import pandas as pd
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:1: from pathlib import Path
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:2: import json
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:3: import math
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:5: import numpy as np
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:6: import rasterio
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:8: from rasterio.transform import from_origin
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:9: from rasterio.warp import reproject, Resampling
+D:\TERRAFORM\src\analysis\death_valley_analog_comparison.py:11: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:4: import gc
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:7: import rasterio
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:9: from rasterio.merge import merge
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:10: from rasterio.warp import calculate_default_transform, reproject, Resampling
+D:\TERRAFORM\src\analysis\death_valley_terrain_analysis.py:11: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py:4: import numpy as np
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py:5: import pandas as pd
+D:\TERRAFORM\src\analysis\diagnose_candidate_ids.py:6: import rasterio
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:3: import json
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:4: import math
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:7: import rasterio
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:9: from pyproj import Transformer
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:10: from rasterio.transform import from_origin
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:11: from rasterio.warp import reproject, Resampling
+D:\TERRAFORM\src\analysis\earth_moon_comparison.py:13: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py:3: import json
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py:4: import pandas as pd
+D:\TERRAFORM\src\analysis\generate_candidate_profiles.py:5: import numpy as np
+D:\TERRAFORM\src\analysis\geological_characterization.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\geological_characterization.py:3: import json
+D:\TERRAFORM\src\analysis\geological_characterization.py:4: import warnings
+D:\TERRAFORM\src\analysis\geological_characterization.py:6: import geopandas as gpd
+D:\TERRAFORM\src\analysis\geological_characterization.py:7: import numpy as np
+D:\TERRAFORM\src\analysis\geological_characterization.py:8: import pandas as pd
+D:\TERRAFORM\src\analysis\geological_characterization.py:9: import rasterio
+D:\TERRAFORM\src\analysis\geological_characterization.py:11: from rasterio.features import shapes
+D:\TERRAFORM\src\analysis\geological_characterization.py:12: from shapely.geometry import shape
+D:\TERRAFORM\src\analysis\geological_characterization.py:13: from shapely.ops import unary_union
+D:\TERRAFORM\src\analysis\geological_characterization.py:58: from shapely import make_valid
+D:\TERRAFORM\src\analysis\inspect_profile_inputs.py:1: from pathlib import Path
+D:\TERRAFORM\src\analysis\inspect_profile_inputs.py:2: import pandas as pd
+D:\TERRAFORM\src\analysis\inspect_profile_inputs.py:3: import json
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:4: import math
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:7: import rasterio
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:9: from rasterio.windows import from_bounds, Window
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:10: from rasterio.warp import reproject, transform_bounds, Resampling
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:11: from rasterio.transform import from_origin
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:12: from rasterio.crs import CRS
+D:\TERRAFORM\src\analysis\mars_terrain_analysis.py:14: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:5: import numpy as np
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:6: import rasterio
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:8: from rasterio.transform import from_origin
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:9: from rasterio.crs import CRS
+D:\TERRAFORM\src\analysis\moon_terrain_analysis.py:11: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:4: import csv
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:7: import rasterio
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:8: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:10: from scipy import ndimage
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:254: from matplotlib.colors import ListedColormap
+D:\TERRAFORM\src\analysis\sensitivity_analysis.py:294: from matplotlib.patches import Patch
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:5: import numpy as np
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:6: import rasterio
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:7: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:9: from scipy import ndimage
+D:\TERRAFORM\src\analysis\spatial_cluster_analysis.py:10: from matplotlib.colors import ListedColormap
+D:\TERRAFORM\src\analysis\terrain_analysis.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\terrain_analysis.py:3: import json
+D:\TERRAFORM\src\analysis\terrain_analysis.py:4: import gc
+D:\TERRAFORM\src\analysis\terrain_analysis.py:6: import numpy as np
+D:\TERRAFORM\src\analysis\terrain_analysis.py:7: import rasterio
+D:\TERRAFORM\src\analysis\terrain_analysis.py:9: from rasterio.warp import calculate_default_transform, reproject, Resampling
+D:\TERRAFORM\src\analysis\terrain_analysis.py:10: from scipy.ndimage import (
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:2: from pathlib import Path
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:3: import json
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:5: import numpy as np
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:6: import rasterio
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:7: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:9: from matplotlib.colors import ListedColormap
+D:\TERRAFORM\src\analysis\terrain_range_screening.py:10: from matplotlib.patches import Patch
+D:\TERRAFORM\src\data\dashboard_pipeline.py:7: from pathlib import Path
+D:\TERRAFORM\src\data\dashboard_pipeline.py:8: import pandas as pd
+D:\TERRAFORM\src\data\dashboard_pipeline.py:10: from src.data.processing import process_dataframe
+D:\TERRAFORM\src\data\download_earth_dem.py:2: from pathlib import Path
+D:\TERRAFORM\src\data\download_earth_dem.py:3: import requests
+D:\TERRAFORM\src\data\download_earth_dem.py:4: import xml.etree.ElementTree as ET
+D:\TERRAFORM\src\data\download_earth_dem.py:5: import rasterio
+D:\TERRAFORM\src\data\download_mars_dem.py:2: from pathlib import Path
+D:\TERRAFORM\src\data\download_mars_dem.py:3: import re
+D:\TERRAFORM\src\data\download_mars_dem.py:4: import json
+D:\TERRAFORM\src\data\download_mars_dem.py:6: import numpy as np
+D:\TERRAFORM\src\data\download_mars_dem.py:7: import rasterio
+D:\TERRAFORM\src\data\download_mars_dem.py:8: import requests
+D:\TERRAFORM\src\data\download_mars_dem.py:10: from rasterio.transform import from_origin
+D:\TERRAFORM\src\data\download_mars_dem.py:11: from rasterio.crs import CRS
+D:\TERRAFORM\src\data\inspect_geology.py:2: from pathlib import Path
+D:\TERRAFORM\src\data\inspect_geology.py:3: import geopandas as gpd
+D:\TERRAFORM\src\data\inspect_geology.py:4: import json
+D:\TERRAFORM\src\data\processing.py:7: from pathlib import Path
+D:\TERRAFORM\src\data\processing.py:8: import json
+D:\TERRAFORM\src\data\processing.py:9: import pandas as pd
+D:\TERRAFORM\src\data\processing.py:11: from src.data.validation import validate_dataset
+D:\TERRAFORM\src\data\validation.py:10: import pandas as pd
+D:\TERRAFORM\src\planetary\catalog.py:10: import json
+D:\TERRAFORM\src\planetary\catalog.py:11: from pathlib import Path
+D:\TERRAFORM\src\planetary\catalog.py:12: from datetime import datetime, timezone
+D:\TERRAFORM\src\planetary\earth_global.py:20: import json
+D:\TERRAFORM\src\planetary\earth_global.py:21: from pathlib import Path
+D:\TERRAFORM\src\planetary\earth_global.py:23: import numpy as np
+D:\TERRAFORM\src\planetary\earth_global.py:24: import rasterio
+D:\TERRAFORM\src\planetary\earth_global.py:25: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\planetary\earth_global.py:27: from rasterio.enums import Resampling
+D:\TERRAFORM\src\planetary\earth_global.py:28: from pyproj import CRS as PyprojCRS
+D:\TERRAFORM\src\planetary\global_comparison.py:17: from __future__ import annotations
+D:\TERRAFORM\src\planetary\global_comparison.py:19: import json
+D:\TERRAFORM\src\planetary\global_comparison.py:20: import time
+D:\TERRAFORM\src\planetary\global_comparison.py:21: from datetime import datetime, timezone
+D:\TERRAFORM\src\planetary\global_comparison.py:22: from pathlib import Path
+D:\TERRAFORM\src\planetary\global_comparison.py:24: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\planetary\global_comparison.py:25: import numpy as np
+D:\TERRAFORM\src\planetary\global_comparison.py:26: import rasterio
+D:\TERRAFORM\src\planetary\global_comparison.py:27: from rasterio.windows import Window
+D:\TERRAFORM\src\planetary\inspect_raster.py:2: from pathlib import Path
+D:\TERRAFORM\src\planetary\inspect_raster.py:3: import rasterio
+D:\TERRAFORM\src\planetary\mars_global.py:10: from pathlib import Path
+D:\TERRAFORM\src\planetary\mars_global.py:11: from datetime import datetime, timezone
+D:\TERRAFORM\src\planetary\mars_global.py:12: import json
+D:\TERRAFORM\src\planetary\mars_global.py:14: import numpy as np
+D:\TERRAFORM\src\planetary\mars_global.py:15: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\planetary\moon_global.py:10: from pathlib import Path
+D:\TERRAFORM\src\planetary\moon_global.py:11: from datetime import datetime, timezone
+D:\TERRAFORM\src\planetary\moon_global.py:12: import json
+D:\TERRAFORM\src\planetary\moon_global.py:14: import numpy as np
+D:\TERRAFORM\src\planetary\moon_global.py:15: import matplotlib.pyplot as plt
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:2: from pathlib import Path
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:3: import json
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:4: import html
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:6: import streamlit as st
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:7: import pandas as pd
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:8: import plotly.express as px
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:9: import folium
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:10: import geopandas as gpd
+D:\TERRAFORM\src\visualization\candidate_intelligence_page.py:12: from streamlit_folium import st_folium
+D:\TERRAFORM\src\visualization\death_valley_map.py:2: from pathlib import Path
+D:\TERRAFORM\src\visualization\death_valley_map.py:4: import numpy as np
+D:\TERRAFORM\src\visualization\death_valley_map.py:5: import rasterio
+D:\TERRAFORM\src\visualization\death_valley_map.py:6: import folium
+D:\TERRAFORM\src\visualization\death_valley_map.py:8: from rasterio.warp import (
+D:\TERRAFORM\src\visualization\death_valley_map.py:13: from rasterio.transform import array_bounds
+D:\TERRAFORM\src\visualization\death_valley_map.py:14: from rasterio import Affine
+D:\TERRAFORM\src\visualization\death_valley_map.py:15: from matplotlib import colormaps
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py:2: from pathlib import Path
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py:3: import json
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py:5: import numpy as np
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py:6: import rasterio
+D:\TERRAFORM\src\visualization\terrain_comparison_charts.py:7: import matplotlib.pyplot as plt
+
+[3] COMPLETE DATA FILE INVENTORY
+
+--- data ---
+    444.38 MB | data\Global\Earth\earth_etopo_2022_60s.tif
+     31.64 MB | data\Global\Mars\megc90n000eb.img
+      0.00 MB | data\Global\Mars\megc90n000eb.lbl
+      0.00 MB | data\Global\Mars\megc90n000eb.lbl.txt
+      0.00 MB | data\Global\Mars\megt90n000eb.hdr
+     31.64 MB | data\Global\Mars\megt90n000eb.img
+      0.00 MB | data\Global\Mars\megt90n000eb.lbl
+     31.64 MB | data\Global\Moon\ldem_16.img
+      0.00 MB | data\Global\Moon\LDEM_16.LBL
+      0.14 MB | data\processed\earth\comparison_scale\earth_local_relief_m.tif
+      0.16 MB | data\processed\earth\comparison_scale\earth_roughness_m.tif
+      0.17 MB | data\processed\earth\comparison_scale\earth_slope_degrees.tif
+      0.05 MB | data\processed\earth\death_valley\comparison_scale\death_valley_local_relief_m.tif
+      0.05 MB | data\processed\earth\death_valley\comparison_scale\death_valley_roughness_m.tif
+      0.05 MB | data\processed\earth\death_valley\comparison_scale\death_valley_slope_degrees.tif
+     11.15 MB | data\processed\earth\death_valley\death_valley_dem_mosaic.tif
+      9.52 MB | data\processed\earth\death_valley\death_valley_dem_projected_utm11n.tif
+     10.28 MB | data\processed\earth\death_valley\death_valley_local_relief_3x3_m.tif
+     11.77 MB | data\processed\earth\death_valley\death_valley_roughness_std_3x3_m.tif
+     12.12 MB | data\processed\earth\death_valley\death_valley_slope_deg.tif
+     24.99 MB | data\processed\earth\earth_dem_projected_utm19s.tif
+     25.95 MB | data\processed\earth\earth_local_relief_3x3_m.tif
+     24.62 MB | data\processed\earth\earth_roughness_std_3x3_m.tif
+     38.49 MB | data\processed\earth\earth_slope_deg.tif
+      0.01 MB | data\processed\earth_moon\atacama\local_relief_m.tif
+      0.01 MB | data\processed\earth_moon\atacama\roughness_m.tif
+      0.01 MB | data\processed\earth_moon\atacama\slope_degrees.tif
+      0.01 MB | data\processed\earth_moon\death_valley\local_relief_m.tif
+      0.01 MB | data\processed\earth_moon\death_valley\roughness_m.tif
+      0.01 MB | data\processed\earth_moon\death_valley\slope_degrees.tif
+      0.00 MB | data\processed\earth_processed.csv
+      0.00 MB | data\processed\earth_rejected.csv
+      0.14 MB | data\processed\mars\comparison_scale\mars_local_relief_m.tif
+      0.16 MB | data\processed\mars\comparison_scale\mars_roughness_m.tif
+      0.16 MB | data\processed\mars\comparison_scale\mars_slope_degrees.tif
+      0.13 MB | data\processed\mars\jezero_dem_local_mars.tif
+      0.14 MB | data\processed\mars\jezero_local_relief_3x3_m.tif
+      0.16 MB | data\processed\mars\jezero_roughness_std_3x3_m.tif
+      0.16 MB | data\processed\mars\jezero_slope_deg.tif
+     56.37 MB | data\processed\mars\mars_mola_128ppd_megt44n000hb.tif
+     25.41 MB | data\processed\moon\moon_global_dem.tif
+     24.94 MB | data\processed\moon\moon_global_local_relief_3x3_m.tif
+     50.64 MB | data\processed\moon\moon_global_roughness_3x3_m.tif
+     49.31 MB | data\processed\moon\moon_global_slope_degrees.tif
+     35.17 MB | data\raw\earth\Copernicus_DSM_COG_10_S23_00_W069_00_DEM.tif
+     39.74 MB | data\raw\earth\death_valley\Copernicus_DSM_COG_10_N35_00_W117_00_DEM.tif
+     37.78 MB | data\raw\earth\death_valley\Copernicus_DSM_COG_10_N35_00_W118_00_DEM.tif
+     38.81 MB | data\raw\earth\death_valley\Copernicus_DSM_COG_10_N36_00_W117_00_DEM.tif
+     39.92 MB | data\raw\earth\death_valley\Copernicus_DSM_COG_10_N36_00_W118_00_DEM.tif
+      0.00 MB | data\raw\earth\geology\Geología Base.cpg
+      9.69 MB | data\raw\earth\geology\Geología Base.dbf
+      0.00 MB | data\raw\earth\geology\Geología Base.prj
+      6.99 MB | data\raw\earth\geology\Geología Base.shp
+      0.12 MB | data\raw\earth\geology\Geología Base.shx
+    123.75 MB | data\raw\mars\megt44n000hb.img
+      0.00 MB | data\raw\mars\megt44n000hb.lbl
+
+--- outputs ---
+      0.00 MB | outputs\dashboard\candidate_master_comparison.csv
+      0.07 MB | outputs\dashboard\candidate_profiles.json
+      0.01 MB | outputs\data_lab_inspection.txt
+      0.01 MB | outputs\Global\Comparisons\earth_moon_common_scale_report.json
+      0.01 MB | outputs\Global\Comparisons\global_comparison_report_audit.txt
+      0.00 MB | outputs\Global\Comparisons\global_comparison_terminal_log.txt
+      0.01 MB | outputs\Global\Comparisons\global_planetary_comparison_report.json
+      0.01 MB | outputs\Global\Comparisons\mars_metadata_audit.txt
+      0.00 MB | outputs\Global\dataset_catalog.json
+      0.00 MB | outputs\Global\Earth\earth_global_report.json
+      0.03 MB | outputs\Global\global_scripts_source.txt
+      0.00 MB | outputs\Global\Mars\mars_global_report.json
+      0.00 MB | outputs\Global\Moon\moon_full_report.txt
+      0.00 MB | outputs\Global\Moon\moon_global_report.json
+      0.01 MB | outputs\Global\Moon\moon_global_terrain_analysis.json
+      0.00 MB | outputs\Global\Moon\moon_verification.txt
+      0.01 MB | outputs\Global\planetary_report_audit.txt
+      0.00 MB | outputs\Global\planetary_scripts_inventory.txt
+      0.00 MB | outputs\global_mars\mars_area_weighted_latitude_bands.csv
+      0.00 MB | outputs\global_mars\mars_area_weighted_report.txt
+      0.00 MB | outputs\global_mars\mars_global_analysis_report.txt
+      2.09 MB | outputs\global_mars\mars_global_elevation.png
+      0.10 MB | outputs\global_mars\mars_global_elevation_distribution.png
+      0.50 MB | outputs\global_mars\mars_global_observation_classification.png
+      7.69 MB | outputs\global_mars\mars_global_observation_density.png
+      0.00 MB | outputs\global_mars\mars_latitude_band_coverage.csv
+      0.01 MB | outputs\global_mars\mars_observation_threshold_report.txt
+      0.06 MB | outputs\global_mars\mars_outlier_validation_report.txt
+      0.02 MB | outputs\global_mars\mars_strict_maxima_audit.txt
+      0.01 MB | outputs\global_mars\mars_strict_observation_report.txt
+      0.00 MB | outputs\global_mars\outlier_inspection_report.txt
+     63.28 MB | outputs\global_mars\terrain_metrics\mars_global_local_relief_3x3_m.npy
+      3.70 MB | outputs\global_mars\terrain_metrics\mars_global_local_relief_3x3_m.png
+     63.28 MB | outputs\global_mars\terrain_metrics\mars_global_roughness_3x3_m.npy
+      3.76 MB | outputs\global_mars\terrain_metrics\mars_global_roughness_3x3_m.png
+     63.28 MB | outputs\global_mars\terrain_metrics\mars_global_slope_degrees.npy
+      4.36 MB | outputs\global_mars\terrain_metrics\mars_global_slope_degrees.png
+      0.13 MB | outputs\global_mars\terrain_metrics\mars_global_terrain_quality.png
+      0.01 MB | outputs\global_mars\terrain_metrics\mars_global_terrain_report.json
+      0.00 MB | outputs\global_mars\terrain_metrics\mars_global_terrain_report.txt
+      0.00 MB | outputs\image_inventory.txt
+      0.06 MB | outputs\inspection_summary.txt
+      0.19 MB | outputs\maps\candidate_regions\atacama_candidate_inventory.csv
+      0.01 MB | outputs\maps\candidate_regions\atacama_candidate_region_ids.tif
+      0.23 MB | outputs\maps\candidate_regions\atacama_candidate_regions_map.png
+      0.00 MB | outputs\maps\geological_characterization\candidate_geological_coverage.csv
+      0.16 MB | outputs\maps\geological_characterization\candidate_geological_intersections.geojson
+      0.01 MB | outputs\maps\geological_characterization\candidate_geological_units.csv
+      0.07 MB | outputs\maps\geological_characterization\verified_candidate_polygons.geojson
+      0.13 MB | outputs\maps\sensitivity_analysis\broad_screening_map.png
+      0.01 MB | outputs\maps\sensitivity_analysis\broad_three_metric_mask.tif
+      0.13 MB | outputs\maps\sensitivity_analysis\moderate_screening_map.png
+      0.01 MB | outputs\maps\sensitivity_analysis\moderate_three_metric_mask.tif
+      0.19 MB | outputs\maps\sensitivity_analysis\sensitivity_comparison.png
+      0.00 MB | outputs\maps\sensitivity_analysis\sensitivity_summary.csv
+      0.12 MB | outputs\maps\sensitivity_analysis\strict_screening_map.png
+      0.01 MB | outputs\maps\sensitivity_analysis\strict_three_metric_mask.tif
+      0.01 MB | outputs\maps\spatial_clusters\atacama_clusters_4_connectivity.tif
+      0.01 MB | outputs\maps\spatial_clusters\atacama_clusters_8_connectivity.tif
+      0.13 MB | outputs\maps\spatial_clusters\atacama_largest_matching_clusters.png
+      0.23 MB | outputs\maps\terrain_comparison\earth_mars_terrain_overview.png
+      0.13 MB | outputs\maps\terrain_comparison\local_relief_distribution.png
+      0.13 MB | outputs\maps\terrain_comparison\roughness_distribution.png
+      0.12 MB | outputs\maps\terrain_comparison\slope_distribution.png
+      0.00 MB | outputs\maps\terrain_comparison\terrain_visualisation_statistics.json
+      0.01 MB | outputs\maps\terrain_range_screening\atacama_local_relief_range_mask.tif
+      0.01 MB | outputs\maps\terrain_range_screening\atacama_roughness_range_mask.tif
+      0.01 MB | outputs\maps\terrain_range_screening\atacama_slope_range_mask.tif
+      0.38 MB | outputs\maps\terrain_range_screening\atacama_terrain_screening_overview.png
+      0.01 MB | outputs\maps\terrain_range_screening\atacama_three_metric_intersection.tif
+      0.00 MB | outputs\mars_file_integrity_check.txt
+      0.00 MB | outputs\mars_file_locations.txt
+      0.00 MB | outputs\mars_observation_elevation_crosscheck.txt
+      0.00 MB | outputs\mars_raster_verification.txt
+      0.00 MB | outputs\reports\candidate_geological_characterization.json
+      0.00 MB | outputs\reports\candidate_geological_characterization_v2.json
+      0.00 MB | outputs\reports\candidate_profile_generation_log.txt
+      0.00 MB | outputs\reports\candidate_profiles\candidate_master_comparison.csv
+      0.00 MB | outputs\reports\candidate_profiles\TF-001_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-001_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-002_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-002_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-003_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-003_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-004_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-004_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-005_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-005_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-006_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-006_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-007_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-007_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-008_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-008_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-009_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-009_profile.md
+      0.01 MB | outputs\reports\candidate_profiles\TF-010_profile.json
+      0.00 MB | outputs\reports\candidate_profiles\TF-010_profile.md
+      0.02 MB | outputs\reports\candidate_region_extraction_report.json
+      0.01 MB | outputs\reports\death_valley_jezero_terrain_comparison.json
+      0.00 MB | outputs\reports\death_valley_terrain_analysis.json
+      0.01 MB | outputs\reports\earth_mars_terrain_comparison.json
+      0.00 MB | outputs\reports\earth_terrain_analysis.json
+      0.00 MB | outputs\reports\earth_validation_report.json
+      0.00 MB | outputs\reports\geology_data_inspection.json
+      0.00 MB | outputs\reports\jezero_terrain_analysis.json
+      0.00 MB | outputs\reports\mars_mola_metadata.json
+      0.01 MB | outputs\reports\profile_input_inspection.txt
+      0.01 MB | outputs\reports\sensitivity_analysis_report.json
+      0.03 MB | outputs\reports\spatial_cluster_analysis.json
+      0.00 MB | outputs\reports\terrain_range_screening_report.json
+      0.18 MB | outputs\terraform_inspection_report.txt
+      1.88 MB | outputs\Visualisations\Global\earth_global_elevation.png
+      0.14 MB | outputs\Visualisations\Global\global_elevation_distribution_comparison.png
+      0.18 MB | outputs\Visualisations\Global\global_normalized_terrain_comparison.png
+      1.51 MB | outputs\Visualisations\Global\mars_global_elevation.png
+      2.63 MB | outputs\Visualisations\Global\moon_global_elevation.png
+
+[4] GIT HISTORY
+
+
+[5] GIT TRACKED FILE COUNT
+200
+
+[6] GIT REMOTE
+
+
+========== INSPECTION COMPLETE ==========
+**********************
+Windows PowerShell transcript end
+End time: 20261113195640
+**********************

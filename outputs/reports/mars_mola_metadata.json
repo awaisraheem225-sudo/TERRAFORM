@@ -1,0 +1,37 @@
+{
+    "dataset": "NASA MOLA MEGDR",
+    "product": "megt44n000hb",
+    "source_file": "megt44n000hb.img",
+    "output_file": "data\\processed\\mars\\mars_mola_128ppd_megt44n000hb.tif",
+    "dimensions": {
+        "rows": 5632,
+        "columns": 11520
+    },
+    "data_type": "Signed 16-bit big-endian source",
+    "units": "metres",
+    "projection": "Simple Cylindrical",
+    "coordinate_system": "Planetocentric",
+    "longitude_direction": "East",
+    "resolution_pixels_per_degree": 128.0,
+    "mars_reference_radius_km": 3396.0,
+    "coverage": {
+        "west": 0.0,
+        "east": 90.0,
+        "south": 0.0,
+        "north": 44.0
+    },
+    "elevation_statistics_m": {
+        "minimum": -5062,
+        "maximum": 3210,
+        "mean": -1020.9728073428375,
+        "standard_deviation": 1618.9728711069513
+    },
+    "jezero_reference": {
+        "latitude": 18.4,
+        "longitude": 77.7,
+        "row": 3276,
+        "column": 9945,
+        "sample_elevation_m": -2641
+    },
+    "scientific_limitation": "MOLA MEGDR cells represent median observed topography. Some cells contain interpolated values where observations are absent."
+}

@@ -1,0 +1,100 @@
+{
+    "project": "TERRAFORM",
+    "comparison": "Atacama, Earth vs Jezero, Mars",
+    "working_resolution_m": 463,
+    "metrics": {
+        "slope": {
+            "earth": {
+                "count": 52499,
+                "mean": 3.780052987886957,
+                "median": 2.4470067024230957,
+                "std": 3.9153617934479112,
+                "p10": 0.7421637773513794,
+                "p25": 1.379550576210022,
+                "p50": 2.4470067024230957,
+                "p75": 4.6326682567596436,
+                "p90": 8.535281372070314,
+                "minimum": 0.0035653221420943737,
+                "maximum": 36.86563491821289
+            },
+            "mars": {
+                "count": 49298,
+                "mean": 3.2780787843980836,
+                "median": 2.2646007537841797,
+                "std": 3.1258672914134547,
+                "p10": 0.6519118547439576,
+                "p25": 1.233550876379013,
+                "p50": 2.2646007537841797,
+                "p75": 4.181218862533569,
+                "p90": 7.3130685806274425,
+                "minimum": 0.010014155879616737,
+                "maximum": 31.07497215270996
+            },
+            "median_difference_mars_minus_earth": -0.18240594863891602
+        },
+        "roughness": {
+            "earth": {
+                "count": 52499,
+                "mean": 26.023378580374935,
+                "median": 17.124570846557617,
+                "std": 26.233572028986664,
+                "p10": 5.257468795776367,
+                "p25": 9.66434621810913,
+                "p50": 17.124570846557617,
+                "p75": 32.093990325927734,
+                "p90": 58.71161727905275,
+                "minimum": 0.06736797094345093,
+                "maximum": 262.56103515625
+            },
+            "mars": {
+                "count": 49298,
+                "mean": 22.3210498013932,
+                "median": 15.62500524520874,
+                "std": 20.55448012622404,
+                "p10": 5.196246147155762,
+                "p25": 8.978257656097412,
+                "p50": 15.62500524520874,
+                "p75": 28.185208797454834,
+                "p90": 48.801456832885755,
+                "minimum": 0.3839096426963806,
+                "maximum": 206.00819396972656
+            },
+            "median_difference_mars_minus_earth": -1.499565601348877
+        },
+        "local_relief": {
+            "earth": {
+                "count": 52499,
+                "mean": 81.74048901154664,
+                "median": 54.373779296875,
+                "std": 81.93658221873672,
+                "p10": 16.44755859375,
+                "p25": 30.5693359375,
+                "p50": 54.373779296875,
+                "p75": 101.2841796875,
+                "p90": 183.8126953125,
+                "minimum": 0.26220703125,
+                "maximum": 790.3291015625
+            },
+            "mars": {
+                "count": 49298,
+                "mean": 69.84383245280337,
+                "median": 49.04669189453125,
+                "std": 64.18235762385511,
+                "p10": 16.4609619140625,
+                "p25": 28.15521240234375,
+                "p50": 49.04669189453125,
+                "p75": 88.09814453125,
+                "p90": 151.19013671875004,
+                "minimum": 1.269287109375,
+                "maximum": 661.08447265625
+            },
+            "median_difference_mars_minus_earth": -5.32708740234375
+        }
+    },
+    "limitations": [
+        "Distribution comparison does not establish spatial correspondence.",
+        "Earth and Mars elevation products have different measurement characteristics.",
+        "Terrain similarity alone does not establish geological or operational equivalence.",
+        "MOLA contains interpolated elevation values in areas with insufficient observations."
+    ]
+}

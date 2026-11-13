@@ -1,0 +1,786 @@
+﻿
+========== app.py LINES 1-180 ==========
+1: from pathlib import Path
+2: import html
+3: import json
+4: import streamlit as st
+5: import pandas as pd
+6: import numpy as np
+7: 
+8: try:
+9:     import rasterio
+10: except ImportError:
+11:     rasterio = None
+12: import plotly.express as px
+13: import folium
+14: 
+15: from folium.plugins import MarkerCluster
+16: from streamlit_folium import st_folium
+17: 
+18: from src.data.dashboard_pipeline import load_and_process
+19: from src.visualization.candidate_intelligence_page import candidate_intelligence_page
+20: 
+21: 
+22: # ============================================================
+23: # TERRAFORM | PLANETARY ANALOG INTELLIGENCE
+24: # ============================================================
+25: 
+26: ROOT = Path(__file__).resolve().parent
+27: OUTPUTS = ROOT / "outputs"
+28: 
+29: PLANETARY_DATASETS = {
+30:     "Earth": {
+31:         "source": "NOAA ETOPO 2022",
+32:         "raster": "data/Global/Earth/earth_etopo_2022_60s.tif",
+33:         "report": "Global/Earth/earth_global_report.json",
+34:         "reference": "WGS84 + EGM2008 height",
+35:         "description": "Global topography and bathymetry",
+36:     },
+37:     "Mars": {
+38:         "source": "NASA PDS MOLA MEGDR",
+39:         "raster": "data/Global/Mars/megt90n000eb.img",
+40:         "report": "Global/Mars/mars_global_report.json",
+41:         "reference": "MOLA areoid",
+42:         "description": "Global median planetary topography",
+43:     },
+44:     "Moon": {
+45:         "source": "NASA PDS LRO LOLA LDEM_16",
+46:         "raster": "data/Global/Moon/LDEM_16.LBL",
+47:         "report": "Global/Moon/moon_global_report.json",
+48:         "reference": "Lunar reference sphere, radius 1,737,400 m",
+49:         "description": "Global lunar digital elevation model",
+50:     },
+51: }
+52: 
+53: GLOBAL_COMPARISON_REPORT_PATH = (
+54:     OUTPUTS / "Global/Comparisons/global_planetary_comparison_report.json"
+55: )
+56: 
+57: ACCENT = "#55D6A0"
+58: BACKGROUND = "#0A1018"
+59: PANEL = "#111C27"
+60: BORDER = "#263746"
+61: MUTED = "#8FA3B5"
+62: WHITE = "#EDF4F8"
+63: 
+64: NUMERIC_COLUMNS = [
+65:     "latitude", "longitude", "elevation_m", "slope_deg",
+66:     "roughness_m", "local_relief_m", "surface_temp_c",
+67:     "precipitation_mm", "similarity_score"
+68: ]
+69: 
+70: COMPARISON_METRICS = [
+71:     "slope_deg", "roughness_m", "local_relief_m",
+72:     "precipitation_mm"
+73: ]
+74: 
+75: RESEARCH_CSV_FILES = {
+76:     "Candidate inventory": "maps/candidate_regions/atacama_candidate_inventory.csv",
+77:     "Master candidate comparison": "dashboard/candidate_master_comparison.csv",
+78:     "Geological coverage": "maps/geological_characterization/candidate_geological_coverage.csv",
+79:     "Geological units": "maps/geological_characterization/candidate_geological_units.csv",
+80:     "Sensitivity summary": "maps/sensitivity_analysis/sensitivity_summary.csv",
+81: }
+82: 
+83: RESEARCH_JSON_FILES = {
+84:     "Candidate profiles": "dashboard/candidate_profiles.json",
+85:     "Terrain comparison statistics": "maps/terrain_comparison/terrain_visualisation_statistics.json",
+86:     "Earth-Mars comparison report": "reports/earth_mars_terrain_comparison.json",
+87:     "Earth terrain analysis": "reports/earth_terrain_analysis.json",
+88:     "Jezero terrain analysis": "reports/jezero_terrain_analysis.json",
+89:     "Earth validation report": "reports/earth_validation_report.json",
+90:     "Sensitivity analysis report": "reports/sensitivity_analysis_report.json",
+91: }
+92: 
+93: RESEARCH_RASTER_FILES = {
+94:     "Candidate region IDs": "maps/candidate_regions/atacama_candidate_region_ids.tif",
+95:     "Broad screening mask": "maps/sensitivity_analysis/broad_three_metric_mask.tif",
+96:     "Moderate screening mask": "maps/sensitivity_analysis/moderate_three_metric_mask.tif",
+97:     "Strict screening mask": "maps/sensitivity_analysis/strict_three_metric_mask.tif",
+98:     "4-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_4_connectivity.tif",
+99:     "8-neighbour cluster map": "maps/spatial_clusters/atacama_clusters_8_connectivity.tif",
+100:     "Slope screening mask": "maps/terrain_range_screening/atacama_slope_range_mask.tif",
+101:     "Roughness screening mask": "maps/terrain_range_screening/atacama_roughness_range_mask.tif",
+102:     "Local relief screening mask": "maps/terrain_range_screening/atacama_local_relief_range_mask.tif",
+103:     "Three-metric intersection": "maps/terrain_range_screening/atacama_three_metric_intersection.tif",
+104: }
+105: 
+106: MARS_JSON_PATH = OUTPUTS / "global_mars/terrain_metrics/mars_global_terrain_report.json"
+107: MARS_AREA_REPORT_PATH = OUTPUTS / "global_mars/mars_area_weighted_report.txt"
+108: 
+109: MARS_IMAGES = {
+110:     "Global elevation": "global_mars/mars_global_elevation.png",
+111:     "Elevation distribution": "global_mars/mars_global_elevation_distribution.png",
+112:     "Observation classification": "global_mars/mars_global_observation_classification.png",
+113:     "Observation density": "global_mars/mars_global_observation_density.png",
+114: }
+115: 
+116: MARS_METRIC_IMAGES = {
+117:     "Slope": "global_mars/terrain_metrics/mars_global_slope_degrees.png",
+118:     "Roughness": "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png",
+119:     "Local relief": "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png",
+120:     "Terrain quality overview": "global_mars/terrain_metrics/mars_global_terrain_quality.png",
+121: }
+122: 
+123: VISUALISATION_GROUPS = {
+124:     "Global Mars terrain": [
+125:         ("Global Mars elevation", "global_mars/mars_global_elevation.png"),
+126:         ("Mars elevation distribution", "global_mars/mars_global_elevation_distribution.png"),
+127:         ("Mars observation classification", "global_mars/mars_global_observation_classification.png"),
+128:         ("Mars observation density", "global_mars/mars_global_observation_density.png"),
+129:     ],
+130:     "Global Mars terrain metrics": [
+131:         ("Global Mars slope", "global_mars/terrain_metrics/mars_global_slope_degrees.png"),
+132:         ("Global Mars roughness", "global_mars/terrain_metrics/mars_global_roughness_3x3_m.png"),
+133:         ("Global Mars local relief", "global_mars/terrain_metrics/mars_global_local_relief_3x3_m.png"),
+134:         ("Global Mars terrain quality overview", "global_mars/terrain_metrics/mars_global_terrain_quality.png"),
+135:     ],
+136:     "Atacamaâ€“Jezero regional study": [
+137:         ("Atacama candidate regions", "maps/candidate_regions/atacama_candidate_regions_map.png"),
+138:         ("Broad screening map", "maps/sensitivity_analysis/broad_screening_map.png"),
+139:         ("Moderate screening map", "maps/sensitivity_analysis/moderate_screening_map.png"),
+140:         ("Strict screening map", "maps/sensitivity_analysis/strict_screening_map.png"),
+141:         ("Screening sensitivity comparison", "maps/sensitivity_analysis/sensitivity_comparison.png"),
+142:         ("Largest spatial clusters", "maps/spatial_clusters/atacama_largest_matching_clusters.png"),
+143:         ("Earthâ€“Mars terrain overview", "maps/terrain_comparison/earth_mars_terrain_overview.png"),
+144:         ("Local relief distributions", "maps/terrain_comparison/local_relief_distribution.png"),
+145:         ("Roughness distributions", "maps/terrain_comparison/roughness_distribution.png"),
+146:         ("Slope distributions", "maps/terrain_comparison/slope_distribution.png"),
+147:         ("Atacama terrain screening", "maps/terrain_range_screening/atacama_terrain_screening_overview.png"),
+148:     ],
+149:     "Global planetary visualisations": [
+150:         ("Global Earth elevation", "Visualisations/Global/earth_global_elevation.png"),
+151:         ("Global elevation distribution comparison", "Visualisations/Global/global_elevation_distribution_comparison.png"),
+152:         ("Global normalised terrain comparison", "Visualisations/Global/global_normalized_terrain_comparison.png"),
+153:         ("Global Mars elevation", "Visualisations/Global/mars_global_elevation.png"),
+154:         ("Global Moon elevation", "Visualisations/Global/moon_global_elevation.png"),
+155:     ],
+156: }
+157: 
+158: 
+159: st.set_page_config(
+160:     page_title="TERRAFORM | Planetary Analog Intelligence",
+161:     page_icon="ðŸŒ",
+162:     layout="wide",
+163:     initial_sidebar_state="expanded"
+164: )
+165: 
+166: 
+167: # ============================================================
+168: # GLOBAL STYLING
+169: # ============================================================
+170: 
+171: 
+172: st.markdown("""
+173: <style>
+174: @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+175: 
+176: :root {
+177:     --background: #070B11;
+178:     --navy: #0B1420;
+179:     --panel: #101B27;
+180:     --elevated: #142332;
+
+========== app.py LINES 1718-1760 ==========
+1718:         "and processing methods."
+1719:     )
+1720: 
+1721:     st.divider()
+1722: 
+1723:     # --------------------------------------------------------
+1724:     # RESEARCH REPOSITORY
+1725:     # --------------------------------------------------------
+1726: 
+1727:     st.markdown(
+1728:         '<div class="eyebrow">02 / RESEARCH REPOSITORY</div>',
+1729:         unsafe_allow_html=True
+1730:     )
+1731: 
+1732:     c1, c2, c3, c4 = st.columns(4)
+1733: 
+1734:     c1.metric(
+1735:         "Extracted regions",
+1736:         REPOSITORY_STATS["inventory"]
+1737:     )
+1738:     c2.metric(
+1739:         "Profiled candidates",
+1740:         REPOSITORY_STATS["profiles"]
+1741:     )
+1742:     c3.metric(
+1743:         "Geological records",
+1744:         REPOSITORY_STATS["geology"]
+1745:     )
+1746:     c4.metric(
+1747:         "Sensitivity scenarios",
+1748:         REPOSITORY_STATS["sensitivity"]
+1749:     )
+1750: 
+1751:     st.caption(
+1752:         "Repository statistics are loaded from the existing TERRAFORM "
+1753:         "research inventory. These counts describe available research "
+1754:         "outputs, not confirmed planetary analogue discoveries."
+1755:     )
+1756: 
+1757:     st.divider()
+1758: 
+1759:     # --------------------------------------------------------
+1760:     # REGIONAL ANALOGUE INVESTIGATION
+
+========== app.py LINES 1815-1865 ==========
+1815:             "#55D6A0"
+1816:             if REPOSITORY_STATS["inventory"] > 0
+1817:             else "#E6B566"
+1818:         )
+1819: 
+1820:         st.markdown(
+1821:             f"""
+1822:             <div class="panel">
+1823:                 <div class="mono">EARTH ANALOGUE REGIONS</div>
+1824:                 <div style="font-size:19px;color:#55D6A0;
+1825:                             font-weight:700;margin-top:8px;">
+1826:                     Atacama Desert Â· Death Valley
+1827:                 </div>
+1828:                 <div class="mono">Earth / terrestrial terrain studies</div>
+1829:             </div>
+1830: 
+1831:             <div class="panel">
+1832:                 <div class="mono">MARS REFERENCE REGIONS</div>
+1833:                 <div style="font-size:19px;color:#55D6A0;
+1834:                             font-weight:700;margin-top:8px;">
+1835:                     MOLA Region Â· Jezero Crater
+1836:                 </div>
+1837:                 <div class="mono">Mars / MOLA terrain reference</div>
+1838:             </div>
+1839: 
+1840:             <div class="panel">
+1841:                 <div class="mono">LUNAR REFERENCE REGION</div>
+1842:                 <div style="font-size:19px;color:#55D6A0;
+1843:                             font-weight:700;margin-top:8px;">
+1844:                     LOLA Region
+1845:                 </div>
+1846:                 <div class="mono">Moon / LOLA terrain reference</div>
+1847:             </div>
+1848: 
+1849:             <div class="panel">
+1850:                 <div class="mono">RESEARCH REPOSITORY</div>
+1851:                 <div style="font-size:16px;color:{status_color};
+1852:                             font-weight:700;margin-top:8px;">
+1853:                     {html.escape(repository_status)}
+1854:                 </div>
+1855:                 <div class="mono">
+1856:                     {REPOSITORY_STATS['assets']} research assets detected
+1857:                 </div>
+1858:             </div>
+1859: 
+1860:             <div class="panel">
+1861:                 <div class="mono">REGIONAL WORKING RESOLUTION</div>
+1862:                 <div style="font-size:19px;color:#55D6A0;
+1863:                             font-weight:700;margin-top:8px;">
+1864:                     ~463 metres
+1865:                 </div>
+
+========== app.py LINES 1900-2005 ==========
+1900:             "Surface roughness",
+1901:             "Local terrain variability and texture."
+1902:         ),
+1903:         (
+1904:             "04",
+1905:             "Local relief",
+1906:             "Elevation variation across surrounding terrain."
+1907:         ),
+1908:         (
+1909:             "05",
+1910:             "Geological context",
+1911:             "Mapped geological units and regional characteristics."
+1912:         ),
+1913:         (
+1914:             "06",
+1915:             "Data integrity",
+1916:             "Source validation, processing assumptions and limitations."
+1917:         ),
+1918:     ]
+1919: 
+1920:     cols = st.columns(3)
+1921: 
+1922:     for index, (number, name, description) in enumerate(dimensions):
+1923:         with cols[index % 3]:
+1924:             st.markdown(
+1925:                 f"""
+1926:                 <div class="panel" style="min-height:125px;">
+1927:                     <div class="mono">
+1928:                         {number} / RESEARCH VARIABLE
+1929:                     </div>
+1930:                     <div style="font-size:16px;font-weight:700;
+1931:                                 color:white;margin-top:9px;">
+1932:                         {name}
+1933:                     </div>
+1934:                     <div style="font-size:12px;color:#8FA3B5;
+1935:                                 margin-top:6px;line-height:1.6;">
+1936:                         {description}
+1937:                     </div>
+1938:                 </div>
+1939:                 """,
+1940:                 unsafe_allow_html=True
+1941:             )
+1942: 
+1943:     st.divider()
+1944: 
+1945:     # --------------------------------------------------------
+1946:     # SENSITIVITY ANALYSIS
+1947:     # --------------------------------------------------------
+1948: 
+1949:     st.markdown(
+1950:         '<div class="eyebrow">05 / CURRENT RESEARCH OUTPUTS</div>',
+1951:         unsafe_allow_html=True
+1952:     )
+1953: 
+1954:     st.markdown("### Terrain screening sensitivity")
+1955: 
+1956:     st.caption(
+1957:         "Existing sensitivity scenarios from the regional research "
+1958:         "repository. Matching percentages and areas are screening outputs, "
+1959:         "not probabilities or validated suitability scores."
+1960:     )
+1961: 
+1962:     if (
+1963:         SENSITIVITY_SUMMARY is not None
+1964:         and not SENSITIVITY_SUMMARY.empty
+1965:     ):
+1966:         scenario_cols = st.columns(3)
+1967: 
+1968:         for index, (_, row) in enumerate(
+1969:             SENSITIVITY_SUMMARY.iterrows()
+1970:         ):
+1971:             scenario = str(
+1972:                 row.get("scenario", "Scenario")
+1973:             ).title()
+1974: 
+1975:             percentage = safe_metric_value(
+1976:                 row, "matching_percentage", "%"
+1977:             )
+1978: 
+1979:             area = safe_metric_value(
+1980:                 row, "matching_area_km2", " kmÂ²"
+1981:             )
+1982: 
+1983:             with scenario_cols[index % 3]:
+1984:                 st.metric(
+1985:                     f"{scenario} matching area",
+1986:                     percentage
+1987:                 )
+1988:                 st.caption(
+1989:                     f"Matching area: {area}"
+1990:                 )
+1991: 
+1992:     else:
+1993:         st.info(
+1994:             "Sensitivity summary is not available in the research repository."
+1995:         )
+1996: 
+1997:     st.divider()
+1998: 
+1999:     # --------------------------------------------------------
+2000:     # SCIENTIFIC INTERPRETATION
+2001:     # --------------------------------------------------------
+2002: 
+2003:     st.markdown(
+2004:         '<div class="eyebrow">06 / SCIENTIFIC INTERPRETATION</div>',
+2005:         unsafe_allow_html=True
+
+========== app.py LINES 2045-2110 ==========
+2045:         "Explore extracted Atacama candidate regions, inspect their geography and examine their measured terrain characteristics."
+2046:     )
+2047:     if CANDIDATE_INVENTORY is None or CANDIDATE_INVENTORY.empty:
+2048:         empty_state("Candidate inventory unavailable", "The Atacama candidate inventory could not be loaded.")
+2049:         return
+2050: 
+2051:     df = CANDIDATE_INVENTORY.copy()
+2052:     if "candidate_id" not in df.columns:
+2053:         st.error("The candidate inventory does not contain a candidate_id column.")
+2054:         return
+2055: 
+2056:     st.markdown("### Explore extracted regions")
+2057:     f1, f2, f3 = st.columns([1.2, 1, 1])
+2058:     with f1:
+2059:         search = st.text_input("Search candidate ID", placeholder="Example: TF-001")
+2060:     with f2:
+2061:         area_range = None
+2062:         if "area_km2" in df.columns:
+2063:             areas = pd.to_numeric(df["area_km2"], errors="coerce").dropna()
+2064:             if not areas.empty:
+2065:                 lo, hi = float(areas.min()), float(areas.max())
+2066:                 area_range = st.slider(
+2067:                     "Area range (kmÂ²)", min_value=lo, max_value=hi,
+2068:                     value=(lo, hi), key="discovery_area_range"
+2069:                 )
+2070:     with f3:
+2071:         sort_order = st.selectbox(
+2072:             "Sort candidates",
+2073:             ["Largest area first", "Smallest area first", "Candidate ID"]
+2074:         )
+2075: 
+2076:     filtered_df = df.copy()
+2077:     if search:
+2078:         filtered_df = filtered_df[
+2079:             filtered_df["candidate_id"].astype(str).str.contains(search, case=False, na=False)
+2080:         ]
+2081:     if area_range is not None and "area_km2" in filtered_df.columns:
+2082:         filtered_df = filtered_df[
+2083:             pd.to_numeric(filtered_df["area_km2"], errors="coerce").between(*area_range)
+2084:         ]
+2085:     if sort_order == "Largest area first" and "area_km2" in filtered_df.columns:
+2086:         filtered_df = filtered_df.sort_values("area_km2", ascending=False)
+2087:     elif sort_order == "Smallest area first" and "area_km2" in filtered_df.columns:
+2088:         filtered_df = filtered_df.sort_values("area_km2", ascending=True)
+2089:     else:
+2090:         filtered_df = filtered_df.sort_values("candidate_id")
+2091: 
+2092:     a, b, c = st.columns(3)
+2093:     a.metric("Extracted inventory", len(df))
+2094:     b.metric("Filtered candidates", len(filtered_df))
+2095:     c.metric("Profiled candidates", REPOSITORY_STATS["profiles"])
+2096: 
+2097:     st.caption(
+2098:         "Geographic scope: this extracted inventory covers the Atacama "
+2099:         "Desert study area in Chile only. It is not a global Earth inventory, "
+2100:         "a suitability ranking, or confirmation of planetary analogues."
+2101:     )
+2102:     st.divider()
+2103: 
+2104:     map_col, profile_col = st.columns([1.45, 1])
+2105:     with map_col:
+2106:         st.markdown("### Candidate geography")
+2107:         if not filtered_df.empty:
+2108:             candidate_map = create_research_candidate_map(filtered_df)
+2109:             if candidate_map is not None:
+2110:                 st_folium(
+
+========== app.py LINES 2705-2820 ==========
+2705: 
+2706: # ============================================================
+2707: # PAGE 4 â€” EARTH / MARS COMPARISON
+2708: # ============================================================
+2709: 
+2710: 
+2711: def comparison_page():
+2712:     import plotly.graph_objects as go
+2713: 
+2714:     project_root = Path(__file__).resolve().parent
+2715:     reports_dir = project_root / "outputs" / "reports"
+2716:     global_dir = project_root / "outputs" / "Global"
+2717: 
+2718:     global_report_path = (
+2719:         global_dir / "Comparisons"
+2720:         / "global_planetary_comparison_report.json"
+2721:     )
+2722: 
+2723:     moon_report_path = (
+2724:         global_dir / "Moon"
+2725:         / "moon_global_terrain_analysis.json"
+2726:     )
+2727: 
+2728:     earth_moon_report_path = (
+2729:         global_dir / "Comparisons"
+2730:         / "earth_moon_common_scale_report.json"
+2731:     )
+2732: 
+2733:     # ========================================================
+2734:     # PAGE HEADER
+2735:     # ========================================================
+2736: 
+2737:     section_header(
+2738:         "REGIONAL ANALOGUE RESEARCH",
+2739:         "Regional Analogue Study",
+2740:         "Compare terrestrial environments against regional and "
+2741:         "global planetary terrain references."
+2742:     )
+2743: 
+2744:     # ========================================================
+2745:     # EARTH REGION SELECTOR
+2746:     # ========================================================
+2747: 
+2748:     st.divider()
+2749:     st.markdown("### Select terrestrial study region")
+2750: 
+2751:     region_options = {
+2752:         "Atacama Desert, Chile": {
+2753:             "report_path": reports_dir
+2754:             / "earth_mars_terrain_comparison.json",
+2755:             "earth_label": "Atacama, Earth",
+2756:             "region_key": "Atacama",
+2757:             "report": EARTH_MARS_REPORT,
+2758:             "filename": "terraform_atacama_comparison.json",
+2759:         },
+2760: 
+2761:         "Death Valley, USA": {
+2762:             "report_path": reports_dir
+2763:             / "death_valley_jezero_terrain_comparison.json",
+2764:             "earth_label": "Death Valley, Earth",
+2765:             "region_key": "Death Valley",
+2766:             "report": None,
+2767:             "filename": "terraform_death_valley_comparison.json",
+2768:         },
+2769:     }
+2770: 
+2771:     selected_region = st.radio(
+2772:         "Earth study region",
+2773:         list(region_options.keys()),
+2774:         horizontal=True,
+2775:         key="regional_analogue_region_selector",
+2776:     )
+2777: 
+2778:     config = region_options[selected_region]
+2779:     earth_label = config["earth_label"]
+2780: 
+2781:     # ========================================================
+2782:     # PLANETARY REFERENCE SELECTOR
+2783:     # ========================================================
+2784: 
+2785:     st.divider()
+2786:     st.markdown("### Select planetary reference")
+2787: 
+2788:     planetary_reference = st.radio(
+2789:         "Planetary reference dataset",
+2790:         [
+2791:             "Jezero Crater â€” Regional",
+2792:             "Global Mars â€” MOLA",
+2793:             "Global Moon â€” LOLA",
+2794:         ],
+2795:         horizontal=True,
+2796:         key="regional_planetary_reference_selector",
+2797:     )
+2798: 
+2799:     is_jezero = (
+2800:         planetary_reference == "Jezero Crater â€” Regional"
+2801:     )
+2802: 
+2803:     is_global_mars = (
+2804:         planetary_reference == "Global Mars â€” MOLA"
+2805:     )
+2806: 
+2807:     is_global_moon = (
+2808:         planetary_reference == "Global Moon â€” LOLA"
+2809:     )
+2810: 
+2811:     # ========================================================
+2812:     # LOAD SELECTED REPORTS
+2813:     # ========================================================
+2814: 
+2815:     report = None
+2816:     active_report = None
+2817: 
+2818:     comparison = {}
+2819:     terrain_metrics = {}
+2820:     histograms = {}
+
+========== app.py LINES 2920-2960 ==========
+2920: 
+2921:             active_report = global_report
+2922: 
+2923:         except (json.JSONDecodeError, OSError) as error:
+2924: 
+2925:             st.error(
+2926:                 f"Could not load global Mars report: {error}"
+2927:             )
+2928: 
+2929:             return
+2930: 
+2931:     # --------------------------------------------------------
+2932:     # GLOBAL MOON REPORTS
+2933:     # --------------------------------------------------------
+2934: 
+2935:     elif is_global_moon:
+2936: 
+2937:         if not moon_report_path.exists():
+2938: 
+2939:             st.error(
+2940:                 "Global lunar terrain report was not found."
+2941:             )
+2942: 
+2943:             st.info(
+2944:                 "Run: python src/analysis/moon_terrain_analysis.py"
+2945:             )
+2946: 
+2947:             return
+2948: 
+2949:         if not earth_moon_report_path.exists():
+2950: 
+2951:             st.error(
+2952:                 "Earth-Moon common-scale comparison report was not found."
+2953:             )
+2954: 
+2955:             st.info(
+2956:                 "Run: python src/analysis/earth_moon_comparison.py"
+2957:             )
+2958: 
+2959:             return
+2960: 
+
+========== app.py LINES 3575-3650 ==========
+3575:                     ensure_ascii=False,
+3576:                 ).encode("utf-8"),
+3577: 
+3578:                 file_name="terraform_global_planetary_comparison.json",
+3579: 
+3580:                 mime="application/json",
+3581: 
+3582:                 key="download_global_planetary_report",
+3583:             )
+3584: 
+3585:     # ========================================================
+3586:     # GLOBAL MOON â€” LOLA
+3587:     # ========================================================
+3588: 
+3589:     elif is_global_moon:
+3590: 
+3591:         dataset = moon_report.get("dataset", {})
+3592:         elevation_stats = moon_report.get(
+3593:             "elevation_statistics", {}
+3594:         )
+3595: 
+3596:         terrain_stats = moon_report.get(
+3597:             "terrain_statistics", {}
+3598:         )
+3599: 
+3600:         lunar_reference = moon_region_data.get(
+3601:             "lunar_reference", {}
+3602:         )
+3603: 
+3604:         earth_statistics = moon_region_data.get(
+3605:             "earth_statistics", {}
+3606:         )
+3607: 
+3608:         lunar_statistics = lunar_reference.get(
+3609:             "metrics", {}
+3610:         )
+3611: 
+3612:         centre = moon_region_data.get("centre", {})
+3613:         scale = moon_region_data.get(
+3614:             "comparison_scale", {}
+3615:         )
+3616: 
+3617:         # ----------------------------------------------------
+3618:         # OVERVIEW
+3619:         # ----------------------------------------------------
+3620: 
+3621:         st.markdown("### Global lunar study overview")
+3622: 
+3623:         c1, c2, c3, c4 = st.columns(4)
+3624: 
+3625:         c1.metric(
+3626:             "Earth study region",
+3627:             selected_region.split(",")[0],
+3628:         )
+3629: 
+3630:         c2.metric(
+3631:             "Planetary reference",
+3632:             "Global Moon",
+3633:         )
+3634: 
+3635:         c3.metric(
+3636:             "LOLA equatorial spacing",
+3637:             f"{dataset.get('equatorial_pixel_scale_m', 1895.21):,.0f} m",
+3638:         )
+3639: 
+3640:         c4.metric(
+3641:             "Global elevation cells",
+3642:             f"{dataset.get('dimensions', {}).get('total_cells', 0):,}",
+3643:         )
+3644: 
+3645:         st.caption(
+3646:             "Reference dataset: NASA Lunar Reconnaissance Orbiter "
+3647:             "LOLA LDEM_16, Version 3.1."
+3648:         )
+3649: 
+3650:         st.divider()
+
+========== app.py LINES 3960-3990 ==========
+3960:         # ----------------------------------------------------
+3961: 
+3962:         st.divider()
+3963:         st.markdown("### Global lunar visualisation")
+3964: 
+3965:         moon_image_path = (
+3966:             project_root
+3967:             / "outputs"
+3968:             / "Visualisations"
+3969:             / "Global"
+3970:             / "moon_global_elevation.png"
+3971:         )
+3972: 
+3973:         if moon_image_path.exists():
+3974: 
+3975:             st.image(
+3976:                 str(moon_image_path),
+3977:                 use_container_width=True,
+3978:                 caption="Global LOLA lunar elevation distribution map.",
+3979:             )
+3980: 
+3981:         else:
+3982: 
+3983:             st.info(
+3984:                 "Global lunar elevation visualisation is not available."
+3985:             )
+3986: 
+3987:         # ----------------------------------------------------
+3988:         # DATASET AND PROCESSING DETAILS
+3989:         # ----------------------------------------------------
+3990: 
+
+========== app.py LINES 4495-4550 ==========
+4495: 
+4496: 
+4497: 
+4498: def moon_explorer_page():
+4499:     section_header(
+4500:         "LUNAR TERRAIN INTELLIGENCE",
+4501:         "Moon Explorer",
+4502:         "Explore the global lunar elevation model and its scientific characteristics."
+4503:     )
+4504: 
+4505:     report_path = OUTPUTS / "Global" / "Moon" / "moon_global_report.json"
+4506:     image_path = OUTPUTS / "Visualisations" / "Global" / "moon_global_elevation.png"
+4507: 
+4508:     if not report_path.exists():
+4509:         st.error("Moon global report not found.")
+4510:         return
+4511: 
+4512:     try:
+4513:         report = json.loads(report_path.read_text(encoding="utf-8"))
+4514:     except Exception as exc:
+4515:         st.error(f"Could not read the Moon report: {exc}")
+4516:         return
+4517: 
+4518:     dataset = report.get("dataset", {})
+4519:     dimensions = dataset.get("dimensions", {})
+4520:     stats = report.get("elevation_statistics", {})
+4521:     percentiles = stats.get("percentiles_m", {})
+4522:     processing = report.get("processing", {})
+4523:     limitations = report.get("scientific_limitations", [])
+4524:     validation = report.get("raw_data_validation", {})
+4525: 
+4526:     def moon_num(value, digits=1):
+4527:         try:
+4528:             return f"{float(value):,.{digits}f}"
+4529:         except (TypeError, ValueError):
+4530:             return "N/A"
+4531: 
+4532:     st.markdown("### Global lunar elevation")
+4533: 
+4534:     if image_path.exists():
+4535:         st.image(
+4536:             str(image_path),
+4537:             caption="Global lunar elevation ? LOLA LDEM_16",
+4538:             use_container_width=True
+4539:         )
+4540:     else:
+4541:         st.warning("Global Moon elevation image not found.")
+4542: 
+4543:     st.markdown("### Elevation statistics")
+4544: 
+4545:     metrics = [
+4546:         ("Minimum", stats.get("minimum_m")),
+4547:         ("Maximum", stats.get("maximum_m")),
+4548:         ("Mean", stats.get("mean_m")),
+4549:         ("Median", stats.get("median_m")),
+4550:     ]

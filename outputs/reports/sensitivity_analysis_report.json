@@ -1,0 +1,152 @@
+{
+    "project": "TERRAFORM",
+    "analysis": "Terrain screening sensitivity analysis",
+    "earth_study_region": "Atacama pilot area, Chile",
+    "mars_reference_region": "Jezero Crater study area",
+    "working_resolution_m": 463,
+    "earth_valid_pixels": 52499,
+    "pixel_area_km2": 0.214369,
+    "scenarios": {
+        "broad": {
+            "label": "Broad screening (P10-P90)",
+            "reference_percentiles": {
+                "lower": 10,
+                "upper": 90
+            },
+            "reference_thresholds": {
+                "slope": {
+                    "lower": 0.6519118547439576,
+                    "upper": 7.3130685806274425,
+                    "unit": "degrees"
+                },
+                "roughness": {
+                    "lower": 5.196246147155762,
+                    "upper": 48.801456832885755,
+                    "unit": "metres"
+                },
+                "local_relief": {
+                    "lower": 16.4609619140625,
+                    "upper": 151.19013671875004,
+                    "unit": "metres"
+                }
+            },
+            "matching_pixels": 38484,
+            "valid_pixels": 52499,
+            "matching_percentage": 73.30425341435075,
+            "matching_area_km2": 8249.776596,
+            "connectivity": {
+                "4_neighbour": {
+                    "cluster_count": 169,
+                    "largest_cluster_pixels": 36934,
+                    "largest_cluster_area_km2": 7917.504646,
+                    "largest_cluster_share_percent": 95.97235214634652,
+                    "largest_10_share_percent": 98.81249350379379
+                },
+                "8_neighbour": {
+                    "cluster_count": 100,
+                    "largest_cluster_pixels": 37035,
+                    "largest_cluster_area_km2": 7939.155915,
+                    "largest_cluster_share_percent": 96.23479887745556,
+                    "largest_10_share_percent": 99.16328863943457
+                }
+            }
+        },
+        "moderate": {
+            "label": "Moderate screening (P25-P75)",
+            "reference_percentiles": {
+                "lower": 25,
+                "upper": 75
+            },
+            "reference_thresholds": {
+                "slope": {
+                    "lower": 1.233550876379013,
+                    "upper": 4.181218862533569,
+                    "unit": "degrees"
+                },
+                "roughness": {
+                    "lower": 8.978257656097412,
+                    "upper": 28.185208797454834,
+                    "unit": "metres"
+                },
+                "local_relief": {
+                    "lower": 28.15521240234375,
+                    "upper": 88.09814453125,
+                    "unit": "metres"
+                }
+            },
+            "matching_pixels": 22063,
+            "valid_pixels": 52499,
+            "matching_percentage": 42.0255623916646,
+            "matching_area_km2": 4729.623247,
+            "connectivity": {
+                "4_neighbour": {
+                    "cluster_count": 415,
+                    "largest_cluster_pixels": 7822,
+                    "largest_cluster_area_km2": 1676.794318,
+                    "largest_cluster_share_percent": 35.453020894710605,
+                    "largest_10_share_percent": 87.32719938358338
+                },
+                "8_neighbour": {
+                    "cluster_count": 220,
+                    "largest_cluster_pixels": 14825,
+                    "largest_cluster_area_km2": 3178.020425,
+                    "largest_cluster_share_percent": 67.19394461315325,
+                    "largest_10_share_percent": 92.46702624303131
+                }
+            }
+        },
+        "strict": {
+            "label": "Strict screening (P40-P60)",
+            "reference_percentiles": {
+                "lower": 40,
+                "upper": 60
+            },
+            "reference_thresholds": {
+                "slope": {
+                    "lower": 1.8180507183074952,
+                    "upper": 2.840375661849975,
+                    "unit": "degrees"
+                },
+                "roughness": {
+                    "lower": 12.683795738220216,
+                    "upper": 19.51007347106933,
+                    "unit": "metres"
+                },
+                "local_relief": {
+                    "lower": 39.82353515625,
+                    "upper": 60.871044921875,
+                    "unit": "metres"
+                }
+            },
+            "matching_pixels": 6608,
+            "valid_pixels": 52499,
+            "matching_percentage": 12.586906417265089,
+            "matching_area_km2": 1416.550352,
+            "connectivity": {
+                "4_neighbour": {
+                    "cluster_count": 873,
+                    "largest_cluster_pixels": 559,
+                    "largest_cluster_area_km2": 119.832271,
+                    "largest_cluster_share_percent": 8.459443099273606,
+                    "largest_10_share_percent": 45.71731234866828
+                },
+                "8_neighbour": {
+                    "cluster_count": 571,
+                    "largest_cluster_pixels": 666,
+                    "largest_cluster_area_km2": 142.769754,
+                    "largest_cluster_share_percent": 10.07869249394673,
+                    "largest_10_share_percent": 50.544794188861985
+                }
+            }
+        }
+    },
+    "methodological_limitations": [
+        "Percentile intervals are derived independently for each terrain metric.",
+        "The three-metric intersection is not a probability of planetary analogy.",
+        "Terrain variables may be correlated and are not independent evidence.",
+        "Results depend on selected reference region and percentile thresholds.",
+        "Cluster sizes depend on connectivity and raster resolution.",
+        "Terrain screening does not establish geological or operational equivalence.",
+        "Earth and Mars datasets have different measurement characteristics."
+    ]
+}
